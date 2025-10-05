@@ -43,15 +43,15 @@
 
     <form id="feedbackForm">
       <div class="mb-2">
-        <input name="name" class="form-control" placeholder="Name / नाम (optional)">
+        <input name="Name" class="form-control" placeholder="Name / नाम (optional)">
       </div>
 
       <div class="mb-2">
-        <input name="mobile" class="form-control" placeholder="Mobile No. / मोबाइल नंबर (optional)" pattern="[0-9]{10}" title="Enter 10-digit mobile number">
+        <input name="Mobile" class="form-control" placeholder="Mobile No. / मोबाइल नंबर (optional)" pattern="[0-9]{10}" title="Enter 10-digit mobile number">
       </div>
 
       <div class="mb-2">
-        <select name="category" class="form-select" required>
+        <select name="Category" class="form-select" required>
           <option value="">Visitor Category / आगंतुक श्रेणी</option>
           <option value="Student">Student / विद्यार्थी</option>
           <option value="Teacher">Teacher / शिक्षक</option>
@@ -66,13 +66,13 @@
       </div>
 
       <div class="mb-2">
-        <input id="district" name="district" class="form-control" placeholder="District / जिला (auto-detected when allowed)">
+        <input id="District" name="district" class="form-control" placeholder="District / जिला (auto-detected when allowed)">
         <div class="small-muted mt-1">If location access is denied, please enter district manually. / यदि स्थान अनुमति नहीं दी गई तो जिला मैन्युअल रूप से भरें।</div>
       </div>
 
       <div class="mb-2">
         <label class="small-muted">Rating / रेटिंग</label>
-        <select name="rating" class="form-select">
+        <select name="Rating" class="form-select">
           <option value="5">Excellent / उत्कृष्ट</option>
           <option value="4">Good / अच्छा</option>
           <option value="3">Average / औसत</option>
@@ -92,7 +92,7 @@
           <option value="Excellent initiative by the State.">Excellent initiative by the State. / राज्य की उत्कृष्ट पहल।</option>
         </select>
 
-        <textarea name="comments" class="form-control" rows="2" placeholder="Type your own comment / अपना सुझाव लिखें"></textarea>
+        <textarea name="Comments" class="form-control" rows="2" placeholder="Type your own comment / अपना सुझाव लिखें"></textarea>
       </div>
 
       <!-- Hidden lat/lon fields -->
@@ -245,4 +245,5 @@ chatInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') chatSend.click
 </script>
 </body>
 </html>
+
 
