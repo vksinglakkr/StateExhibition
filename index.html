@@ -1,250 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>State Level Exhibition on the New Criminal Laws</title>
-
-  <!-- Bootstrap + Font -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet"/>
-
-  <style>
-    :root{--accent:#0d6efd;--muted:#6c757d}
-    body{font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#f6fbff,#ffffff);padding-bottom:40px}
-    .banner{border-radius:10px; overflow:hidden; box-shadow:0 6px 18px rgba(13,110,253,0.08); margin:12px 0}
-    .banner img{width:100%; height:auto; display:block}
-    .title{color:#08306b; text-align:center; margin:10px 0 6px}
-    .subtitle{color:var(--muted); text-align:center; margin-bottom:18px}
-    .card{border-radius:14px; box-shadow:0 6px 20px rgba(25,25,40,0.06)}
-    .chat-box{background:#f4f7fb; padding:10px; border-radius:10px; max-height:220px; overflow:auto}
-    .chat-user{background:#e7f4ff; padding:8px; border-radius:8px; margin-bottom:8px; display:inline-block; max-width:80%}
-    .chat-bot{background:#eef2f6; padding:8px; border-radius:8px; margin-bottom:8px; display:inline-block; max-width:80%}
-    .small-muted{color:var(--muted); font-size:.9rem}
-    footer{font-size:.85rem; text-align:center; color:var(--muted); margin-top:18px}
-    @media (max-width:420px){ .title{font-size:1.05rem} }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Level Exhibition on New Criminal Laws / नये आपराधिक कानूनों पर राज्य स्तरीय प्रदर्शनी</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 </head>
-<body>
+<body class="p-3">
 
-<div class="container">
+  <h2 class="text-center mb-3">State Level Exhibition on New Criminal Laws / नये आपराधिक कानूनों पर राज्य स्तरीय प्रदर्शनी</h2>
 
-  <!-- Banner / Title -->
-  <div class="banner">
-    <img src="https://via.placeholder.com/1200x300.png?text=Exhibition+Banner+Replace+With+Official+Banner" alt="Exhibition Banner">
-  </div>
-
-  <h3 class="title">State Level Exhibition on the New Criminal Laws</h3>
-  <div class="subtitle">नये आपराधिक कानूनों पर राज्य स्तरीय प्रदर्शनी</div>
-
-  <!-- Feedback Card -->
-  <div class="card p-3 mb-3">
-    <h5 class="mb-3">Visitor Feedback / प्रदर्शनी प्रतिपुष्टि</h5>
-
-    <form id="feedbackForm">
-      <div class="mb-2">
-        <input name="Name" class="form-control" placeholder="Name / नाम (optional)">
-      </div>
-
-      <div class="mb-2">
-        <input name="Mobile" class="form-control" placeholder="Mobile No. / मोबाइल नंबर (optional)" pattern="[0-9]{10}" title="Enter 10-digit mobile number">
-      </div>
-
-      <div class="mb-2">
-        <select name="Category" class="form-select" required>
-          <option value="">Visitor Category / आगंतुक श्रेणी</option>
-          <option value="Student">Student / विद्यार्थी</option>
-          <option value="Teacher">Teacher / शिक्षक</option>
-          <option value="Advocate">Advocate / अधिवक्ता</option>
-          <option value="Shopkeeper">Shopkeeper / दुकानदार</option>
-          <option value="Employee">Employee / कर्मचारी</option>
-          <option value="Farmer">Farmer / किसान</option>
-          <option value="Homemaker">Homemaker / गृहिणी</option>
-          <option value="Retired">Retired / सेवानिवृत्त</option>
-          <option value="Other">Other / अन्य</option>
-        </select>
-      </div>
-
-      <div class="mb-2">
-        <input id="District" name="District" class="form-control" placeholder="District / जिला (auto-detected when allowed)">
-        <div class="small-muted mt-1">If location access is denied, please enter district manually. / यदि स्थान अनुमति नहीं दी गई तो जिला मैन्युअल रूप से भरें।</div>
-      </div>
-
-      <div class="mb-2">
-        <label class="small-muted">Rating / रेटिंग</label>
-        <select name="Rating" class="form-select">
-          <option value="5">Excellent / उत्कृष्ट</option>
-          <option value="4">Good / अच्छा</option>
-          <option value="3">Average / औसत</option>
-          <option value="2">Below Average / औसत से कम</option>
-          <option value="1">Poor / खराब</option>
-        </select>
-      </div>
-
-      <div class="mb-2">
-        <label class="small-muted">Comments / सुझाव</label>
-        <select id="commentTemplate" class="form-select mb-2">
-          <option value="">-- Select a comment template --</option>
-          <option value="Very informative exhibition. I learned about new laws.">Very informative exhibition. I learned about new laws. / बहुत उपयोगी प्रदर्शनी, मुझे नये कानूनों की जानकारी मिली।</option>
-          <option value="Presentation is clear and easy to understand.">Presentation is clear and easy to understand. / प्रस्तुति स्पष्ट और समझने योग्य है।</option>
-          <option value="AI assistant explained very well.">AI assistant explained very well. / एआई सहायक ने बहुत अच्छा समझाया।</option>
-          <option value="Need more examples or visual displays.">Need more examples or visual displays. / अधिक उदाहरण या दृश्य प्रदर्शन की आवश्यकता है।</option>
-          <option value="Excellent initiative by the State.">Excellent initiative by the State. / राज्य की उत्कृष्ट पहल।</option>
-        </select>
-
-        <textarea name="Comments" class="form-control" rows="2" placeholder="Type your own comment / अपना सुझाव लिखें"></textarea>
-      </div>
-
-      <!-- Hidden lat/lon fields -->
-      <input type="hidden" id="latitude" name="Latitude">
-      <input type="hidden" id="longitude" name="Longitude">
-
-      <div class="d-grid mt-2">
-        <button type="submit" class="btn btn-primary btn-lg">Submit Feedback / जमा करें</button>
-      </div>
-      <div id="feedMsg" class="mt-2 small-muted" style="display:none"></div>
-    </form>
-  </div>
-
-  <!-- Chat Card -->
-  <div class="card p-3 mb-3">
-    <h5 class="mb-2">Ask About the New Criminal Laws / नए आपराधिक कानूनों के बारे में पूछें (Interactive Chat)</h5>
-
-    <div class="chat-box mb-2" id="chatBox">
-      <div class="small-muted">Type a question and press Send. (Chatbot will be enabled shortly)</div>
-    </div>
-
-    <div class="input-group mb-2">
-      <input id="chatInput" type="text" class="form-control" placeholder="Type your question / अपना सवाल लिखें">
-      <button id="chatSend" class="btn btn-outline-primary">Send</button>
-    </div>
-
-    <div class="small-muted">Questions are for visitor awareness. AI/chat will be connected via n8n webhook soon.</div>
-  </div>
-
-  <!-- Stalls link -->
+  <!-- Stalls Section -->
   <div class="text-center mb-4">
-    <a href="Stalls.html" class="btn btn-info btn-lg w-100">Explore All Stalls / स्टॉल देखें</a>
+    <a href="Stalls.html" class="btn btn-info w-75">Learn More About Stalls / स्टॉल के बारे में जानें</a>
   </div>
 
-  <footer>
-    State Level Exhibition on the New Criminal Laws | नये आपराधिक कानूनों पर राज्य स्तरीय प्रदर्शनी
-  </footer>
-</div>
+  <!-- Feedback Form Section -->
+  <h3 class="text-center mb-3">Ask about the New Criminal Laws / नए आपराधिक कानूनों के बारे में पूछें</h3>
 
-<!-- Bootstrap bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <form id="feedbackForm" class="container">
+    <div class="mb-2">
+      <input type="text" name="Name" placeholder="Name / नाम" class="form-control" required>
+    </div>
+    <div class="mb-2">
+      <input type="text" name="Mobile" placeholder="Mobile / मोबाइल" class="form-control" required>
+    </div>
+    <div class="mb-2">
+      <select name="Category" class="form-control">
+        <option value="">Select Category / श्रेणी चुनें</option>
+        <option value="Student">Student / छात्र</option>
+        <option value="Employee">Employee / कर्मचारी</option>
+        <option value="Shopkeeper">Shopkeeper / दुकानदार</option>
+        <option value="Advocate">Advocate / अधिवक्ता</option>
+      </select>
+    </div>
+    <div class="mb-2">
+      <input type="number" name="Rating" placeholder="Rating / रेटिंग" min="1" max="5" class="form-control">
+    </div>
+    <div class="mb-2">
+      <textarea name="Comments" placeholder="Comments / टिप्पणियाँ" class="form-control"></textarea>
+    </div>
 
-<script>
-/* ---------- CONFIG ---------- */
-const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/Exhibition';
-/* ---------------------------- */
+    <!-- Hidden fields for geolocation -->
+    <input type="hidden" name="Latitude" id="Latitude">
+    <input type="hidden" name="Longitude" id="Longitude">
+    <input type="hidden" name="Timestamp" id="Timestamp">
 
-/* 1) Comment template -> textarea */
-const commentTemplate = document.getElementById('commentTemplate');
-const commentsField = document.querySelector('textarea[name="comments"]');
-commentTemplate.addEventListener('change', ()=> {
-  commentsField.value = commentTemplate.value;
-});
+    <button type="submit" class="btn btn-primary w-100">Submit / जमा करें</button>
+  </form>
 
-/* 2) Geolocation: capture lat/lon and try reverse geocode to fill District */
-async function tryAutoLocation(){
-  if(!navigator.geolocation) return;
-  try{
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const lat = pos.coords.latitude.toFixed(6);
-      const lon = pos.coords.longitude.toFixed(6);
-      document.getElementById('latitude').value = lat;
-      document.getElementById('longitude').value = lon;
+  <script>
+    const form = document.getElementById('feedbackForm');
 
-      // Reverse geocode using BigDataCloud (no API key, free for basic use)
-      try{
-        const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-        if(resp.ok){
-          const j = await resp.json();
-          // Try city -> principalSubdivision fallback
-          const districtVal = j.city || j.locality || j.principalSubdivision || '';
-          if(districtVal){
-            const districtEl = document.getElementById('district');
-            if(!districtEl.value || districtEl.value.trim()==='' || districtEl.placeholder.includes('auto-detected')){
-              districtEl.value = districtVal;
-            }
-          }
-        }
-      }catch(err){
-        console.warn('Reverse geocode failed', err);
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      // Timestamp
+      document.getElementById('Timestamp').value = new Date().toISOString();
+
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(function(position){
+          document.getElementById('Latitude').value = position.coords.latitude;
+          document.getElementById('Longitude').value = position.coords.longitude;
+
+          sendFeedback();
+        }, function(error){
+          document.getElementById('Latitude').value = 0;
+          document.getElementById('Longitude').value = 0;
+          sendFeedback();
+        });
+      } else {
+        document.getElementById('Latitude').value = 0;
+        document.getElementById('Longitude').value = 0;
+        sendFeedback();
       }
-    }, (err) => {
-      console.warn('Geolocation denied or unavailable', err);
-    }, { maximumAge:60000, timeout:8000 });
-  }catch(e){
-    console.warn('Geolocation error', e);
-  }
-}
-tryAutoLocation();
-
-/* 3) Submit feedback to n8n webhook */
-const feedbackForm = document.getElementById('feedbackForm');
-const feedMsg = document.getElementById('feedMsg');
-
-feedbackForm.addEventListener('submit', async (ev) => {
-  ev.preventDefault();
-  feedMsg.style.display = 'none';
-
-  // collect form data
-  const fd = new FormData(feedbackForm);
-  const payload = Object.fromEntries(fd.entries());
-  payload.timestamp = new Date().toISOString();
-
-  try{
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
     });
-    if(res.ok){
-      feedMsg.style.display = 'block';
-      feedMsg.textContent = 'Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';
-      feedMsg.style.color = 'green';
-      feedbackForm.reset();
-      // keep lat/lon preserved? reset hidden fields to blank
-      document.getElementById('latitude').value = '';
-      document.getElementById('longitude').value = '';
-    } else {
-      throw new Error('HTTP ' + res.status);
+
+    function sendFeedback(){
+      const data = {
+        Name: form.Name.value,
+        Mobile: form.Mobile.value,
+        Category: form.Category.value,
+        District: "", // optionally set default or add logic
+        Rating: form.Rating.value,
+        Comments: form.Comments.value,
+        Latitude: form.Latitude.value,
+        Longitude: form.Longitude.value,
+        Timestamp: form.Timestamp.value
+      };
+
+      fetch('https://vinodnic.app.n8n.cloud/webhook/Exhibition', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(resp => {
+        alert("Feedback Submitted Successfully / फीडबैक सफलतापूर्वक जमा हुआ!");
+        form.reset();
+      })
+      .catch(err => alert("Error submitting feedback / फीडबैक जमा करने में त्रुटि!"));
     }
-  }catch(err){
-    console.error(err);
-    feedMsg.style.display = 'block';
-    feedMsg.textContent = 'Submission failed. Please try again. / भेजने में विफल। कृपया पुनः प्रयास करें।';
-    feedMsg.style.color = 'red';
-  }
-});
+  </script>
 
-/* 4) Chat placeholder ready for future webhook */
-const chatBox = document.getElementById('chatBox');
-const chatInput = document.getElementById('chatInput');
-const chatSend = document.getElementById('chatSend');
-
-chatSend.addEventListener('click', async ()=>{
-  const q = (chatInput.value||'').trim();
-  if(!q) return;
-  // show user message
-  const userDiv = document.createElement('div'); userDiv.className='chat-user'; userDiv.textContent = q;
-  chatBox.appendChild(userDiv);
-  // placeholder response while chatbot is not connected
-  const botDiv = document.createElement('div'); botDiv.className='chat-bot'; botDiv.textContent = 'Answer will appear here once chatbot is connected.';
-  chatBox.appendChild(botDiv);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  chatInput.value = '';
-});
-
-/* Optional: Enter key sends chat */
-chatInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') chatSend.click(); });
-
-</script>
 </body>
 </html>
-
-
-
