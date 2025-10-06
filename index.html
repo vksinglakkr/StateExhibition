@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html> 
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -43,29 +43,6 @@
       border-radius:14px;
       box-shadow:0 6px 20px rgba(25,25,40,0.06);
       min-height: 100%;
-    }
-    .chat-box {
-      background:#f4f7fb;
-      padding:10px;
-      border-radius:10px;
-      height:250px;
-      overflow-y:auto;
-    }
-    .chat-user {
-      background:#e7f4ff;
-      padding:8px;
-      border-radius:8px;
-      margin-bottom:8px;
-      display:inline-block;
-      max-width:80%;
-    }
-    .chat-bot {
-      background:#eef2f6;
-      padding:8px;
-      border-radius:8px;
-      margin-bottom:8px;
-      display:inline-block;
-      max-width:80%;
     }
     .small-muted {
       color:var(--muted);
@@ -159,17 +136,11 @@
     </form>
   </div>
 
-  <!-- Chatbot Card -->
-  <div class="card p-3 mb-3" style="min-height:300px;">
-    <h5 class="mb-2">Ask About the New Criminal Laws / नए आपराधिक कानूनों के बारे में पूछें (Interactive Chat)</h5>
-    <div class="chat-box mb-2" id="chatBox">
-      <div class="small-muted">Type a question and press Send.</div>
-    </div>
-    <div class="input-group mb-2">
-      <input id="chatInput" type="text" class="form-control" placeholder="Type your question / अपना सवाल लिखें">
-      <button id="chatSend" class="btn btn-outline-primary">Send</button>
-    </div>
-    <div class="small-muted">Your name and category (from feedback form) are used only to personalize the chat.</div>
+  <!-- Ask Question (AI) Button -->
+  <div class="text-center mb-3">
+    <a href="chatbot.html" target="_blank" class="btn btn-success btn-lg w-100">
+      Ask Question (with AI) / प्रश्न पूछें (AI के साथ)
+    </a>
   </div>
 
   <!-- Stalls link -->
@@ -186,7 +157,6 @@
 
 <script>
 const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/Exhibition';
-const CHAT_WEBHOOK = 'https://vinodnic.app.n8n.cloud/webhook/chatbot';
 
 /* Comment template */
 const commentTemplate = document.getElementById('commentTemplate');
@@ -209,7 +179,8 @@ async function tryAutoLocation(){
           const districtVal=j.city||j.locality||j.principalSubdivision||'';
           if(districtVal){
             const districtEl=document.getElementById('District');
-            if(!districtEl.value||districtEl.value.trim()===''||districtEl.placeholder.includes('auto-detected')) districtEl.value=districtVal;
+            if(!districtEl.value||districtEl.value.trim()===''||districtEl.placeholder.includes('auto-detected')) 
+              districtEl.value=districtVal;
           }
         }
       }catch(e){console.warn('Reverse geocode failed',e);}
@@ -221,73 +192,4 @@ tryAutoLocation();
 /* Feedback submission */
 const feedbackForm=document.getElementById('feedbackForm');
 const feedMsg=document.getElementById('feedMsg');
-feedbackForm.addEventListener('submit',async(ev)=>{
-  ev.preventDefault();feedMsg.style.display='none';
-  if(!document.getElementById('Latitude').value||!document.getElementById('Longitude').value) await tryAutoLocation();
-  const fd=new FormData(feedbackForm);
-  const payload=Object.fromEntries(fd.entries());
-  payload.Timestamp=new Date().toISOString();
-  try{
-    const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(res.ok){
-      feedMsg.style.display='block';
-      feedMsg.textContent='Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';
-      feedMsg.style.color='green';
-      feedbackForm.reset();document.getElementById('Latitude').value='';document.getElementById('Longitude').value='';
-    }else throw new Error('HTTP '+res.status);
-  }catch(err){
-    console.error(err);
-    feedMsg.style.display='block';
-    feedMsg.textContent='Submission failed. Please try again. / भेजने में विफल। कृपया पुनः प्रयास करें।';
-    feedMsg.style.color='red';
-  }
-});
-
-/* Chatbot */
-const chatBox=document.getElementById('chatBox');
-const chatInput=document.getElementById('chatInput');
-const chatSend=document.getElementById('chatSend');
-function appendMsg(cls,txt){
-  const d=document.createElement('div');
-  d.className=cls;
-  d.textContent=txt;
-  chatBox.appendChild(d);
-  chatBox.scrollTop=chatBox.scrollHeight;
-}
-chatSend.addEventListener('click',sendChat);
-chatInput.addEventListener('keypress',e=>{if(e.key==='Enter')sendChat();});
-
-async function sendChat(){
-  const q=chatInput.value.trim();
-  if(!q)return;
-
-  appendMsg('chat-user',q);
-  chatInput.value='';
-  appendMsg('chat-bot','Typing...');
-
-  const userName=document.querySelector('input[name="Name"]').value||'';
-  const userCategory=document.querySelector('select[name="Category"]').value||'';
-
-  try{
-    const res=await fetch(CHAT_WEBHOOK,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({Question:q,Name:userName,Category:userCategory,Language:'en'})
-    });
-    const data=await res.json();
-
-    let botReply='';
-    if(Array.isArray(data) && data[0]?.output) botReply=data[0].output;
-    else if(data.output) botReply=data.output;
-    else if(data.answer) botReply=data.answer;
-    else botReply='No reply received.';
-
-    chatBox.lastChild.textContent=botReply;
-  }catch(e){
-    console.error(e);
-    chatBox.lastChild.textContent='Error: could not connect.';
-  }
-}
-</script>
-</body>
-</html>
+feedbackForm.addEventListener('submit',a
