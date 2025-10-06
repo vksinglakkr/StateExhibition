@@ -1,4 +1,4 @@
-<!doctype html> 
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -136,11 +136,13 @@
     </form>
   </div>
 
-  <!-- Ask Question (AI) Button -->
-  <div class="text-center mb-3">
-    <a href="chatbot.html" target="_blank" class="btn btn-success btn-lg w-100">
-      Ask Question (with AI) / प्रश्न पूछें (AI के साथ)
-    </a>
+  <!-- Ask Question (AI) Card (replaces inline chatbot) -->
+  <div class="card p-3 mb-3">
+    <h5 class="mb-2">Ask Question (with AI) / प्रश्न पूछें (AI के साथ)</h5>
+    <p class="small-muted">Open the AI-powered chatbot in a new tab for interactive questions.</p>
+    <div class="d-grid">
+      <a href="chatbot.html" target="_blank" class="btn btn-success btn-lg">Open Chatbot — Ask Question (with AI)</a>
+    </div>
   </div>
 
   <!-- Stalls link -->
@@ -156,40 +158,125 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+/* === Configuration === */
 const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/Exhibition';
 
-/* Comment template */
+/* === Comment template -> textarea === */
 const commentTemplate = document.getElementById('commentTemplate');
 const commentsField = document.querySelector('textarea[name="Comments"]');
-commentTemplate.addEventListener('change', ()=> { commentsField.value = commentTemplate.value; });
-
-/* Auto-location */
-async function tryAutoLocation(){
-  if(!navigator.geolocation) return;
-  try{
-    navigator.geolocation.getCurrentPosition(async (pos)=>{
-      const lat=pos.coords.latitude.toFixed(6);
-      const lon=pos.coords.longitude.toFixed(6);
-      document.getElementById('Latitude').value=lat;
-      document.getElementById('Longitude').value=lon;
-      try{
-        const resp=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-        if(resp.ok){
-          const j=await resp.json();
-          const districtVal=j.city||j.locality||j.principalSubdivision||'';
-          if(districtVal){
-            const districtEl=document.getElementById('District');
-            if(!districtEl.value||districtEl.value.trim()===''||districtEl.placeholder.includes('auto-detected')) 
-              districtEl.value=districtVal;
-          }
-        }
-      }catch(e){console.warn('Reverse geocode failed',e);}
-    },(err)=>{console.warn('Geolocation denied',err);},{maximumAge:60000,timeout:8000});
-  }catch(e){console.warn('Geolocation error',e);}
+if (commentTemplate && commentsField) {
+  commentTemplate.addEventListener('change', () => {
+    commentsField.value = commentTemplate.value;
+  });
 }
-tryAutoLocation();
 
-/* Feedback submission */
-const feedbackForm=document.getElementById('feedbackForm');
-const feedMsg=document.getElementById('feedMsg');
-feedbackForm.addEventListener('submit',a
+/* === Auto-location (returns Promise so caller can await) === */
+function tryAutoLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      console.warn('Geolocation not supported by browser.');
+      return resolve(false);
+    }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lon = pos.coords.longitude.toFixed(6);
+        document.getElementById('Latitude').value = lat;
+        document.getElementById('Longitude').value = lon;
+
+        // Try reverse-geocoding to get district (best-effort)
+        try {
+          const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+          if (resp.ok) {
+            const j = await resp.json();
+            const districtVal = j.city || j.locality || j.principalSubdivision || j.city || '';
+            if (districtVal) {
+              const districtEl = document.getElementById('District');
+              if (districtEl && (!districtEl.value || districtEl.value.trim() === '' || districtEl.placeholder.toLowerCase().includes('auto-detected'))) {
+                districtEl.value = districtVal;
+              }
+            }
+          }
+        } catch (rgErr) {
+          console.warn('Reverse geocode failed:', rgErr);
+        }
+
+        resolve(true);
+      } catch (e) {
+        console.warn('Error handling position:', e);
+        resolve(false);
+      }
+    }, (err) => {
+      console.warn('Geolocation error or permission denied:', err);
+      resolve(false);
+    }, {
+      maximumAge: 60000,
+      timeout: 10000,
+      enableHighAccuracy: false
+    });
+  });
+}
+
+/* Try once on page load (best-effort) */
+document.addEventListener('DOMContentLoaded', () => {
+  tryAutoLocation().then((ok) => {
+    if (!ok) console.log('Auto-location not set (user denied or unavailable).');
+  });
+});
+
+/* === Feedback submission === */
+const feedbackForm = document.getElementById('feedbackForm');
+const feedMsg = document.getElementById('feedMsg');
+
+feedbackForm.addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  feedMsg.style.display = 'none';
+
+  const submitBtn = feedbackForm.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+
+  try {
+    // If location not set yet, try to obtain before submit (await ensures we wait)
+    const latVal = document.getElementById('Latitude').value;
+    const lonVal = document.getElementById('Longitude').value;
+    if (!latVal || !lonVal) {
+      await tryAutoLocation();
+    }
+
+    const fd = new FormData(feedbackForm);
+    const payload = Object.fromEntries(fd.entries());
+    payload.Timestamp = new Date().toISOString();
+
+    // POST to webhook
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      feedMsg.style.color = 'green';
+      feedMsg.textContent = 'Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';
+      feedMsg.style.display = 'block';
+      feedbackForm.reset();
+      document.getElementById('Latitude').value = '';
+      document.getElementById('Longitude').value = '';
+    } else {
+      // include response text for debugging (best-effort)
+      let errText = '';
+      try { errText = await res.text(); } catch (_) { errText = res.statusText; }
+      throw new Error('HTTP ' + res.status + ' - ' + errText);
+    }
+  } catch (err) {
+    console.error('Feedback submit error:', err);
+    feedMsg.style.color = 'red';
+    feedMsg.textContent = 'Submission failed. Please try again. / भेजने में विफल। कृपया पुनः प्रयास करें।';
+    feedMsg.style.display = 'block';
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
