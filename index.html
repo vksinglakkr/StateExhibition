@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -23,6 +22,7 @@
     .chat-bot{background:#eef2f6; padding:8px; border-radius:8px; margin-bottom:8px; display:inline-block; max-width:80%}
     .small-muted{color:var(--muted); font-size:.9rem}
     footer{font-size:.85rem; text-align:center; color:var(--muted); margin-top:18px}
+    #feedMsg{font-weight:bold;}
     @media (max-width:420px){ .title{font-size:1.05rem} }
   </style>
 </head>
@@ -67,7 +67,7 @@
       </div>
 
       <div class="mb-2">
-        <input id="District" name="district" class="form-control" placeholder="District / जिला (auto-detected when allowed)">
+        <input id="District" name="District" class="form-control" placeholder="District / जिला (auto-detected when allowed)">
         <div class="small-muted mt-1">If location access is denied, please enter district manually. / यदि स्थान अनुमति नहीं दी गई तो जिला मैन्युअल रूप से भरें।</div>
       </div>
 
@@ -97,8 +97,8 @@
       </div>
 
       <!-- Hidden lat/lon fields -->
-      <input type="hidden" id="latitude" name="latitude">
-      <input type="hidden" id="longitude" name="longitude">
+      <input type="hidden" id="Latitude" name="Latitude">
+      <input type="hidden" id="Longitude" name="Longitude">
 
       <div class="d-grid mt-2">
         <button type="submit" class="btn btn-primary btn-lg">Submit Feedback / जमा करें</button>
@@ -143,7 +143,7 @@ const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/Exhibition';
 
 /* 1) Comment template -> textarea */
 const commentTemplate = document.getElementById('commentTemplate');
-const commentsField = document.querySelector('textarea[name="comments"]');
+const commentsField = document.querySelector('textarea[name="Comments"]');
 commentTemplate.addEventListener('change', ()=> {
   commentsField.value = commentTemplate.value;
 });
@@ -155,18 +155,17 @@ async function tryAutoLocation(){
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const lat = pos.coords.latitude.toFixed(6);
       const lon = pos.coords.longitude.toFixed(6);
-      document.getElementById('latitude').value = lat;
-      document.getElementById('longitude').value = lon;
+      document.getElementById('Latitude').value = lat;
+      document.getElementById('Longitude').value = lon;
 
-      // Reverse geocode using BigDataCloud (no API key, free for basic use)
+      // Reverse geocode using BigDataCloud
       try{
         const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
         if(resp.ok){
           const j = await resp.json();
-          // Try city -> principalSubdivision fallback
           const districtVal = j.city || j.locality || j.principalSubdivision || '';
           if(districtVal){
-            const districtEl = document.getElementById('district');
+            const districtEl = document.getElementById('District');
             if(!districtEl.value || districtEl.value.trim()==='' || districtEl.placeholder.includes('auto-detected')){
               districtEl.value = districtVal;
             }
@@ -192,10 +191,20 @@ feedbackForm.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   feedMsg.style.display = 'none';
 
+  // Retry location if empty
+  if(!document.getElementById('Latitude').value || !document.getElementById('Longitude').value){
+    await tryAutoLocation();
+  }
+
   // collect form data
   const fd = new FormData(feedbackForm);
   const payload = Object.fromEntries(fd.entries());
-  payload.timestamp = new Date().toISOString();
+  payload.Timestamp = new Date().toISOString(); // override Timestamp
+
+  // Ensure correct field names
+  payload.District = payload.District || '';
+  payload.Latitude = payload.Latitude || '';
+  payload.Longitude = payload.Longitude || '';
 
   try{
     const res = await fetch(WEBHOOK_URL, {
@@ -208,9 +217,9 @@ feedbackForm.addEventListener('submit', async (ev) => {
       feedMsg.textContent = 'Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';
       feedMsg.style.color = 'green';
       feedbackForm.reset();
-      // keep lat/lon preserved? reset hidden fields to blank
-      document.getElementById('latitude').value = '';
-      document.getElementById('longitude').value = '';
+      // Reset hidden fields
+      document.getElementById('Latitude').value = '';
+      document.getElementById('Longitude').value = '';
     } else {
       throw new Error('HTTP ' + res.status);
     }
@@ -230,21 +239,16 @@ const chatSend = document.getElementById('chatSend');
 chatSend.addEventListener('click', async ()=>{
   const q = (chatInput.value||'').trim();
   if(!q) return;
-  // show user message
   const userDiv = document.createElement('div'); userDiv.className='chat-user'; userDiv.textContent = q;
   chatBox.appendChild(userDiv);
-  // placeholder response while chatbot is not connected
   const botDiv = document.createElement('div'); botDiv.className='chat-bot'; botDiv.textContent = 'Answer will appear here once chatbot is connected.';
   chatBox.appendChild(botDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
   chatInput.value = '';
 });
 
-/* Optional: Enter key sends chat */
 chatInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') chatSend.click(); });
 
 </script>
 </body>
 </html>
-
-
