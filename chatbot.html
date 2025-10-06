@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>State Exhibition for new prosecution laws</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container py-4">
+    <h1 class="mb-3">State Exhibition — New Prosecution Laws (since 2024)</h1>
+    <p class="text-muted">Select a ready question or type your own. The answer will appear here on the same page.</p>
+
+    <div class="mb-3">
+      <label class="form-label">Your name</label>
+      <input id="name" class="form-control" placeholder="e.g. Vinod Singla">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Choose a ready question (or type below)</label>
+      <div id="sampleQuestions" class="border rounded p-2" style="max-height:280px; overflow:auto"></div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Or type your question</label>
+      <textarea id="question" class="form-control" rows="4" placeholder="Type your custom question here..."></textarea>
+    </div>
+
+    <div class="mb-3">
+      <button id="submitBtn" class="btn btn-primary">Ask AI</button>
+      <span id="status" class="ms-3 text-muted"></span>
+    </div>
+
+    <hr>
+    <small class="text-muted">Note: This page sends the question to your n8n webhook which calls Google Gemini on the server. No API keys are stored in this page.</small>
+  </div>
+
+  <!-- Modal to show answer -->
+  <div class="modal fade" id="answerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">AI Answer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <pre id="aiAnswer" style="white-space:pre-wrap;"></pre>
+        </div>
+        <div class="modal-footer">
+          <button id="copyBtn" class="btn btn-outline-secondary">Copy</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Your n8n webhook URL (you gave this)
+    const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbot';
+
+    // 20 sample questions (adapt as you like)
+    const samples = [
+      "What are the three new prosecution laws implemented since 2024 (summary)?",
+      "How do the new laws change the process for FIRs and investigations?",
+      "Do the new laws change bail rules? If yes, how?",
+      "How do the laws affect evidence collection and admissibility?",
+      "Are there new offences or increased penalties introduced?",
+      "What protections do accused persons have under the new laws?",
+      "How do the laws affect victim rights and victim compensation?",
+      "Which courts have jurisdiction under the new laws?",
+      "Any special provisions for cybercrime prosecution in the new laws?",
+      "Are there transitional provisions for cases started before 2024?",
+      "Do the new laws change police powers of arrest or search?",
+      "How do the laws affect plea bargaining or case withdrawal?",
+      "What changes were made to witness protection rules, if any?",
+      "Are there guidelines for speedy trial under the new laws?",
+      "How do the laws interact with existing criminal statutes?",
+      "Are any new reporting / compliance obligations added for institutions?",
+      "Any change in limitation periods or time frames in prosecution?",
+      "How will these laws affect sentencing and remission?",
+      "Are there special procedures for economic offences introduced?",
+      "Where can I find the official text or government notifications?"
+    ];
+
+    // render radio options
+    const container = document.getElementById('sampleQuestions');
+    samples.forEach((q,i) => {
+      const id = 'sample' + i;
+      const div = document.createElement('div');
+      div.className = 'form-check';
+      div.innerHTML = `
+        <input class="form-check-input" type="radio" name="sampleQ" id="${id}" value="${q}">
+        <label class="form-check-label" for="${id}">${q}</label>
+      `;
+      container.appendChild(div);
+    });
+
+    // when a radio selected, fill textarea
+    container.addEventListener('change', (ev) => {
+      if(ev.target && ev.target.name === 'sampleQ') {
+        document.getElementById('question').value = ev.target.value;
+      }
+    });
+
+    // submit handler
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const name = document.getElementById('name').value.trim() || 'Anonymous';
+      const question = document.getElementById('question').value.trim();
+      if(!question) { alert('Please choose or type a question'); return; }
+
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('status').textContent = 'Asking AI...';
+
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ name, question })
+        });
+
+        if(!res.ok) {
+          const text = await res.text();
+          throw new Error('Server error: ' + res.status + ' — ' + text);
+        }
+
+        const data = await res.json();
+        // Expecting { answer: "..." }
+        const ans = data.answer || JSON.stringify(data, null, 2);
+
+        document.getElementById('aiAnswer').textContent = ans;
+        const modal = new bootstrap.Modal(document.getElementById('answerModal'));
+        modal.show();
+
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('status').textContent = '';
+      }
+    });
+
+    // copy button
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const text = document.getElementById('aiAnswer').textContent;
+      navigator.clipboard.writeText(text).then(()=> alert('Copied'));
+    });
+  </script>
+</body>
+</html>
