@@ -9,20 +9,80 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet"/>
 
   <style>
-    :root{--accent:#0d6efd;--muted:#6c757d}
-    body{font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#f6fbff,#ffffff);padding-bottom:40px}
-   .banner{border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(13,110,253,0.08);margin:12px 0}
-    .banner img{width:100%;height:auto;display:block}
-    .title{color:#08306b;text-align:center;margin:10px 0 6px}
-    .subtitle{color:var(--muted);text-align:center;margin-bottom:18px}
-    .card{border-radius:14px;box-shadow:0 6px 20px rgba(25,25,40,0.06)}
-    .chat-box{background:#f4f7fb;padding:10px;border-radius:10px;max-height:220px;overflow:auto}
-    .chat-user{background:#e7f4ff;padding:8px;border-radius:8px;margin-bottom:8px;display:inline-block;max-width:80%}
-    .chat-bot{background:#eef2f6;padding:8px;border-radius:8px;margin-bottom:8px;display:inline-block;max-width:80%}
-    .small-muted{color:var(--muted);font-size:.9rem}
-    footer{font-size:.85rem;text-align:center;color:var(--muted);margin-top:18px}
-    #feedMsg{font-weight:bold;}
-    @media (max-width:420px){.title{font-size:1.05rem}}
+    :root {
+      --accent:#0d6efd;
+      --muted:#6c757d;
+    }
+    body {
+      font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      background:linear-gradient(180deg,#f6fbff,#ffffff);
+      padding-bottom:40px;
+    }
+    .banner {
+      border-radius:10px;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(13,110,253,0.08);
+      margin:12px 0;
+    }
+    .banner img {
+      width:100%;
+      height:auto;
+      display:block;
+    }
+    .title {
+      color:#08306b;
+      text-align:center;
+      margin:10px 0 6px;
+    }
+    .subtitle {
+      color:var(--muted);
+      text-align:center;
+      margin-bottom:18px;
+    }
+    .card {
+      border-radius:14px;
+      box-shadow:0 6px 20px rgba(25,25,40,0.06);
+      min-height: 100%;
+    }
+    .chat-box {
+      background:#f4f7fb;
+      padding:10px;
+      border-radius:10px;
+      height:250px;
+      overflow-y:auto;
+    }
+    .chat-user {
+      background:#e7f4ff;
+      padding:8px;
+      border-radius:8px;
+      margin-bottom:8px;
+      display:inline-block;
+      max-width:80%;
+    }
+    .chat-bot {
+      background:#eef2f6;
+      padding:8px;
+      border-radius:8px;
+      margin-bottom:8px;
+      display:inline-block;
+      max-width:80%;
+    }
+    .small-muted {
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    footer {
+      font-size:.85rem;
+      text-align:center;
+      color:var(--muted);
+      margin-top:18px;
+    }
+    #feedMsg {
+      font-weight:bold;
+    }
+    @media (max-width:420px){
+      .title{font-size:1.05rem}
+    }
   </style>
 </head>
 <body>
@@ -30,7 +90,7 @@
 
   <!-- Banner -->
   <div class="banner">
-<!--    <img src="https://via.placeholder.com/1200x300.png?text=Exhibition+Banner+Replace+With+Official+Banner" alt="Exhibition Banner">-->
+    <!-- Optional Banner Image -->
   </div>
 
   <h3 class="title">State Level Exhibition on the New Criminal Laws</h3>
@@ -62,7 +122,9 @@
       </div>
       <div class="mb-2">
         <input id="District" name="District" class="form-control" placeholder="District / जिला (auto-detected when allowed)">
-        <div class="small-muted mt-1">If location access is denied, please enter district manually. / यदि स्थान अनुमति नहीं दी गई तो जिला मैन्युअल रूप से भरें।</div>
+        <div class="small-muted mt-1">
+          If location access is denied, please enter district manually. / यदि स्थान अनुमति नहीं दी गई तो जिला मैन्युअल रूप से भरें।
+        </div>
       </div>
       <div class="mb-2">
         <label class="small-muted">Rating / रेटिंग</label>
@@ -98,7 +160,7 @@
   </div>
 
   <!-- Chatbot Card -->
-  <div class="card p-3 mb-3">
+  <div class="card p-3 mb-3" style="min-height:300px;">
     <h5 class="mb-2">Ask About the New Criminal Laws / नए आपराधिक कानूनों के बारे में पूछें (Interactive Chat)</h5>
     <div class="chat-box mb-2" id="chatBox">
       <div class="small-muted">Type a question and press Send.</div>
@@ -168,25 +230,44 @@ feedbackForm.addEventListener('submit',async(ev)=>{
   try{
     const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(res.ok){
-      feedMsg.style.display='block';feedMsg.textContent='Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';feedMsg.style.color='green';
+      feedMsg.style.display='block';
+      feedMsg.textContent='Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';
+      feedMsg.style.color='green';
       feedbackForm.reset();document.getElementById('Latitude').value='';document.getElementById('Longitude').value='';
     }else throw new Error('HTTP '+res.status);
-  }catch(err){console.error(err);feedMsg.style.display='block';feedMsg.textContent='Submission failed. Please try again. / भेजने में विफल। कृपया पुनः प्रयास करें।';feedMsg.style.color='red';}
+  }catch(err){
+    console.error(err);
+    feedMsg.style.display='block';
+    feedMsg.textContent='Submission failed. Please try again. / भेजने में विफल। कृपया पुनः प्रयास करें।';
+    feedMsg.style.color='red';
+  }
 });
 
 /* Chatbot */
 const chatBox=document.getElementById('chatBox');
 const chatInput=document.getElementById('chatInput');
 const chatSend=document.getElementById('chatSend');
-function appendMsg(cls,txt){const d=document.createElement('div');d.className=cls;d.textContent=txt;chatBox.appendChild(d);chatBox.scrollTop=chatBox.scrollHeight;}
+function appendMsg(cls,txt){
+  const d=document.createElement('div');
+  d.className=cls;
+  d.textContent=txt;
+  chatBox.appendChild(d);
+  chatBox.scrollTop=chatBox.scrollHeight;
+}
 chatSend.addEventListener('click',sendChat);
 chatInput.addEventListener('keypress',e=>{if(e.key==='Enter')sendChat();});
 
 async function sendChat(){
-  const q=chatInput.value.trim();if(!q)return;
-  appendMsg('chat-user',q);chatInput.value='';appendMsg('chat-bot','Typing...');
+  const q=chatInput.value.trim();
+  if(!q)return;
+
+  appendMsg('chat-user',q);
+  chatInput.value='';
+  appendMsg('chat-bot','Typing...');
+
   const userName=document.querySelector('input[name="Name"]').value||'';
   const userCategory=document.querySelector('select[name="Category"]').value||'';
+
   try{
     const res=await fetch(CHAT_WEBHOOK,{
       method:'POST',
@@ -194,11 +275,19 @@ async function sendChat(){
       body:JSON.stringify({Question:q,Name:userName,Category:userCategory,Language:'en'})
     });
     const data=await res.json();
-    chatBox.lastChild.textContent=data.answer||'No reply received.';
-  }catch(e){console.error(e);chatBox.lastChild.textContent='Error: could not connect.';}
+
+    let botReply='';
+    if(Array.isArray(data) && data[0]?.output) botReply=data[0].output;
+    else if(data.output) botReply=data.output;
+    else if(data.answer) botReply=data.answer;
+    else botReply='No reply received.';
+
+    chatBox.lastChild.textContent=botReply;
+  }catch(e){
+    console.error(e);
+    chatBox.lastChild.textContent='Error: could not connect.';
+  }
 }
 </script>
 </body>
 </html>
-
-
