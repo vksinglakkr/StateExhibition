@@ -1,66 +1,113 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>State Level Exhibition on the New Criminal Laws</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>State Level Exhibition on the New Criminal Laws</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
 
-  <style>
-    :root {
-      --accent:#0d6efd;
-      --muted:#6c757d;
-    }
-    body {
-      font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
-      background:linear-gradient(180deg,#f6fbff,#ffffff);
-      padding-bottom:40px;
-    }
-    .banner {
-      border-radius:10px;
-      overflow:hidden;
-      box-shadow:0 6px 18px rgba(13,110,253,0.08);
-      margin:12px 0;
-    }
-    .banner img {
-      width:100%;
-      height:auto;
-      display:block;
-    }
-    .title {
-      color:#08306b;
-      text-align:center;
-      margin:10px 0 6px;
-    }
-    .subtitle {
-      color:var(--muted);
-      text-align:center;
-      margin-bottom:18px;
-    }
-    .card {
-      border-radius:14px;
-      box-shadow:0 6px 20px rgba(25,25,40,0.06);
-      min-height: 100%;
-    }
-    .small-muted {
-      color:var(--muted);
-      font-size:.9rem;
-    }
-    footer {
-      font-size:.85rem;
-      text-align:center;
-      color:var(--muted);
-      margin-top:18px;
-    }
-    #feedMsg {
-      font-weight:bold;
-    }
-    @media (max-width:420px){
-      .title{font-size:1.05rem}
-    }
-  </style>
+<style>
+:root {
+  --primary:#0d6efd;
+  --secondary:#6c757d;
+  --light-bg:#f6f9ff;
+  --card-gradient: linear-gradient(135deg, #cce4ff 0%, #e6f0ff 100%);
+  --success-gradient: linear-gradient(135deg, #d4edda 0%, #b2dfdb 100%);
+}
+
+body {
+  font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+  background: linear-gradient(180deg,#eef5ff,#ffffff);
+  padding-bottom:40px;
+}
+
+.banner {
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(13,110,253,0.15);
+  margin:15px 0;
+}
+
+.banner img {
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+.title {
+  color:#08306b;
+  text-align:center;
+  margin:15px 0 5px;
+  font-weight:700;
+  font-size:1.8rem;
+}
+
+.subtitle {
+  color:var(--secondary);
+  text-align:center;
+  margin-bottom:25px;
+  font-size:1.1rem;
+}
+
+.card {
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  padding:25px;
+  margin-bottom:20px;
+  background:var(--card-gradient);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow:0 14px 28px rgba(0,0,0,0.15);
+}
+
+h5 {
+  font-weight:700;
+  color: var(--primary);
+}
+
+.small-muted {
+  color:var(--secondary);
+  font-size:.9rem;
+}
+
+textarea.form-control, input.form-control, select.form-select {
+  border-radius:10px;
+  border:1px solid #cfd8dc;
+}
+
+button.btn-primary, a.btn {
+  border-radius:10px;
+  font-weight:600;
+  transition: all 0.3s ease;
+}
+
+button.btn-primary:hover, a.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(13,110,253,0.25);
+}
+
+footer {
+  font-size:.85rem;
+  text-align:center;
+  color:var(--secondary);
+  margin-top:30px;
+}
+
+#feedMsg {
+  font-weight:bold;
+  margin-top:10px;
+}
+
+@media (max-width:420px){
+  .title{font-size:1.3rem}
+}
+</style>
 </head>
 <body>
 <div class="container">
@@ -70,12 +117,12 @@
     <!-- Optional Banner Image -->
   </div>
 
-  <h3 class="title">State Level Exhibition on the New Criminal Laws</h3>
+  <h3 class="title"><i class="bi bi-building"></i> State Level Exhibition on the New Criminal Laws</h3>
   <div class="subtitle">नये आपराधिक कानूनों पर राज्य स्तरीय प्रदर्शनी</div>
 
   <!-- Feedback Card -->
-  <div class="card p-3 mb-3">
-    <h5 class="mb-3">Visitor Feedback / प्रदर्शनी प्रतिपुष्टि</h5>
+  <div class="card">
+    <h5><i class="bi bi-chat-text"></i> Visitor Feedback / प्रदर्शनी प्रतिपुष्टि</h5>
     <form id="feedbackForm">
       <div class="mb-2">
         <input name="Name" class="form-control" placeholder="Name / नाम (optional)">
@@ -117,11 +164,10 @@
         <label class="small-muted">Comments / सुझाव</label>
         <select id="commentTemplate" class="form-select mb-2">
           <option value="">-- Select a comment template --</option>
-          <option value="Very informative exhibition. I learned about new laws.">Very informative exhibition. I learned about new laws. / बहुत उपयोगी प्रदर्शनी, मुझे नये कानूनों की जानकारी मिली।</option>
-          <option value="Presentation is clear and easy to understand.">Presentation is clear and easy to understand. / प्रस्तुति स्पष्ट और समझने योग्य है।</option>
-          <option value="AI assistant explained very well.">AI assistant explained very well. / एआई सहायक ने बहुत अच्छा समझाया।</option>
-          <option value="Need more examples or visual displays.">Need more examples or visual displays. / अधिक उदाहरण या दृश्य प्रदर्शन की आवश्यकता है।</option>
-          <option value="Excellent initiative by the State.">Excellent initiative by the State. / राज्य की उत्कृष्ट पहल।</option>
+          <option value="Very informative exhibition. I learned about new laws.">Very informative exhibition. / बहुत उपयोगी प्रदर्शनी</option>
+          <option value="Presentation is clear and easy to understand.">Presentation is clear / प्रस्तुति स्पष्ट</option>
+          <option value="Need more examples or visual displays.">Need more examples / अधिक उदाहरण</option>
+          <option value="Excellent initiative by the State.">Excellent initiative / राज्य की उत्कृष्ट पहल</option>
         </select>
         <textarea name="Comments" class="form-control" rows="2" placeholder="Type your own comment / अपना सुझाव लिखें"></textarea>
       </div>
@@ -132,16 +178,16 @@
       <div class="d-grid mt-2">
         <button type="submit" class="btn btn-primary btn-lg">Submit Feedback / जमा करें</button>
       </div>
-      <div id="feedMsg" class="mt-2 small-muted" style="display:none"></div>
+      <div id="feedMsg" class="small-muted"></div>
     </form>
   </div>
 
-  <!-- Ask Question (AI) Card (replaces inline chatbot) -->
-  <div class="card p-3 mb-3">
-    <h5 class="mb-2">Ask Question (with AI) / प्रश्न पूछें (AI के साथ)</h5>
+  <!-- Ask Question (AI) Card -->
+  <div class="card" style="background: var(--success-gradient)">
+    <h5><i class="bi bi-robot"></i> Ask Question (with AI) / प्रश्न पूछें (AI के साथ)</h5>
     <p class="small-muted">Open the AI-powered chatbot in a new tab for interactive questions.</p>
     <div class="d-grid">
-      <a href="chatbot.html" target="_blank" class="btn btn-success btn-lg">Open Chatbot — Ask Question (with AI)</a>
+      <a href="chatbot.html" target="_blank" class="btn btn-success btn-lg">Open Chatbot</a>
     </div>
   </div>
 
@@ -158,10 +204,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-/* === Configuration === */
 const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/Exhibition';
-
-/* === Comment template -> textarea === */
 const commentTemplate = document.getElementById('commentTemplate');
 const commentsField = document.querySelector('textarea[name="Comments"]');
 if (commentTemplate && commentsField) {
@@ -170,112 +213,61 @@ if (commentTemplate && commentsField) {
   });
 }
 
-/* === Auto-location (returns Promise so caller can await) === */
 function tryAutoLocation() {
   return new Promise((resolve) => {
-    if (!navigator.geolocation) {
-      console.warn('Geolocation not supported by browser.');
-      return resolve(false);
-    }
-
+    if (!navigator.geolocation) return resolve(false);
     navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lon = pos.coords.longitude.toFixed(6);
+      document.getElementById('Latitude').value = lat;
+      document.getElementById('Longitude').value = lon;
       try {
-        const lat = pos.coords.latitude.toFixed(6);
-        const lon = pos.coords.longitude.toFixed(6);
-        document.getElementById('Latitude').value = lat;
-        document.getElementById('Longitude').value = lon;
-
-        // Try reverse-geocoding to get district (best-effort)
-        try {
-          const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-          if (resp.ok) {
-            const j = await resp.json();
-            const districtVal = j.city || j.locality || j.principalSubdivision || j.city || '';
-            if (districtVal) {
-              const districtEl = document.getElementById('District');
-              if (districtEl && (!districtEl.value || districtEl.value.trim() === '' || districtEl.placeholder.toLowerCase().includes('auto-detected'))) {
-                districtEl.value = districtVal;
-              }
-            }
-          }
-        } catch (rgErr) {
-          console.warn('Reverse geocode failed:', rgErr);
+        const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+        if (resp.ok) {
+          const j = await resp.json();
+          const districtVal = j.city || j.locality || j.principalSubdivision || '';
+          const districtEl = document.getElementById('District');
+          if (districtEl && (!districtEl.value || districtEl.value.trim() === '')) districtEl.value = districtVal;
         }
-
-        resolve(true);
-      } catch (e) {
-        console.warn('Error handling position:', e);
-        resolve(false);
-      }
-    }, (err) => {
-      console.warn('Geolocation error or permission denied:', err);
-      resolve(false);
-    }, {
-      maximumAge: 60000,
-      timeout: 10000,
-      enableHighAccuracy: false
-    });
+      } catch (e) { console.warn('Reverse geocode failed', e); }
+      resolve(true);
+    }, (err) => { console.warn(err); resolve(false); }, {timeout:10000});
   });
 }
 
-/* Try once on page load (best-effort) */
-document.addEventListener('DOMContentLoaded', () => {
-  tryAutoLocation().then((ok) => {
-    if (!ok) console.log('Auto-location not set (user denied or unavailable).');
-  });
-});
+document.addEventListener('DOMContentLoaded', () => tryAutoLocation());
 
-/* === Feedback submission === */
 const feedbackForm = document.getElementById('feedbackForm');
 const feedMsg = document.getElementById('feedMsg');
 
 feedbackForm.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   feedMsg.style.display = 'none';
-
   const submitBtn = feedbackForm.querySelector('button[type="submit"]');
   if (submitBtn) submitBtn.disabled = true;
 
-  try {
-    // If location not set yet, try to obtain before submit (await ensures we wait)
-    const latVal = document.getElementById('Latitude').value;
-    const lonVal = document.getElementById('Longitude').value;
-    if (!latVal || !lonVal) {
-      await tryAutoLocation();
-    }
-
-    const fd = new FormData(feedbackForm);
-    const payload = Object.fromEntries(fd.entries());
-    payload.Timestamp = new Date().toISOString();
-
-    // POST to webhook
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-      feedMsg.style.color = 'green';
-      feedMsg.textContent = 'Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';
-      feedMsg.style.display = 'block';
-      feedbackForm.reset();
-      document.getElementById('Latitude').value = '';
-      document.getElementById('Longitude').value = '';
-    } else {
-      // include response text for debugging (best-effort)
-      let errText = '';
-      try { errText = await res.text(); } catch (_) { errText = res.statusText; }
-      throw new Error('HTTP ' + res.status + ' - ' + errText);
-    }
-  } catch (err) {
-    console.error('Feedback submit error:', err);
-    feedMsg.style.color = 'red';
-    feedMsg.textContent = 'Submission failed. Please try again. / भेजने में विफल। कृपया पुनः प्रयास करें।';
-    feedMsg.style.display = 'block';
-  } finally {
-    if (submitBtn) submitBtn.disabled = false;
+  if (!document.getElementById('Latitude').value || !document.getElementById('Longitude').value) {
+    await tryAutoLocation();
   }
+
+  const fd = new FormData(feedbackForm);
+  const payload = Object.fromEntries(fd.entries());
+  payload.Timestamp = new Date().toISOString();
+
+  try {
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(res.ok){
+      feedMsg.style.color='green';
+      feedMsg.textContent='Thank you — feedback submitted successfully! / धन्यवाद — प्रतिक्रिया सफलतापूर्वक भेजी गई!';
+      feedMsg.style.display='block';
+      feedbackForm.reset();
+    } else throw new Error('HTTP '+res.status);
+  } catch(err){
+    console.error(err);
+    feedMsg.style.color='red';
+    feedMsg.textContent='Submission failed. Please try again. / भेजने में विफल। कृपया पुनः प्रयास करें।';
+    feedMsg.style.display='block';
+  } finally { if(submitBtn) submitBtn.disabled=false; }
 });
 </script>
 </body>
