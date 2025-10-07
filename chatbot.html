@@ -63,6 +63,11 @@
         </button>
         <span id="status" class="text-gray-500"></span>
       </div>
+
+      <!-- Last modified date -->
+      <div class="text-gray-600 text-sm mt-2">
+        Last Modified: <span id="lastModified"></span>
+      </div>
     </div>
 
     <!-- Footer -->
@@ -142,7 +147,6 @@
     document.getElementById('closeBtn').onclick=closeModal;
     document.getElementById('closeModal').onclick=closeModal;
 
-    // Main page buttons
     document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
     document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
 
@@ -151,10 +155,13 @@
     document.querySelectorAll('.langBtn').forEach(btn => {
       btn.addEventListener('click', function() {
         selectedLanguage = this.dataset.lang;
-        document.querySelectorAll('.langBtn').forEach(b => b.classList.replace('bg-blue-700', 'bg-gray-500'));
-        this.classList.replace('bg-gray-500', 'bg-blue-700');
+        document.querySelectorAll('.langBtn').forEach(b => b.classList.replace('bg-blue-700','bg-gray-500'));
+        this.classList.replace('bg-gray-500','bg-blue-700');
       });
     });
+
+    // Show last modified date
+    document.getElementById('lastModified').textContent = document.lastModified;
 
     document.getElementById('submitBtn').addEventListener('click', async()=>{
       const name = document.getElementById('name').value.trim() || 'Anonymous';
@@ -167,15 +174,31 @@
         const res = await fetch(WEBHOOK_URL, {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({name, question, language: selectedLanguage})
+          body: JSON.stringify({name, question, language:selectedLanguage})
         });
 
+        // Read response safely once
+        const text = await res.text();
         let answerText = '';
-        try {
-          const data = await res.json();
-          answerText = data.answer || JSON.stringify(data, null, 2);
-        } catch(err) {
-          answerText = await res.text() || "AI Server: No response received.";
+        try{
+          const data = JSON.parse(text);
+          if(typeof data.answer==='string'){
+            answerText = data.answer;
+          } else if(Array.isArray(data.answer)){
+            answerText = data.answer.map(item=>{
+              if(typeof item==='object'){
+                return Object.values(item).join(' | ');
+              }
+              return item;
+            }).join('\n');
+          } else if(typeof data.answer==='object'){
+            answerText = Object.values(data.answer).join(' | ');
+          } else {
+            answerText = String(data.answer);
+          }
+        } catch(err){
+          // fallback if not JSON
+          answerText = text || "AI Server: No response received.";
         }
 
         document.getElementById('userQuestion').textContent = question;
