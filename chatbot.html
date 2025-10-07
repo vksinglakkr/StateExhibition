@@ -68,6 +68,10 @@
         <button id="closeModal" class="hover:text-gray-200"><i data-lucide="x"></i></button>
       </div>
       <div class="p-5 max-h-[70vh] overflow-y-auto">
+        <div class="mb-3 text-gray-600">
+          <strong>Your Question:</strong>
+          <div id="userQuestion" class="ml-2 text-gray-800"></div>
+        </div>
         <pre id="aiAnswer" class="whitespace-pre-wrap text-gray-800"></pre>
       </div>
       <div class="border-t p-4 flex justify-end gap-3">
@@ -105,7 +109,6 @@
       "Do these laws align with constitutional rights?"
     ];
 
-    // Render ready questions
     const container = document.getElementById('sampleQuestions');
     samples.forEach((q,i)=>{
       const id = 'q'+i;
@@ -117,7 +120,6 @@
       `;
       container.appendChild(div);
     });
-
     container.addEventListener('change', e=>{
       if(e.target.name==='sampleQ')
         document.getElementById('question').value=e.target.value;
@@ -129,29 +131,28 @@
     document.getElementById('closeBtn').onclick=closeModal;
     document.getElementById('closeModal').onclick=closeModal;
 
-    document.getElementById('submitBtn').addEventListener('click', async()=>{
-      const name = document.getElementById('name').value.trim() || 'Anonymous';
-      const question = document.getElementById('question').value.trim();
-      if(!question){ alert('Please select or type a question'); return; }
-
+    document.getElementById('submitBtn').addEventListener('click',async()=>{
+      const name=document.getElementById('name').value.trim()||'Anonymous';
+      const question=document.getElementById('question').value.trim();
+      if(!question){alert('Please select or type a question');return;}
       document.getElementById('submitBtn').disabled=true;
       document.getElementById('status').textContent='Getting response...';
 
       try{
-        const res = await fetch(WEBHOOK_URL,{
+        const res=await fetch(WEBHOOK_URL,{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({name, question})
+          body:JSON.stringify({name,question})
         });
 
-        const text = await res.text(); // always read raw text
         let data;
-        try{
-          data = JSON.parse(text); // try parse JSON
+        try {
+          data = await res.json();
         } catch(err){
-          data = { answer: text }; // fallback to raw text
+          throw new Error("Invalid JSON response from AI server.");
         }
 
+        // Handle AI response safely
         let answer = data.answer;
         if(answer && typeof answer !== 'string'){
           answer = JSON.stringify(answer, null, 2);
@@ -159,24 +160,20 @@
           answer = "AI Server: No response received.";
         }
 
-        // Optional: quota message handling
-        if(answer.toLowerCase().includes('quota exceeded')){
-          answer = "AI Server: You have reached your request limit or quota. Please wait or upgrade your plan.";
-        }
-
+        // Display user question at top
+        document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answer;
-        openModal();
 
-      } catch(err){
-        document.getElementById('aiAnswer').textContent = 'Error contacting AI Server: ' + err.message;
         openModal();
-      } finally{
+      }catch(err){
+        alert('Error contacting AI Server: '+err.message);
+      }finally{
         document.getElementById('submitBtn').disabled=false;
         document.getElementById('status').textContent='';
       }
     });
 
-    document.getElementById('copyBtn').onclick = ()=>{
+    document.getElementById('copyBtn').onclick=()=>{
       navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
       alert('Copied to clipboard');
     };
