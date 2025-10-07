@@ -179,27 +179,19 @@
 
         // Read response safely once
         const text = await res.text();
-        let answerText = '';
-        try{
-          const data = JSON.parse(text);
-          if(typeof data.answer==='string'){
-            answerText = data.answer;
-          } else if(Array.isArray(data.answer)){
-            answerText = data.answer.map(item=>{
-              if(typeof item==='object'){
-                return Object.values(item).join(' | ');
-              }
-              return item;
-            }).join('\n');
-          } else if(typeof data.answer==='object'){
-            answerText = Object.values(data.answer).join(' | ');
-          } else {
-            answerText = String(data.answer);
-          }
-        } catch(err){
-          // fallback if not JSON
-          answerText = text || "AI Server: No response received.";
-        }
+    let answerText = '';
+try {
+  if (data.answer) {
+    answerText = data.answer;
+  } else if (data.choices && data.choices[0] && data.choices[0].message) {
+    answerText = data.choices[0].message.content;
+  } else {
+    answerText = "AI Server: No response received.";
+  }
+} catch(err){
+  answerText = "AI Server: No response received.";
+}
+
 
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answerText;
@@ -218,4 +210,5 @@
     };
   </script>
 </body>
+
 </html>
