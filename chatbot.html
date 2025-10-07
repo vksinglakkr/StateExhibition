@@ -86,4 +86,100 @@
       "What are the three new prosecution laws implemented since 2024?",
       "How have the new laws changed the FIR process?",
       "Are bail provisions modified under the new system?",
-      "How are c
+      "How are cybercrimes treated under the new prosecution laws?",
+      "What changes exist in the evidence collection process?",
+      "Do victims get more rights or faster justice now?",
+      "Are new offences introduced or penalties enhanced?",
+      "How do the new laws ensure speedy trials?",
+      "Do these laws affect existing criminal cases?",
+      "Any changes to police powers or arrest procedures?",
+      "What about reforms in case hearings and appeals?",
+      "How are economic crimes handled differently?",
+      "Do these laws simplify court processes?",
+      "Is digital submission of evidence allowed now?",
+      "What are the main benefits for citizens?",
+      "How do these laws support fair prosecution?",
+      "Are there any guidelines for prosecutors?",
+      "What are the penalties for delaying investigation?",
+      "How can I access the official text of the laws?",
+      "Do these laws align with constitutional rights?"
+    ];
+
+    const container = document.getElementById('sampleQuestions');
+    samples.forEach((q,i)=>{
+      const id = 'q'+i;
+      const div = document.createElement('div');
+      div.className = 'flex items-start';
+      div.innerHTML = `
+        <input type="radio" id="${id}" name="sampleQ" value="${q}" class="mt-1 text-blue-600 focus:ring-blue-600">
+        <label for="${id}" class="ml-2 text-sm text-gray-700 cursor-pointer hover:text-blue-700">${q}</label>
+      `;
+      container.appendChild(div);
+    });
+
+    container.addEventListener('change', e=>{
+      if(e.target.name==='sampleQ') document.getElementById('question').value=e.target.value;
+    });
+
+    const modal=document.getElementById('modal');
+    const openModal=()=>modal.classList.remove('hidden');
+    const closeModal=()=>modal.classList.add('hidden');
+    document.getElementById('closeBtn').onclick=closeModal;
+    document.getElementById('closeModal').onclick=closeModal;
+
+    document.getElementById('submitBtn').addEventListener('click', async ()=>{
+      const name = document.getElementById('name').value.trim() || 'Anonymous';
+      const question = document.getElementById('question').value.trim();
+      if(!question){ alert('Please select or type a question'); return; }
+
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('status').textContent = 'Getting response...';
+
+      try{
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({name, question})
+        });
+
+        let data;
+        try { 
+          data = await res.json(); 
+        } catch(e){
+          // fallback if response is plain text
+          const text = await res.text();
+          data = { answer: text };
+        }
+
+        let answer = '';
+        if(typeof data.answer === 'string'){
+          try {
+            const parsed = JSON.parse(data.answer);
+            answer = parsed.answer || data.answer;
+          } catch {
+            answer = data.answer;
+          }
+        } else if(Array.isArray(data)){
+          answer = data[0]?.content?.parts[0]?.text || JSON.stringify(data,null,2);
+        } else {
+          answer = JSON.stringify(data,null,2);
+        }
+
+        document.getElementById('aiAnswer').textContent = answer;
+        openModal();
+
+      } catch(err){
+        alert('Error contacting AI Server: '+err.message);
+      } finally {
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('status').textContent = '';
+      }
+    });
+
+    document.getElementById('copyBtn').onclick = ()=>{
+      navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
+      alert('Copied to clipboard');
+    };
+  </script>
+</body>
+</html>
