@@ -170,13 +170,26 @@
           body: JSON.stringify({name, question, language: selectedLanguage})
         });
 
-        let answerText = '';
-        try {
-          const data = await res.json();
-          answerText = data.answer || JSON.stringify(data, null, 2);
-        } catch(err) {
-          answerText = await res.text() || "AI Server: No response received.";
-        }
+      let answerText = '';
+try {
+  const data = await res.json();
+  // If AI sends JSON array/object, convert to readable text
+  if (Array.isArray(data)) {
+    answerText = data.map(item => {
+      if (item.law_name) {
+        return `${item.law_name} (replaces: ${item.replaces}) - ${item.purpose}`;
+      } else {
+        return JSON.stringify(item, null, 2);
+      }
+    }).join('\n');
+  } else if (typeof data === 'object') {
+    answerText = Object.values(data).join('\n');
+  } else {
+    answerText = data.answer || data;
+  }
+} catch(err) {
+  answerText = await res.text() || "AI Server: No response received.";
+}
 
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answerText;
@@ -196,3 +209,4 @@
   </script>
 </body>
 </html>
+
