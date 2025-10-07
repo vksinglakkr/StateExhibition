@@ -18,6 +18,9 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .lang-btn-active {
+      background-color: #1e40af; color: #fff;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -47,12 +50,12 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Select Language</label>
-        <select id="language" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 p-2">
-          <option value="English" selected>English</option>
-          <option value="Hindi">Hindi</option>
-          <option value="Punjabi">Punjabi</option>
-        </select>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Select language</label>
+        <div class="flex gap-3">
+          <button class="language-btn bg-gray-300 px-4 py-2 rounded-lg" data-lang="English">English</button>
+          <button class="language-btn bg-gray-300 px-4 py-2 rounded-lg" data-lang="Hindi">Hindi</button>
+          <button class="language-btn bg-gray-300 px-4 py-2 rounded-lg" data-lang="Punjabi">Punjabi</button>
+        </div>
       </div>
 
       <div class="flex items-center space-x-4">
@@ -97,6 +100,7 @@
     lucide.createIcons();
 
     const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbot';
+    let selectedLanguage = 'English';
 
     const samples = [
       "What are the three new prosecution laws implemented since 2024?",
@@ -121,6 +125,7 @@
       "Do these laws align with constitutional rights?"
     ];
 
+    // Populate sample questions
     const container = document.getElementById('sampleQuestions');
     samples.forEach((q,i)=>{
       const id = 'q'+i;
@@ -137,19 +142,29 @@
         document.getElementById('question').value=e.target.value;
     });
 
+    // Language buttons
+    const langButtons = document.querySelectorAll('.language-btn');
+    langButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        selectedLanguage = btn.getAttribute('data-lang');
+        langButtons.forEach(b=>b.classList.remove('lang-btn-active'));
+        btn.classList.add('lang-btn-active');
+      });
+    });
+
     const modal=document.getElementById('modal');
     const openModal=()=>modal.classList.remove('hidden');
     const closeModal=()=>modal.classList.add('hidden');
     document.getElementById('closeBtn').onclick=closeModal;
     document.getElementById('closeModal').onclick=closeModal;
 
+    // Main page buttons
     document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
     document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
 
     document.getElementById('submitBtn').addEventListener('click', async()=>{
       const name = document.getElementById('name').value.trim() || 'Anonymous';
       const question = document.getElementById('question').value.trim();
-      const language = document.getElementById('language').value;
       if(!question){ alert('Please select or type a question'); return; }
       document.getElementById('submitBtn').disabled=true;
       document.getElementById('status').textContent='Getting response...';
@@ -158,23 +173,21 @@
         const res = await fetch(WEBHOOK_URL, {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({name, question, language})
+          body: JSON.stringify({name, question, language: selectedLanguage})
         });
 
         let answerText = '';
         try {
           const data = await res.json();
-          // If JSON array/object returned, format to readable text
+          // If response is JSON array/object, convert to readable text
           if(Array.isArray(data)){
-            answerText = data.map((item,i)=>{
-              return Object.entries(item).map(([k,v])=>`${k}: ${v}`).join('\n');
-            }).join('\n\n');
-          } else if(typeof data==='object'){
+            answerText = data.map((item,i)=>Object.entries(item).map(([k,v])=>`${k}: ${v}`).join('\n')).join('\n\n');
+          } else if(typeof data === 'object'){
             answerText = data.answer || JSON.stringify(data,null,2);
           } else {
             answerText = String(data);
           }
-        } catch(err) {
+        } catch(err){
           answerText = await res.text() || "AI Server: No response received.";
         }
 
