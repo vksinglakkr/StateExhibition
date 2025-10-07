@@ -46,12 +46,14 @@
         <textarea id="question" rows="4" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 p-2" placeholder="Type your custom question..."></textarea>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
+      <!-- Responsive Buttons -->
+      <div class="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-2 sm:space-y-0">
+        <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition w-full sm:w-auto">
           <i data-lucide="send"></i> <span>Ask AI</span>
         </button>
-        <span id="status" class="text-gray-500"></span>
+        <button id="mainPageBtnTop" class="bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700 transition w-full sm:w-auto">Go to Main Page</button>
       </div>
+      <span id="status" class="text-gray-500 mt-2 block"></span>
     </div>
 
     <!-- Footer -->
@@ -132,9 +134,9 @@
     document.getElementById('closeBtn').onclick=closeModal;
     document.getElementById('closeModal').onclick=closeModal;
 
-    document.getElementById('mainPageBtn').onclick=()=> {
-      window.location.href = 'index.html';
-    }
+    // Go to main page buttons
+    document.getElementById('mainPageBtnTop').onclick = () => { window.location.href = 'index.html'; }
+    document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
 
     document.getElementById('submitBtn').addEventListener('click',async()=>{
       const name=document.getElementById('name').value.trim()||'Anonymous';
@@ -157,7 +159,6 @@
           throw new Error("Invalid JSON response from AI server.");
         }
 
-        // Handle AI response safely
         let answer = data.answer;
         if(answer && typeof answer !== 'string'){
           answer = JSON.stringify(answer, null, 2);
@@ -165,7 +166,6 @@
           answer = "AI Server: No response received.";
         }
 
-        // Display user question at top
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answer;
 
