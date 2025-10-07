@@ -135,19 +135,18 @@
       document.getElementById('submitBtn').disabled = true;
       document.getElementById('status').textContent = 'Getting response...';
 
-      try{
+      try {
         const res = await fetch(WEBHOOK_URL, {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({name, question})
         });
 
+        const text = await res.text(); // read once
         let data;
-        try { 
-          data = await res.json(); 
-        } catch(e){
-          // fallback if response is plain text
-          const text = await res.text();
+        try {
+          data = JSON.parse(text);
+        } catch {
           data = { answer: text };
         }
 
