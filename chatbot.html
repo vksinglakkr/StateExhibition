@@ -11,17 +11,10 @@
       background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 100%);
       font-family: 'Inter', sans-serif;
     }
-    .fade-in {
-      animation: fadeIn 0.8s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .lang-btn-active {
-      background-color: #1e3a8a;
-      color: white;
-    }
+    .fade-in { animation: fadeIn 0.8s ease-in-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .lang-btn { min-width:80px; }
+    .lang-btn.active { background-color:#1e40af; color:white; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -52,14 +45,14 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Select Language</label>
-        <div class="flex space-x-2">
-          <button class="lang-btn px-4 py-2 rounded-lg border" data-lang="English">English</button>
-          <button class="lang-btn px-4 py-2 rounded-lg border" data-lang="Hindi">Hindi</button>
-          <button class="lang-btn px-4 py-2 rounded-lg border" data-lang="Punjabi">Punjabi</button>
+        <div class="flex gap-3">
+          <button class="lang-btn bg-blue-700 text-white px-4 py-2 rounded-lg active" data-lang="English">English</button>
+          <button class="lang-btn bg-gray-300 text-black px-4 py-2 rounded-lg" data-lang="Hindi">Hindi</button>
+          <button class="lang-btn bg-gray-300 text-black px-4 py-2 rounded-lg" data-lang="Punjabi">Punjabi</button>
         </div>
       </div>
 
-      <div class="flex items-center space-x-4 mt-4">
+      <div class="flex items-center space-x-4">
         <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
           <i data-lucide="send"></i> <span>Ask AI</span>
         </button>
@@ -73,7 +66,8 @@
     <!-- Footer -->
     <div class="border-t p-4 text-center text-sm text-gray-600">
       © 2024 State Exhibition | Informational purpose only — not legal advice
-      <div class="mt-1 text-gray-500 text-xs">Last Updated: <span id="lastModified"></span></div>
+      <br>
+      Last Modified: <span id="lastModified"></span>
     </div>
   </div>
 
@@ -103,7 +97,6 @@
 
     const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbot';
 
-    // Sample questions
     const samples = [
       "What are the three new prosecution laws implemented since 2024?",
       "How have the new laws changed the FIR process?",
@@ -139,33 +132,28 @@
       container.appendChild(div);
     });
     container.addEventListener('change', e=>{
-      if(e.target.name==='sampleQ')
-        document.getElementById('question').value=e.target.value;
+      if(e.target.name==='sampleQ') document.getElementById('question').value = e.target.value;
     });
 
-    const modal = document.getElementById('modal');
-    const openModal = ()=> modal.classList.remove('hidden');
-    const closeModal = ()=> modal.classList.add('hidden');
+    const modal=document.getElementById('modal');
+    const openModal=()=>modal.classList.remove('hidden');
+    const closeModal=()=>modal.classList.add('hidden');
     document.getElementById('closeBtn').onclick = closeModal;
     document.getElementById('closeModal').onclick = closeModal;
 
     // Main page buttons
-    document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
-    document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
+    document.getElementById('mainPageBtn').onclick = () => window.location.href = 'index.html';
+    document.getElementById('mainPageModalBtn').onclick = () => window.location.href = 'index.html';
 
-    // Last modified
-    document.getElementById('lastModified').textContent = document.lastModified;
-
-    // Language selection
-    let selectedLanguage = 'English'; // default
-    const langBtns = document.querySelectorAll('.lang-btn');
-    langBtns.forEach(btn => {
-      if(btn.dataset.lang === 'English') btn.classList.add('lang-btn-active');
-      btn.addEventListener('click', ()=>{
+    // Language buttons
+    let selectedLanguage = 'English';
+    document.querySelectorAll('.lang-btn').forEach(btn=>{
+      btn.onclick = ()=>{
         selectedLanguage = btn.dataset.lang;
-        langBtns.forEach(b => b.classList.remove('lang-btn-active'));
-        btn.classList.add('lang-btn-active');
-      });
+        document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active','bg-blue-700','text-white'));
+        document.querySelectorAll('.lang-btn').forEach(b=>b.classList.add('bg-gray-300','text-black'));
+        btn.classList.add('active','bg-blue-700','text-white');
+      }
     });
 
     // Submit button
@@ -173,8 +161,9 @@
       const name = document.getElementById('name').value.trim() || 'Anonymous';
       const question = document.getElementById('question').value.trim();
       if(!question){ alert('Please select or type a question'); return; }
-      document.getElementById('submitBtn').disabled=true;
-      document.getElementById('status').textContent='Getting response...';
+
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('status').textContent = 'Getting response...';
 
       try{
         const res = await fetch(WEBHOOK_URL, {
@@ -184,15 +173,8 @@
         });
 
         let answerText = '';
-        try {
-          const data = await res.json();
-          // Ensure plain text display
-          if(data.answer) answerText = data.answer;
-          else if(typeof data === 'string') answerText = data;
-          else answerText = JSON.stringify(data, null, 2);
-        } catch(err) {
-          answerText = await res.text() || "AI Server: No response received.";
-        }
+        const text = await res.text(); // read once
+        try { answerText = JSON.parse(text).answer || text; } catch(e){ answerText = text; }
 
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answerText;
@@ -200,15 +182,19 @@
       } catch(err){
         alert('Error contacting AI Server: ' + err.message);
       } finally {
-        document.getElementById('submitBtn').disabled=false;
-        document.getElementById('status').textContent='';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('status').textContent = '';
       }
     });
 
-    document.getElementById('copyBtn').onclick = ()=>{
+    document.getElementById('copyBtn').onclick = ()=> {
       navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
-      alert('Copied to clipboard');
+           alert('Copied to clipboard');
     };
+
+    // Display last modified date
+    document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
   </script>
 </body>
 </html>
+
