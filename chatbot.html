@@ -18,6 +18,9 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    #debug { 
+      max-height: 150px; overflow:auto; background:#f3f4f6; padding:10px; margin-top:10px; border-radius:8px; font-size:12px; white-space:pre-wrap;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -52,6 +55,9 @@
         </button>
         <span id="status" class="text-gray-500"></span>
       </div>
+
+      <!-- Debug Output -->
+      <div id="debug" class="hidden"></div>
     </div>
 
     <!-- Footer -->
@@ -127,12 +133,16 @@
     document.getElementById('closeBtn').onclick = closeModal;
     document.getElementById('closeModal').onclick = closeModal;
 
+    const debugBox = document.getElementById('debug');
+
     document.getElementById('submitBtn').addEventListener('click', async () => {
       const name = document.getElementById('name').value.trim() || 'Anonymous';
       const question = document.getElementById('question').value.trim();
       if(!question){alert('Please select or type a question'); return;}
       document.getElementById('submitBtn').disabled = true;
       document.getElementById('status').textContent = 'Getting response...';
+      debugBox.classList.add('hidden');
+      debugBox.textContent = '';
 
       try{
         const res = await fetch(WEBHOOK_URL, {
@@ -141,7 +151,7 @@
           body: JSON.stringify({name, question})
         });
 
-        const text = await res.text(); // read body once
+        const text = await res.text();
         let data;
         try { data = JSON.parse(text); } catch { data = text; }
 
@@ -166,6 +176,10 @@
 
         document.getElementById('aiAnswer').textContent = answer;
         openModal();
+
+        // Show raw response for debugging
+        debugBox.textContent = JSON.stringify(data, null, 2);
+        debugBox.classList.remove('hidden');
 
       }catch(err){
         alert('Error contacting AI Server: '+err.message);
