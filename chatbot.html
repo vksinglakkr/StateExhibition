@@ -116,66 +116,66 @@
       `;
       container.appendChild(div);
     });
-
     container.addEventListener('change', e=>{
-      if(e.target.name==='sampleQ') document.getElementById('question').value=e.target.value;
+      if(e.target.name==='sampleQ')
+        document.getElementById('question').value=e.target.value;
     });
 
-    const modal=document.getElementById('modal');
-    const openModal=()=>modal.classList.remove('hidden');
-    const closeModal=()=>modal.classList.add('hidden');
-    document.getElementById('closeBtn').onclick=closeModal;
-    document.getElementById('closeModal').onclick=closeModal;
+    const modal = document.getElementById('modal');
+    const openModal = ()=> modal.classList.remove('hidden');
+    const closeModal = ()=> modal.classList.add('hidden');
+    document.getElementById('closeBtn').onclick = closeModal;
+    document.getElementById('closeModal').onclick = closeModal;
 
-    document.getElementById('submitBtn').addEventListener('click', async ()=>{
+    document.getElementById('submitBtn').addEventListener('click', async () => {
       const name = document.getElementById('name').value.trim() || 'Anonymous';
       const question = document.getElementById('question').value.trim();
-      if(!question){ alert('Please select or type a question'); return; }
-
+      if(!question){alert('Please select or type a question'); return;}
       document.getElementById('submitBtn').disabled = true;
       document.getElementById('status').textContent = 'Getting response...';
 
-      try {
+      try{
         const res = await fetch(WEBHOOK_URL, {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({name, question})
         });
 
-        const text = await res.text(); // read once
+        const text = await res.text(); // read body once
         let data;
-        try {
-          data = JSON.parse(text);
-        } catch {
-          data = { answer: text };
-        }
+        try { data = JSON.parse(text); } catch { data = text; }
 
         let answer = '';
-        if(typeof data.answer === 'string'){
-          try {
-            const parsed = JSON.parse(data.answer);
-            answer = parsed.answer || data.answer;
+        if(Array.isArray(data)){
+          try{
+            const partText = data[0]?.content?.parts[0]?.text || '';
+            try {
+              const parsed = JSON.parse(partText);
+              answer = parsed.answer || partText;
+            } catch {
+              answer = partText;
+            }
           } catch {
-            answer = data.answer;
+            answer = JSON.stringify(data, null, 2);
           }
-        } else if(Array.isArray(data)){
-          answer = data[0]?.content?.parts[0]?.text || JSON.stringify(data,null,2);
+        } else if(typeof data === 'object' && data.answer){
+          answer = data.answer;
         } else {
-          answer = JSON.stringify(data,null,2);
+          answer = data.toString();
         }
 
         document.getElementById('aiAnswer').textContent = answer;
         openModal();
 
-      } catch(err){
+      }catch(err){
         alert('Error contacting AI Server: '+err.message);
-      } finally {
+      }finally{
         document.getElementById('submitBtn').disabled = false;
         document.getElementById('status').textContent = '';
       }
     });
 
-    document.getElementById('copyBtn').onclick = ()=>{
+    document.getElementById('copyBtn').onclick = () => {
       navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
       alert('Copied to clipboard');
     };
