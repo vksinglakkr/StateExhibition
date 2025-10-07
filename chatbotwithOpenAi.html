@@ -181,14 +181,12 @@
         const text = await res.text();
     let answerText = '';
 try {
-  if (data.answer) {
-    answerText = data.answer;
-  } else if (data.choices && data.choices[0] && data.choices[0].message) {
-    answerText = data.choices[0].message.content;
-  } else {
-    answerText = "AI Server: No response received.";
-  }
-} catch(err){
+  const data = await res.json();
+  // safe extraction of content
+  answerText = data.answer 
+    || (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content)
+    || "AI Server: No response received.";
+} catch(err) {
   answerText = "AI Server: No response received.";
 }
 
@@ -212,3 +210,4 @@ try {
 </body>
 
 </html>
+
