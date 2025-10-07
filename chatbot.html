@@ -12,9 +12,10 @@
       font-family: 'Inter', sans-serif;
     }
     .fade-in { animation: fadeIn 0.8s ease-in-out; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-    .lang-btn { min-width:80px; }
-    .lang-btn.active { background-color:#1e40af; color:white; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+    .lang-btn { flex:1; padding:0.5rem 0; border-radius:0.5rem; cursor:pointer; text-align:center; transition:0.3s; }
+    .lang-btn.selected { background-color:#1d4ed8; color:white; }
+    .lang-btn:not(.selected) { background-color:#e5e7eb; color:#374151; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -45,14 +46,14 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Select Language</label>
-        <div class="flex gap-3">
-          <button class="lang-btn bg-blue-700 text-white px-4 py-2 rounded-lg active" data-lang="English">English</button>
-          <button class="lang-btn bg-gray-300 text-black px-4 py-2 rounded-lg" data-lang="Hindi">Hindi</button>
-          <button class="lang-btn bg-gray-300 text-black px-4 py-2 rounded-lg" data-lang="Punjabi">Punjabi</button>
+        <div class="flex space-x-2">
+          <div class="lang-btn selected" data-lang="English">English</div>
+          <div class="lang-btn" data-lang="Hindi">Hindi</div>
+          <div class="lang-btn" data-lang="Punjabi">Punjabi</div>
         </div>
       </div>
 
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-4 mt-3">
         <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
           <i data-lucide="send"></i> <span>Ask AI</span>
         </button>
@@ -61,13 +62,12 @@
         </button>
         <span id="status" class="text-gray-500"></span>
       </div>
+      <div class="text-sm text-gray-500 mt-2">Last Modified: <span id="lastModified"></span></div>
     </div>
 
     <!-- Footer -->
     <div class="border-t p-4 text-center text-sm text-gray-600">
       © 2024 State Exhibition | Informational purpose only — not legal advice
-      <br>
-      Last Modified: <span id="lastModified"></span>
     </div>
   </div>
 
@@ -132,49 +132,57 @@
       container.appendChild(div);
     });
     container.addEventListener('change', e=>{
-      if(e.target.name==='sampleQ') document.getElementById('question').value = e.target.value;
+      if(e.target.name==='sampleQ')
+        document.getElementById('question').value=e.target.value;
+    });
+
+    // Language selection buttons
+    let selectedLang = 'English';
+    document.querySelectorAll('.lang-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        selectedLang = btn.getAttribute('data-lang');
+        document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
     });
 
     const modal=document.getElementById('modal');
     const openModal=()=>modal.classList.remove('hidden');
     const closeModal=()=>modal.classList.add('hidden');
-    document.getElementById('closeBtn').onclick = closeModal;
-    document.getElementById('closeModal').onclick = closeModal;
+    document.getElementById('closeBtn').onclick=closeModal;
+    document.getElementById('closeModal').onclick=closeModal;
 
     // Main page buttons
-    document.getElementById('mainPageBtn').onclick = () => window.location.href = 'index.html';
-    document.getElementById('mainPageModalBtn').onclick = () => window.location.href = 'index.html';
+    document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
+    document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
 
-    // Language buttons
-    let selectedLanguage = 'English';
-    document.querySelectorAll('.lang-btn').forEach(btn=>{
-      btn.onclick = ()=>{
-        selectedLanguage = btn.dataset.lang;
-        document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active','bg-blue-700','text-white'));
-        document.querySelectorAll('.lang-btn').forEach(b=>b.classList.add('bg-gray-300','text-black'));
-        btn.classList.add('active','bg-blue-700','text-white');
-      }
-    });
-
-    // Submit button
     document.getElementById('submitBtn').addEventListener('click', async()=>{
       const name = document.getElementById('name').value.trim() || 'Anonymous';
       const question = document.getElementById('question').value.trim();
       if(!question){ alert('Please select or type a question'); return; }
-
-      document.getElementById('submitBtn').disabled = true;
-      document.getElementById('status').textContent = 'Getting response...';
+      document.getElementById('submitBtn').disabled=true;
+      document.getElementById('status').textContent='Getting response...';
 
       try{
         const res = await fetch(WEBHOOK_URL, {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({name, question, language: selectedLanguage})
+          body: JSON.stringify({name, question, language: selectedLang})
         });
 
         let answerText = '';
-        const text = await res.text(); // read once
-        try { answerText = JSON.parse(text).answer || text; } catch(e){ answerText = text; }
+        try {
+          const data = await res.json();
+          if(typeof data.answer === 'string'){
+            answerText = data.answer;
+          } else {
+            // If JSON array/object, convert to readable text
+            answerText = JSON.stringify(data.answer,null,2);
+            // optional: you can add a simple formatter here
+          }
+        } catch(err){
+          answerText = await res.text() || "AI Server: No response received.";
+        }
 
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answerText;
@@ -182,19 +190,19 @@
       } catch(err){
         alert('Error contacting AI Server: ' + err.message);
       } finally {
-        document.getElementById('submitBtn').disabled = false;
-        document.getElementById('status').textContent = '';
+        document.getElementById('submitBtn').disabled=false;
+        document.getElementById('status').textContent='';
       }
     });
 
-    document.getElementById('copyBtn').onclick = ()=> {
+    document.getElementById('copyBtn').onclick = ()=>{
       navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
-           alert('Copied to clipboard');
+      alert('Copied to clipboard');
     };
 
     // Display last modified date
-    document.getElementById('lastModified').textContent = new Date(document.lastModified).toLocaleString();
+    document.getElementById('lastModified').textContent = document.lastModified;
+
   </script>
 </body>
 </html>
-
