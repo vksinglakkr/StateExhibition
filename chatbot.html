@@ -74,9 +74,10 @@
         </div>
         <pre id="aiAnswer" class="whitespace-pre-wrap text-gray-800"></pre>
       </div>
-      <div class="border-t p-4 flex justify-end gap-3">
+      <div class="border-t p-4 flex justify-end gap-3 flex-wrap">
         <button id="copyBtn" class="flex items-center gap-1 px-4 py-2 border rounded-lg hover:bg-gray-100 transition"><i data-lucide="copy"></i> Copy</button>
         <button id="closeBtn" class="bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-800 transition">Close</button>
+        <button id="mainPageBtn" class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition">Go to Main Page</button>
       </div>
     </div>
   </div>
@@ -130,6 +131,10 @@
     const closeModal=()=>modal.classList.add('hidden');
     document.getElementById('closeBtn').onclick=closeModal;
     document.getElementById('closeModal').onclick=closeModal;
+
+    document.getElementById('mainPageBtn').onclick=()=> {
+      window.location.href = 'index.html';
+    }
 
     document.getElementById('submitBtn').addEventListener('click',async()=>{
       const name=document.getElementById('name').value.trim()||'Anonymous';
