@@ -11,11 +11,13 @@
       background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 100%);
       font-family: 'Inter', sans-serif;
     }
-    .fade-in { animation: fadeIn 0.8s ease-in-out; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
-    .lang-btn { flex:1; padding:0.5rem 0; border-radius:0.5rem; cursor:pointer; text-align:center; transition:0.3s; }
-    .lang-btn.selected { background-color:#1d4ed8; color:white; }
-    .lang-btn:not(.selected) { background-color:#e5e7eb; color:#374151; }
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -44,6 +46,7 @@
         <textarea id="question" rows="4" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 p-2" placeholder="Type your custom question..."></textarea>
       </div>
 
+      <!-- Language Selector -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Select Language</label>
         <div class="flex space-x-2">
@@ -53,7 +56,7 @@
         </div>
       </div>
 
-      <div class="flex items-center space-x-4 mt-3">
+      <div class="flex items-center space-x-4">
         <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
           <i data-lucide="send"></i> <span>Ask AI</span>
         </button>
@@ -136,16 +139,6 @@
         document.getElementById('question').value=e.target.value;
     });
 
-    // Language selection buttons
-    let selectedLang = 'English';
-    document.querySelectorAll('.lang-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        selectedLang = btn.getAttribute('data-lang');
-        document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('selected'));
-        btn.classList.add('selected');
-      });
-    });
-
     const modal=document.getElementById('modal');
     const openModal=()=>modal.classList.remove('hidden');
     const closeModal=()=>modal.classList.add('hidden');
@@ -155,6 +148,16 @@
     // Main page buttons
     document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
     document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
+
+    // Language selection
+    let selectedLanguage = 'English'; // default
+    document.querySelectorAll('.langBtn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        selectedLanguage = this.dataset.lang;
+        document.querySelectorAll('.langBtn').forEach(b => b.classList.replace('bg-blue-700', 'bg-gray-500'));
+        this.classList.replace('bg-gray-500', 'bg-blue-700');
+      });
+    });
 
     document.getElementById('submitBtn').addEventListener('click', async()=>{
       const name = document.getElementById('name').value.trim() || 'Anonymous';
@@ -167,22 +170,29 @@
         const res = await fetch(WEBHOOK_URL, {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({name, question, language: selectedLang})
+          body: JSON.stringify({name, question, language: selectedLanguage})
         });
 
-        let answerText = '';
-        try {
-          const data = await res.json();
-          if(typeof data.answer === 'string'){
-            answerText = data.answer;
-          } else {
-            // If JSON array/object, convert to readable text
-            answerText = JSON.stringify(data.answer,null,2);
-            // optional: you can add a simple formatter here
-          }
-        } catch(err){
-          answerText = await res.text() || "AI Server: No response received.";
-        }
+      let answerText = '';
+try {
+  const data = await res.json();
+  // If AI sends JSON array/object, convert to readable text
+  if (Array.isArray(data)) {
+    answerText = data.map(item => {
+      if (item.law_name) {
+        return `${item.law_name} (replaces: ${item.replaces}) - ${item.purpose}`;
+      } else {
+        return JSON.stringify(item, null, 2);
+      }
+    }).join('\n');
+  } else if (typeof data === 'object') {
+    answerText = Object.values(data).join('\n');
+  } else {
+    answerText = data.answer || data;
+  }
+} catch(err) {
+  answerText = await res.text() || "AI Server: No response received.";
+}
 
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answerText;
@@ -199,10 +209,8 @@
       navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
       alert('Copied to clipboard');
     };
-
-    // Display last modified date
+	// Display last modified date
     document.getElementById('lastModified').textContent = document.lastModified;
-
   </script>
 </body>
 </html>
