@@ -1,73 +1,50 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AI Test — Minimal</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Chat Test</title>
 <style>
-body { font-family: sans-serif; padding: 20px; background: #f0f4f8; }
-input, textarea, button { padding:8px; margin:4px 0; width:100%; }
-.langBtn { width:auto; margin-right:5px; cursor:pointer; }
-.activeLang { background:blue; color:white; }
-#answerBox { margin-top:10px; padding:10px; background:#fff; border:1px solid #ccc; white-space:pre-wrap; }
+  body { font-family: Arial; padding: 20px; background: #f0f4f8; }
+  input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
+  button { padding: 8px 12px; margin: 5px 0; }
+  #answerBox { margin-top: 15px; white-space: pre-wrap; background: #fff; padding: 10px; border-radius: 5px; }
 </style>
 </head>
 <body>
 
-<h2>AI Question Test</h2>
+<h2>AI Chat Test</h2>
 
-<label>Your Name:</label>
-<input id="name" placeholder="e.g. Vinod Singla"/>
-
-<label>Type your question:</label>
-<textarea id="question" rows="3" placeholder="Type your question here..."></textarea>
-
-<div>
-  Answer Language:
-  <button class="langBtn activeLang" data-lang="English">English</button>
-  <button class="langBtn" data-lang="Hindi">Hindi</button>
-  <button class="langBtn" data-lang="Punjabi">Punjabi</button>
-</div>
-
+<input id="name" placeholder="Your Name (Optional)">
+<textarea id="question" rows="4" placeholder="Type your question..."></textarea>
+<br>
 <button id="askBtn">Ask AI</button>
 
-<div id="status"></div>
-<div id="answerBox"></div>
+<div id="answerBox">Answer will appear here...</div>
 
 <script>
-let selectedLanguage = 'English';
-document.querySelectorAll('.langBtn').forEach(btn=>{
-  btn.onclick = ()=>{
-    selectedLanguage = btn.dataset.lang;
-    document.querySelectorAll('.langBtn').forEach(b=>b.classList.remove('activeLang'));
-    btn.classList.add('activeLang');
-  };
-});
+const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi'; // your webhook
 
-document.getElementById('askBtn').onclick = async ()=>{
+document.getElementById('askBtn').addEventListener('click', async () => {
   const name = document.getElementById('name').value.trim() || 'Anonymous';
   const question = document.getElementById('question').value.trim();
-  if(!question){ alert('Enter a question'); return; }
+  if (!question) return alert('Please type a question.');
 
-  document.getElementById('status').textContent = 'Getting response...';
-  document.getElementById('answerBox').textContent = '';
+  document.getElementById('answerBox').textContent = 'Getting response...';
 
-  try{
-    const res = await fetch('https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({name, question, language:selectedLanguage})
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, question, language: 'English' })
     });
 
-    // Get text raw to avoid body stream already read issue
-    const answer = await res.text();
-    document.getElementById('answerBox').textContent = answer || 'No response received.';
-  }catch(err){
+    const data = await res.json(); // always expects JSON
+    document.getElementById('answerBox').textContent = data.answer;
+  } catch (err) {
     document.getElementById('answerBox').textContent = 'Error contacting AI Server: ' + err.message;
-  }finally{
-    document.getElementById('status').textContent = '';
   }
-};
+});
 </script>
 
 </body>
