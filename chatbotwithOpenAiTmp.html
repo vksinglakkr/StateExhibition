@@ -2,17 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>AI Test</title>
+  <title>AI Test - Custom Question</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
+    input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
     button { padding: 8px 16px; margin-top: 10px; }
     pre { background: #f0f0f0; padding: 10px; }
   </style>
 </head>
 <body>
 
-<h2>AI Test Page11</h2>
-<p>Question: <b>What are the three new prosecution laws implemented since 2024?</b></p>
+<h2>AI Test Page</h2>
+
+<label>Your Name:</label>
+<input type="text" id="name" placeholder="Enter your name (optional)">
+
+<label>Your Question:</label>
+<textarea id="question" rows="3" placeholder="Type your question here..."></textarea>
+
 <button id="askBtn">Ask AI</button>
 
 <h3>Answer:</h3>
@@ -20,21 +27,35 @@
 
 <script>
   const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi';
+
   document.getElementById('askBtn').addEventListener('click', async () => {
+    const name = document.getElementById('name').value.trim() || "Anonymous";
+    const question = document.getElementById('question').value.trim();
+
+    if (!question) {
+      alert("Please type a question");
+      return;
+    }
+
     document.getElementById('answer').textContent = 'Getting response...';
+
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: "Test User",
-          question: "What are the three new prosecution laws implemented since 2024?",
+          name: name,
+          question: question,
           language: "English"
         })
       });
+
       let data;
-      try { data = await res.json(); } catch(e) { data = { answer: await res.text() }; }
+      try { data = await res.json(); } 
+      catch(e) { data = { answer: await res.text() }; }
+
       document.getElementById('answer').textContent = data.answer || "No response received";
+
     } catch(err) {
       document.getElementById('answer').textContent = "Error: " + err.message;
     }
