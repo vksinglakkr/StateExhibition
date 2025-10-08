@@ -1,62 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Chat Test</title>
-<style>
-  body { font-family: sans-serif; padding: 20px; background: #f0f4f8; }
-  button { padding: 5px 10px; margin: 2px; cursor: pointer; }
-  #answer { margin-top: 20px; white-space: pre-wrap; background: #fff; padding: 10px; border: 1px solid #ccc; }
-  .lang-selected { background-color: #4f46e5; color: white; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Test Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    textarea { width: 100%; height: 100px; margin-bottom: 1rem; }
+    button { padding: 0.5rem 1rem; }
+    #answer { margin-top: 1rem; white-space: pre-wrap; background: #f3f3f3; padding: 1rem; border-radius: 5px; }
+  </style>
 </head>
 <body>
+  <h2>AI Test Page</h2>
 
-<h2>AI Chat Test</h2>
+  <textarea id="question">What are the three new prosecution laws implemented since 2024?</textarea>
+  <br>
+  <button id="submitBtn">Send Question</button>
 
-<div>
-  <span>Language:</span>
-  <button class="langBtn lang-selected" data-lang="English">English</button>
-  <button class="langBtn" data-lang="Hindi">Hindi</button>
-  <button class="langBtn" data-lang="Punjabi">Punjabi</button>
-</div>
+  <div id="answer">Answer will appear here...</div>
 
-<button id="sendBtn">Send Question</button>
+  <script>
+    const WEBHOOK_URL = 'YOUR_WEBHOOK_URL_HERE'; // replace with your n8n webhook
 
-<div id="answer">AI answer will appear here...</div>
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const question = document.getElementById('question').value.trim();
+      if(!question) { alert('Type a question'); return; }
 
-<script>
-  const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi'; // replace with your n8n webhook
+      document.getElementById('answer').textContent = 'Waiting for response...';
 
-  let selectedLanguage = 'English';
-  document.querySelectorAll('.langBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedLanguage = btn.dataset.lang;
-      document.querySelectorAll('.langBtn').forEach(b => b.classList.remove('lang-selected'));
-      btn.classList.add('lang-selected');
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: 'Test User', question, language: 'English' })
+        });
+
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+
+        const data = await res.json();
+
+        // Display AI answer, checking both top-level and body-nested
+        document.getElementById('answer').textContent =
+          data.answer || data.body?.answer || 'No answer received';
+      } catch(err) {
+        document.getElementById('answer').textContent = 'Error: ' + err.message;
+      }
     });
-  });
-
-  document.getElementById('sendBtn').addEventListener('click', async () => {
-    const question = "What are the three new prosecution laws implemented since 2024?";
-    document.getElementById('answer').textContent = 'Waiting for AI response...';
-    try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'Test User', question, language: selectedLanguage })
-      });
-
-      const data = await res.json();
-      // Make sure to display the 'answer' property from your workflow response
-      document.getElementById('answer').textContent = data.answer || 'No answer received';
-    } catch (err) {
-      document.getElementById('answer').textContent = 'Error: ' + err.message;
-    }
-  });
-</script>
-
+  </script>
 </body>
 </html>
-
