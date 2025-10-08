@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h3>Simple AI Webhook Test</h3>
+<pre id="output">Waiting...</pre>
+
+<script>
+async function test() {
+  try {
+    const res = await fetch("https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: "What is Bhagavad Gita?" })
+    });
+    const text = await res.text();   // read raw text for debugging
+    document.getElementById("output").textContent = text;
+  } catch (err) {
+    document.getElementById("output").textContent = "Error: " + err.message;
+  }
+}
+test();
+</script>
+</body>
+</html>
