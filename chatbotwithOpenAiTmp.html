@@ -1,86 +1,73 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI Chat Test</title>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f4f8; }
-    .btn { padding: 5px 10px; margin-right: 5px; cursor: pointer; border-radius: 4px; border: none; }
-    .btn.active { background: #007bff; color: white; }
-    #answer { margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #ccc; min-height: 50px; }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI Test — Minimal</title>
+<style>
+body { font-family: sans-serif; padding: 20px; background: #f0f4f8; }
+input, textarea, button { padding:8px; margin:4px 0; width:100%; }
+.langBtn { width:auto; margin-right:5px; cursor:pointer; }
+.activeLang { background:blue; color:white; }
+#answerBox { margin-top:10px; padding:10px; background:#fff; border:1px solid #ccc; white-space:pre-wrap; }
+</style>
 </head>
 <body>
 
-<h2>AI Chat Test</h2>
+<h2>AI Question Test</h2>
 
 <label>Your Name:</label>
-<input id="name" placeholder="Anonymous" /><br><br>
+<input id="name" placeholder="e.g. Vinod Singla"/>
 
-<label>Question:</label>
-<textarea id="question" rows="3" style="width:100%;"></textarea><br><br>
+<label>Type your question:</label>
+<textarea id="question" rows="3" placeholder="Type your question here..."></textarea>
 
-<label>Language:</label>
-<button class="btn active" data-lang="English">English</button>
-<button class="btn" data-lang="Hindi">Hindi</button>
-<button class="btn" data-lang="Punjabi">Punjabi</button><br><br>
+<div>
+  Answer Language:
+  <button class="langBtn activeLang" data-lang="English">English</button>
+  <button class="langBtn" data-lang="Hindi">Hindi</button>
+  <button class="langBtn" data-lang="Punjabi">Punjabi</button>
+</div>
 
 <button id="askBtn">Ask AI</button>
 
-<div id="answer">Answer will appear here...</div>
+<div id="status"></div>
+<div id="answerBox"></div>
 
 <script>
-  lucide.createIcons();
+let selectedLanguage = 'English';
+document.querySelectorAll('.langBtn').forEach(btn=>{
+  btn.onclick = ()=>{
+    selectedLanguage = btn.dataset.lang;
+    document.querySelectorAll('.langBtn').forEach(b=>b.classList.remove('activeLang'));
+    btn.classList.add('activeLang');
+  };
+});
 
-  const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi';
-  let selectedLang = 'English';
+document.getElementById('askBtn').onclick = async ()=>{
+  const name = document.getElementById('name').value.trim() || 'Anonymous';
+  const question = document.getElementById('question').value.trim();
+  if(!question){ alert('Enter a question'); return; }
 
-  document.querySelectorAll('.btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      selectedLang = this.dataset.lang;
-      document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
+  document.getElementById('status').textContent = 'Getting response...';
+  document.getElementById('answerBox').textContent = '';
+
+  try{
+    const res = await fetch('https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name, question, language:selectedLanguage})
     });
-  });
 
-  async function askAI(retryCount = 0) {
-    const name = document.getElementById('name').value.trim() || 'Anonymous';
-    const question = document.getElementById('question').value.trim();
-    if(!question) { alert('Please type a question'); return; }
-    const answerDiv = document.getElementById('answer');
-    answerDiv.textContent = 'Getting response...';
-
-    try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, question, language: selectedLang })
-      });
-
-      let data;
-      try { data = await res.json(); } catch(e) { data = null; }
-
-      // If empty or invalid response, retry once
-      if(!data || !data.answer) {
-        if(retryCount < 1) {
-          setTimeout(() => askAI(retryCount + 1), 1000); // retry after 1s
-          return;
-        } else {
-          answerDiv.textContent = 'Partial or no response received. Try again.';
-          return;
-        }
-      }
-
-      answerDiv.textContent = data.answer;
-
-    } catch(err) {
-      answerDiv.textContent = 'Error fetching response: ' + err.message;
-    }
+    // Get text raw to avoid body stream already read issue
+    const answer = await res.text();
+    document.getElementById('answerBox').textContent = answer || 'No response received.';
+  }catch(err){
+    document.getElementById('answerBox').textContent = 'Error contacting AI Server: ' + err.message;
+  }finally{
+    document.getElementById('status').textContent = '';
   }
-
-  document.getElementById('askBtn').addEventListener('click', () => askAI());
+};
 </script>
 
 </body>
