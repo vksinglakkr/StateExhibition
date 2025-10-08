@@ -3,55 +3,84 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Test AI Chatbot</title>
+  <title>AI Chat Test</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
-    input, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
-    button { padding: 8px 16px; }
-    #answer { margin-top: 20px; white-space: pre-wrap; background: #fff; padding: 10px; border-radius: 5px; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f4f8; }
+    .btn { padding: 5px 10px; margin-right: 5px; cursor: pointer; border-radius: 4px; border: none; }
+    .btn.active { background: #007bff; color: white; }
+    #answer { margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #ccc; min-height: 50px; }
   </style>
 </head>
 <body>
 
-<h2>Test AI Chatbot</h2>
+<h2>AI Chat Test</h2>
 
-<input id="name" placeholder="Your Name (optional)" />
-<textarea id="question" rows="4" placeholder="Type your question here..."></textarea>
+<label>Your Name:</label>
+<input id="name" placeholder="Anonymous" /><br><br>
+
+<label>Question:</label>
+<textarea id="question" rows="3" style="width:100%;"></textarea><br><br>
+
+<label>Language:</label>
+<button class="btn active" data-lang="English">English</button>
+<button class="btn" data-lang="Hindi">Hindi</button>
+<button class="btn" data-lang="Punjabi">Punjabi</button><br><br>
+
 <button id="askBtn">Ask AI</button>
 
-<div id="answer">Answer will appear here</div>
+<div id="answer">Answer will appear here...</div>
 
 <script>
-  const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi';
+  lucide.createIcons();
 
-  document.getElementById('askBtn').addEventListener('click', async () => {
+  const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi';
+  let selectedLang = 'English';
+
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      selectedLang = this.dataset.lang;
+      document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  async function askAI(retryCount = 0) {
     const name = document.getElementById('name').value.trim() || 'Anonymous';
     const question = document.getElementById('question').value.trim();
-    if (!question) { alert('Please type a question'); return; }
-
-    document.getElementById('answer').textContent = 'Getting response...';
+    if(!question) { alert('Please type a question'); return; }
+    const answerDiv = document.getElementById('answer');
+    answerDiv.textContent = 'Getting response...';
 
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, question, language: "English" })
+        body: JSON.stringify({ name, question, language: selectedLang })
       });
 
-      // Read response once
-      let rawData = await res.text();
       let data;
-      try {
-        data = JSON.parse(rawData);
-      } catch (e) {
-        data = { answer: rawData };
+      try { data = await res.json(); } catch(e) { data = null; }
+
+      // If empty or invalid response, retry once
+      if(!data || !data.answer) {
+        if(retryCount < 1) {
+          setTimeout(() => askAI(retryCount + 1), 1000); // retry after 1s
+          return;
+        } else {
+          answerDiv.textContent = 'Partial or no response received. Try again.';
+          return;
+        }
       }
 
-      document.getElementById('answer').textContent = data.answer || "No response received";
-    } catch (err) {
-      document.getElementById('answer').textContent = 'Error contacting AI Server: ' + err.message;
+      answerDiv.textContent = data.answer;
+
+    } catch(err) {
+      answerDiv.textContent = 'Error fetching response: ' + err.message;
     }
-  });
+  }
+
+  document.getElementById('askBtn').addEventListener('click', () => askAI());
 </script>
 
 </body>
