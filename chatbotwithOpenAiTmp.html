@@ -2,53 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Test Page1</title>
+  <title>AI Test</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; }
-    textarea { width: 100%; height: 100px; margin-bottom: 1rem; }
-    button { padding: 0.5rem 1rem; }
-    #answer { margin-top: 1rem; white-space: pre-wrap; background: #f3f3f3; padding: 1rem; border-radius: 5px; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    button { padding: 8px 16px; margin-top: 10px; }
+    pre { background: #f0f0f0; padding: 10px; }
   </style>
 </head>
 <body>
-  <h2>AI Test Page</h2>
 
-  <textarea id="question">What are the three new prosecution laws implemented since 2024?</textarea>
-  <br>
-  <button id="submitBtn">Send Question</button>
+<h2>AI Test Page11</h2>
+<p>Question: <b>What are the three new prosecution laws implemented since 2024?</b></p>
+<button id="askBtn">Ask AI</button>
 
-  <div id="answer">Answer will appear here...</div>
+<h3>Answer:</h3>
+<pre id="answer">Waiting...</pre>
 
-  <script>
-    const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi'; // replace with your n8n webhook
+<script>
+  const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi';
+  document.getElementById('askBtn').addEventListener('click', async () => {
+    document.getElementById('answer').textContent = 'Getting response...';
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: "Test User",
+          question: "What are the three new prosecution laws implemented since 2024?",
+          language: "English"
+        })
+      });
+      let data;
+      try { data = await res.json(); } catch(e) { data = { answer: await res.text() }; }
+      document.getElementById('answer').textContent = data.answer || "No response received";
+    } catch(err) {
+      document.getElementById('answer').textContent = "Error: " + err.message;
+    }
+  });
+</script>
 
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      const question = document.getElementById('question').value.trim();
-      if(!question) { alert('Type a question'); return; }
-
-      document.getElementById('answer').textContent = 'Waiting for response...';
-
-      try {
-        const res = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: 'Test User', question, language: 'English' })
-        });
-
-        if(!res.ok) throw new Error('HTTP ' + res.status);
-
-        const data = await res.json();
-
-        // Display AI answer, checking both top-level and body-nested
-        document.getElementById('answer').textContent =
-          data.answer || data.body?.answer || 'No answer received';
-      } catch(err) {
-        document.getElementById('answer').textContent = 'Error: ' + err.message;
-      }
-    });
-  </script>
 </body>
 </html>
-
-
