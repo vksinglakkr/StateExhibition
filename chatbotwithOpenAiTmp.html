@@ -7,13 +7,17 @@
 <script>
 async function test() {
   try {
-    const res = await fetch("https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi", {
+    const response = await fetch("https://your_webhook_url_here", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: "What is Bhagavad Gita?" })
     });
-    const text = await res.text();   // read raw text for debugging
-    document.getElementById("output").textContent = text;
+
+    document.getElementById("output").textContent = 
+      "Status: " + response.status + "\n";
+
+    const text = await response.text();
+    document.getElementById("output").textContent += "\nResponse:\n" + text;
   } catch (err) {
     document.getElementById("output").textContent = "Error: " + err.message;
   }
