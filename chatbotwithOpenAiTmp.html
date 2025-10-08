@@ -1,41 +1,33 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>AI Test - Custom Question</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Test AI Chatbot</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
-    button { padding: 8px 16px; margin-top: 10px; }
-    pre { background: #f0f0f0; padding: 10px; }
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    input, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
+    button { padding: 8px 16px; }
+    #answer { margin-top: 20px; white-space: pre-wrap; background: #fff; padding: 10px; border-radius: 5px; }
   </style>
 </head>
 <body>
 
-<h2>AI Test Page</h2>
+<h2>Test AI Chatbot</h2>
 
-<label>Your Name:</label>
-<input type="text" id="name" placeholder="Enter your name (optional)">
-
-<label>Your Question:</label>
-<textarea id="question" rows="3" placeholder="Type your question here..."></textarea>
-
+<input id="name" placeholder="Your Name (optional)" />
+<textarea id="question" rows="4" placeholder="Type your question here..."></textarea>
 <button id="askBtn">Ask AI</button>
 
-<h3>Answer:</h3>
-<pre id="answer">Waiting...</pre>
+<div id="answer">Answer will appear here</div>
 
 <script>
   const WEBHOOK_URL = 'https://vinodnic.app.n8n.cloud/webhook/chatbotwithopenAi';
 
   document.getElementById('askBtn').addEventListener('click', async () => {
-    const name = document.getElementById('name').value.trim() || "Anonymous";
+    const name = document.getElementById('name').value.trim() || 'Anonymous';
     const question = document.getElementById('question').value.trim();
-
-    if (!question) {
-      alert("Please type a question");
-      return;
-    }
+    if (!question) { alert('Please type a question'); return; }
 
     document.getElementById('answer').textContent = 'Getting response...';
 
@@ -43,21 +35,21 @@
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name,
-          question: question,
-          language: "English"
-        })
+        body: JSON.stringify({ name, question, language: "English" })
       });
 
+      // Read response once
+      let rawData = await res.text();
       let data;
-      try { data = await res.json(); } 
-      catch(e) { data = { answer: await res.text() }; }
+      try {
+        data = JSON.parse(rawData);
+      } catch (e) {
+        data = { answer: rawData };
+      }
 
       document.getElementById('answer').textContent = data.answer || "No response received";
-
-    } catch(err) {
-      document.getElementById('answer').textContent = "Error: " + err.message;
+    } catch (err) {
+      document.getElementById('answer').textContent = 'Error contacting AI Server: ' + err.message;
     }
   });
 </script>
