@@ -7,216 +7,415 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    body {
-      background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 100%);
-      font-family: 'Inter', sans-serif;
-    }
-    .fade-in {
-      animation: fadeIn 0.8s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    body { background: linear-gradient(135deg,#e0f2fe 0%,#fef3c7 100%); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .fade-in { animation: fadeIn 0.7s ease-in-out; }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(8px)} to {opacity:1; transform:none} }
+    /* small screens: make radio labels wrap nicely */
+    .sample-q label { display:block; width:100%; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-  <div class="w-full max-w-3xl bg-white rounded-2xl shadow-2xl fade-in">
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl fade-in overflow-hidden">
     <!-- Header -->
-    <div class="bg-gradient-to-r from-blue-800 to-indigo-600 text-white rounded-t-2xl p-6 text-center">
-      <h1 class="text-2xl font-bold mb-2">State Exhibition on New Prosecution Laws – 2024</h1>
-      <p class="text-blue-100">Interactive Chatbot powered by Google Gemini</p>
+    <div class="flex items-center gap-4 p-5 bg-gradient-to-r from-blue-800 to-indigo-600 text-white">
+      <!-- Simple Gemini-like SVG (stylized, non-official) -->
+      <div class="flex items-center gap-3">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden class="rounded-md bg-white/10 p-1">
+          <path d="M6 7c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 17c0 2.761 2.239 5 5 5s5-2.239 5-5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="2.2" stroke="white" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div class="flex-1">
+        <h1 class="text-xl font-semibold">State Exhibition — New Prosecution Laws (2024)</h1>
+        <p class="text-sm text-blue-100">Interactive chatbot · informational only — not legal advice</p>
+      </div>
+      <div class="text-right text-xs">
+        <div id="lastModifiedHeader" class="text-slate-100/80"></div>
+      </div>
     </div>
 
-    <!-- Form -->
-    <div class="p-6 space-y-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-        <input id="name" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 p-2" placeholder="e.g. Vinod Singla" />
+    <!-- Body -->
+    <div class="p-6 space-y-5">
+      <!-- Inputs -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+          <input id="name" class="w-full rounded-lg border-gray-300 p-2 focus:ring-2 focus:ring-blue-600" placeholder="e.g. Vinod Singla" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+          <div class="flex gap-2">
+            <button class="langBtn px-3 py-1 rounded-lg bg-blue-700 text-white text-sm" data-lang="English">English</button>
+            <button class="langBtn px-3 py-1 rounded-lg bg-gray-200 text-gray-700 text-sm" data-lang="Hindi">Hindi</button>
+            <button class="langBtn px-3 py-1 rounded-lg bg-gray-200 text-gray-700 text-sm" data-lang="Punjabi">Punjabi</button>
+          </div>
+          <div id="langHint" class="text-xs text-gray-500 mt-1">English selected</div>
+        </div>
       </div>
 
+      <!-- Sample questions (radio) -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Select a ready question</label>
-        <div id="sampleQuestions" class="max-h-56 overflow-auto border rounded-lg p-3 space-y-2 bg-gray-50"></div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Select a ready question (or type below)</label>
+        <div id="sampleQuestions" class="max-h-48 overflow-auto border rounded-lg p-3 space-y-2 bg-gray-50"></div>
       </div>
 
+      <!-- Custom question -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Or type your own question</label>
-        <textarea id="question" rows="4" class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 p-2" placeholder="Type your custom question..."></textarea>
+        <textarea id="question" rows="4" class="w-full rounded-lg border-gray-300 p-3 focus:ring-2 focus:ring-blue-600" placeholder="Type your custom question..."></textarea>
       </div>
 
-      <!-- Language Selector -->
-      <div class="flex items-center space-x-2">
-        <span class="text-gray-700 font-medium">Answer Language:</span>
-        <button class="langBtn px-3 py-1 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition" data-lang="English">English</button>
-        <button class="langBtn px-3 py-1 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition" data-lang="Hindi">Hindi</button>
-        <button class="langBtn px-3 py-1 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition" data-lang="Punjabi">Punjabi</button>
+      <!-- Buttons -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
+        <div class="flex items-center gap-3">
+          <button id="submitBtn" class="flex items-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
+            <i data-lucide="send"></i><span>Ask AI</span>
+          </button>
+
+          <button id="clearBtn" class="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-gray-50 transition text-sm">
+            <i data-lucide="trash"></i><span>Clear</span>
+          </button>
+
+          <button id="mainPageBtn" class="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-gray-50 transition text-sm">
+            <i data-lucide="home"></i><span>Main Page</span>
+          </button>
+        </div>
+
+        <div class="text-sm text-gray-500" id="status">Ready</div>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
-          <i data-lucide="send"></i> <span>Ask AI</span>
-        </button>
-        <button id="mainPageBtn" class="flex items-center justify-center gap-2 bg-gray-500 text-white px-5 py-2 rounded-xl shadow hover:bg-gray-600 transition">
-          <i data-lucide="home"></i> <span>Main Page</span>
-        </button>
-        <span id="status" class="text-gray-500"></span>
-      </div>
-
-      <!-- Last modified date -->
-      <div class="text-gray-600 text-sm mt-2">
-        Last Modified: <span id="lastModified"></span>
-      </div>
+      <!-- Diagnostic / hint box -->
+      <div id="diag" class="hidden border rounded-lg p-3 bg-gray-50 text-sm text-gray-700"></div>
     </div>
 
     <!-- Footer -->
     <div class="border-t p-4 text-center text-sm text-gray-600">
-      © 2024 State Exhibition | Informational purpose only — not legal advice
+      © 2024 State Exhibition — Informational only
     </div>
   </div>
 
-  <!-- Modal -->
-  <div id="modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 fade-in">
-      <div class="flex justify-between items-center border-b px-5 py-3 bg-blue-700 text-white rounded-t-2xl">
-        <h2 class="text-lg font-semibold flex items-center gap-2"><i data-lucide="message-circle"></i> AI Response</h2>
-        <button id="closeModal" class="hover:text-gray-200"><i data-lucide="x"></i></button>
+  <!-- Modal for answer -->
+  <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-3 bg-blue-700 text-white">
+        <div class="flex items-center gap-3">
+          <i data-lucide="message-circle"></i>
+          <div>
+            <div class="font-semibold">AI Response</div>
+            <div id="modalLang" class="text-xs opacity-90">Language: English</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="copyBtn" class="px-3 py-1 rounded-lg bg-white/10 text-white text-sm"><i data-lucide="copy"></i> Copy</button>
+          <button id="closeModal" class="px-3 py-1 rounded-lg bg-white/10 text-white text-sm"><i data-lucide="x"></i> Close</button>
+        </div>
       </div>
-      <div class="p-5 max-h-[70vh] overflow-y-auto">
-        <p class="font-semibold text-gray-700 mb-2">Question:</p>
-        <pre id="userQuestion" class="whitespace-pre-wrap text-gray-800 mb-4"></pre>
-        <p class="font-semibold text-gray-700 mb-2">Answer:</p>
-        <pre id="aiAnswer" class="whitespace-pre-wrap text-gray-800"></pre>
+
+      <div class="p-5 max-h-[70vh] overflow-auto text-gray-800">
+        <div class="mb-3">
+          <div class="font-semibold text-sm text-gray-700">Question</div>
+          <pre id="userQuestion" class="whitespace-pre-wrap bg-gray-50 p-3 rounded text-sm"></pre>
+        </div>
+        <div>
+          <div class="font-semibold text-sm text-gray-700">Answer</div>
+          <pre id="aiAnswer" class="whitespace-pre-wrap p-3 rounded text-sm bg-white border"></pre>
+        </div>
+
+        <div id="devDiagnostics" class="mt-4 text-xs text-gray-500 hidden">
+          <div><strong>Diagnostics:</strong></div>
+          <pre id="rawDiag" class="whitespace-pre-wrap bg-gray-100 p-2 rounded mt-2 text-xs"></pre>
+        </div>
       </div>
-      <div class="border-t p-4 flex justify-end gap-3">
-        <button id="copyBtn" class="flex items-center gap-1 px-4 py-2 border rounded-lg hover:bg-gray-100 transition"><i data-lucide="copy"></i> Copy</button>
-        <button id="mainPageModalBtn" class="flex items-center gap-1 px-4 py-2 border rounded-lg hover:bg-gray-100 transition"><i data-lucide="home"></i> Main Page</button>
-        <button id="closeBtn" class="bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-800 transition">Close</button>
-      </div>
+
     </div>
   </div>
 
-  <script>
-    lucide.createIcons();
+<script>
+/* =========================
+   CONFIG — change only this if needed
+   ========================= */
+const WEBHOOK_URL = 'https://poonamvinod.app.n8n.cloud/webhook/chatbot'; // <-- your webhook
+const MAX_RETRIES = 1; // automatic retry attempts on empty response
+/* ========================= */
 
-    const WEBHOOK_URL = 'https://poonamvinod.app.n8n.cloud/webhook/chatbot';
+lucide.createIcons();
 
-    const samples = [
-      "What are the three new prosecution laws implemented since 2024?",
-      "How have the new laws changed the FIR process?",
-      "Are bail provisions modified under the new system?",
-      "How are cybercrimes treated under the new prosecution laws?",
-      "What changes exist in the evidence collection process?",
-      "Do victims get more rights or faster justice now?",
-      "Are new offences introduced or penalties enhanced?",
-      "How do the new laws ensure speedy trials?",
-      "Do these laws affect existing criminal cases?",
-      "Any changes to police powers or arrest procedures?",
-      "What about reforms in case hearings and appeals?",
-      "How are economic crimes handled differently?",
-      "Do these laws simplify court processes?",
-      "Is digital submission of evidence allowed now?",
-      "What are the main benefits for citizens?",
-      "How do these laws support fair prosecution?",
-      "Are there any guidelines for prosecutors?",
-      "What are the penalties for delaying investigation?",
-      "How can I access the official text of the laws?",
-      "Do these laws align with constitutional rights?"
-    ];
+// sample questions array (20)
+const samples = [
+  "What are the three new prosecution laws implemented since 2024?",
+  "How have the new laws changed the FIR process?",
+  "Are bail provisions modified under the new system?",
+  "How are cybercrimes treated under the new prosecution laws?",
+  "What changes exist in the evidence collection process?",
+  "Do victims get more rights or faster justice now?",
+  "Are new offences introduced or penalties enhanced?",
+  "How do the new laws ensure speedy trials?",
+  "Do these laws affect existing criminal cases?",
+  "Any changes to police powers or arrest procedures?",
+  "What about reforms in case hearings and appeals?",
+  "How are economic crimes handled differently?",
+  "Do these laws simplify court processes?",
+  "Is digital submission of evidence allowed now?",
+  "What are the main benefits for citizens?",
+  "How do these laws support fair prosecution?",
+  "Are there any guidelines for prosecutors?",
+  "What are the penalties for delaying investigation?",
+  "How can I access the official text of the laws?",
+  "Do these laws align with constitutional rights?"
+];
 
-    const container = document.getElementById('sampleQuestions');
-    samples.forEach((q,i)=>{
-      const id = 'q'+i;
-      const div = document.createElement('div');
-      div.className = 'flex items-start';
-      div.innerHTML = `
-        <input type="radio" id="${id}" name="sampleQ" value="${q}" class="mt-1 text-blue-600 focus:ring-blue-600">
-        <label for="${id}" class="ml-2 text-sm text-gray-700 cursor-pointer hover:text-blue-700">${q}</label>
-      `;
-      container.appendChild(div);
+// build sample questions list
+const container = document.getElementById('sampleQuestions');
+samples.forEach((q,i) => {
+  const id = 'q'+i;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'flex items-start sample-q';
+  wrapper.innerHTML = `
+    <input type="radio" id="${id}" name="sampleQ" value="${q}" class="mt-1 text-blue-600" />
+    <label for="${id}" class="ml-2 text-sm text-gray-700 cursor-pointer">${q}</label>
+  `;
+  container.appendChild(wrapper);
+});
+container.addEventListener('change', e => {
+  if(e.target && e.target.name === 'sampleQ') {
+    document.getElementById('question').value = e.target.value;
+  }
+});
+
+// language buttons
+let selectedLanguage = 'English';
+document.querySelectorAll('.langBtn').forEach(btn => {
+  btn.addEventListener('click', function(){
+    selectedLanguage = this.dataset.lang;
+    document.querySelectorAll('.langBtn').forEach(b => {
+      b.classList.remove('bg-blue-700'); b.classList.remove('text-white');
+      b.classList.add('bg-gray-200'); b.classList.add('text-gray-700');
     });
-    container.addEventListener('change', e=>{
-      if(e.target.name==='sampleQ')
-        document.getElementById('question').value=e.target.value;
-    });
+    this.classList.remove('bg-gray-200'); this.classList.remove('text-gray-700');
+    this.classList.add('bg-blue-700'); this.classList.add('text-white');
+    document.getElementById('langHint').textContent = selectedLanguage + ' selected';
+  });
+});
 
-    const modal=document.getElementById('modal');
-    const openModal=()=>modal.classList.remove('hidden');
-    const closeModal=()=>modal.classList.add('hidden');
-    document.getElementById('closeBtn').onclick=closeModal;
-    document.getElementById('closeModal').onclick=closeModal;
+// last modified display
+document.getElementById('lastModifiedHeader').textContent = 'Last modified: ' + document.lastModified;
 
-    document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
-    document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
+// modal controls
+const modal = document.getElementById('modal');
+const openModal = () => { modal.classList.remove('hidden'); }
+const closeModal = () => { modal.classList.add('hidden'); }
+document.getElementById('closeModal').addEventListener('click', closeModal);
 
-    // Language selection
-    let selectedLanguage = 'English'; // default
-    document.querySelectorAll('.langBtn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        selectedLanguage = this.dataset.lang;
-        document.querySelectorAll('.langBtn').forEach(b => b.classList.replace('bg-blue-700','bg-gray-500'));
-        this.classList.replace('bg-gray-500','bg-blue-700');
-      });
-    });
+// main page, copy, clear
+document.getElementById('mainPageBtn').addEventListener('click', ()=> window.location.href = 'index.html');
+document.getElementById('mainPageModalBtn').addEventListener('click', ()=> window.location.href = 'index.html');
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const txt = document.getElementById('aiAnswer').textContent || '';
+  navigator.clipboard.writeText(txt).then(()=> alert('Answer copied to clipboard'));
+});
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  document.getElementById('name').value = '';
+  document.getElementById('question').value = '';
+  document.querySelectorAll('input[name="sampleQ"]').forEach(r => r.checked = false);
+});
 
-    // Show last modified date
-    document.getElementById('lastModified').textContent = document.lastModified;
+// status helper
+function setStatus(msg, color='text-gray-500') {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = color + ' text-sm';
+}
 
-    document.getElementById('submitBtn').addEventListener('click', async()=>{
-      const name = document.getElementById('name').value.trim() || 'Anonymous';
-      const question = document.getElementById('question').value.trim();
-      if(!question){ alert('Please select or type a question'); return; }
-      document.getElementById('submitBtn').disabled=true;
-      document.getElementById('status').textContent='Getting response...';
-
-      try{
-        const res = await fetch(WEBHOOK_URL, {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({name, question, language:selectedLanguage})
-        });
-
-        // Read response safely once
-        const text = await res.text();
-        let answerText = '';
-        try{
-          const data = JSON.parse(text);
-          if(typeof data.answer==='string'){
-            answerText = data.answer;
-          } else if(Array.isArray(data.answer)){
-            answerText = data.answer.map(item=>{
-              if(typeof item==='object'){
-                return Object.values(item).join(' | ');
-              }
-              return item;
-            }).join('\n');
-          } else if(typeof data.answer==='object'){
-            answerText = Object.values(data.answer).join(' | ');
-          } else {
-            answerText = String(data.answer);
-          }
-        } catch(err){
-          // fallback if not JSON
-          answerText = text || "AI Server: No response received.";
-        }
-
-        document.getElementById('userQuestion').textContent = question;
-        document.getElementById('aiAnswer').textContent = answerText;
-        openModal();
-      } catch(err){
-        alert('Error contacting AI Server: ' + err.message);
-      } finally {
-        document.getElementById('submitBtn').disabled=false;
-        document.getElementById('status').textContent='';
+// robust answer extractor (handles many shapes)
+function extractAnswerFromText(text) {
+  // try parse JSON safely
+  if(!text || text.trim()==='') return null;
+  try {
+    const parsed = JSON.parse(text);
+    // common shapes:
+    // { answer: "..." } or { body: { answer: "..." } }
+    if(parsed && typeof parsed === 'object') {
+      if(parsed.answer && typeof parsed.answer === 'string') return parsed.answer;
+      if(parsed.body && parsed.body.answer && typeof parsed.body.answer === 'string') return parsed.body.answer;
+      // OpenAI style: { choices: [ { message: { content: "..." } } ] }
+      if(parsed.choices && parsed.choices[0] && parsed.choices[0].message && parsed.choices[0].message.content) {
+        return parsed.choices[0].message.content;
       }
-    });
+      // Gemini style: [{ content: { parts: [ { text: "..." } ] } }, ...] or single object
+      if(Array.isArray(parsed) && parsed[0] && parsed[0].content && parsed[0].content.parts && parsed[0].content.parts[0] && parsed[0].content.parts[0].text) {
+        return parsed[0].content.parts[0].text;
+      }
+      if(parsed.content && parsed.content.parts && parsed.content.parts[0] && parsed.content.parts[0].text) {
+        return parsed.content.parts[0].text;
+      }
+      // If parsed is array of simple objects (like earlier issue), join summary
+      if(Array.isArray(parsed)) {
+        try {
+          return parsed.map(item=>{
+            if(typeof item === 'string') return item;
+            if(item && typeof item === 'object') return Object.values(item).join(' | ');
+            return String(item);
+          }).join('\n');
+        } catch(e) {}
+      }
+      // fallback: stringify object succinctly
+      return JSON.stringify(parsed, null, 2);
+    }
+  } catch(e) {
+    // not JSON — treat as plain text (often safe)
+    return text;
+  }
+  return null;
+}
 
-    document.getElementById('copyBtn').onclick = ()=>{
-      navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
-      alert('Copied to clipboard');
-    };
-  </script>
+// diagnostics display helper
+function showDiagnostics(info) {
+  const diag = document.getElementById('diag');
+  diag.classList.remove('hidden');
+  diag.innerHTML = '<strong>Diagnostics — useful for debugging</strong><br/>' +
+    '<div class="text-xs mt-2 whitespace-pre-wrap">' + info + '</div>';
+}
+
+// main request — safe, single-read, retry once
+async function askAIWithRetries(name, question, language) {
+  let attempt = 0;
+  let lastErr = null;
+
+  while(attempt <= MAX_RETRIES) {
+    const start = Date.now();
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, question, language })
+      });
+
+      const ms = Date.now() - start;
+      let raw = await res.text(); // read once
+      const length = raw ? raw.length : 0;
+
+      // If response is empty and status OK, allow retry (maybe model timed out)
+      if((!raw || raw.trim()==='') && res.ok && attempt < MAX_RETRIES) {
+        attempt++;
+        await new Promise(r => setTimeout(r, 900)); // backoff 900ms
+        continue;
+      }
+
+      // Try to extract answer
+      const answer = extractAnswerFromText(raw);
+      // If we got something meaningful, return with meta
+      if(answer !== null && answer !== undefined && String(answer).trim() !== '') {
+        return {
+          ok: true,
+          status: res.status,
+          ms,
+          raw,
+          answer
+        };
+      }
+
+      // If status indicates rate-limit or quota, return informative error
+      if(res.status === 429) {
+        return {
+          ok: false,
+          status: res.status,
+          ms,
+          raw,
+          message: 'Rate limit / quota exceeded (HTTP 429). Consider reducing frequency or upgrading quota.'
+        };
+      }
+
+      // If nothing extracted, return fallback with raw data
+      return {
+        ok: false,
+        status: res.status,
+        ms,
+        raw,
+        message: raw ? 'Response received but no extractable answer. Raw output shown.' : 'Empty response received from server.'
+      };
+
+    } catch(err) {
+      lastErr = err;
+      // network error / CORS / fetch error — if retry left, wait and retry
+      if(attempt < MAX_RETRIES) {
+        attempt++;
+        await new Promise(r => setTimeout(r, 900));
+        continue;
+      }
+      return { ok:false, error: err.message || String(err) };
+    }
+  }
+
+  return { ok:false, error: lastErr ? lastErr.message : 'Unknown error' };
+}
+
+// submit handler
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const name = (document.getElementById('name').value || 'Anonymous').trim();
+  const question = (document.getElementById('question').value || '').trim();
+  if(!question) { alert('Please select or type a question.'); return; }
+
+  setStatus('Getting response...', 'text-gray-600');
+  document.getElementById('diag').classList.add('hidden');
+  document.getElementById('userQuestion').textContent = '';
+  document.getElementById('aiAnswer').textContent = '';
+  document.getElementById('devDiagnostics').classList.add('hidden');
+  document.getElementById('rawDiag').textContent = '';
+
+  document.getElementById('submitBtn').disabled = true;
+
+  const result = await askAIWithRetries(name, question, selectedLanguage);
+
+  if(result.ok) {
+    document.getElementById('userQuestion').textContent = question;
+    document.getElementById('aiAnswer').textContent = result.answer;
+    // optional developer diagnostics (toggle shown)
+    const diagText = `HTTP status: ${result.status}\nTime: ${result.ms} ms\nResponse length: ${result.raw ? result.raw.length : 0} chars\n\nRAW response:\n${result.raw}`;
+    document.getElementById('rawDiag').textContent = diagText;
+    document.getElementById('devDiagnostics').classList.remove('hidden');
+
+    openModal();
+    setStatus('Response received', 'text-green-600');
+  } else {
+    // show helpful error message with likely causes
+    let help = '';
+    if(result.status === 429) {
+      help = 'Rate limited by AI provider (HTTP 429). Try again after a short time or check quota.';
+    } else if(result.error) {
+      help = `Network/error: ${result.error}. Possible causes: CORS blocked, network down, or webhook URL incorrect.`;
+    } else {
+      help = result.message || 'No answer extracted from server response.';
+    }
+
+    // display helpful diagnostics area and error
+    showDiagnostics(`Error: ${help}\n\nServer raw response (if any):\n${result.raw || '<no response>'}\n\nHTTP status: ${result.status || 'N/A'}`);
+    setStatus('Error - see diagnostics', 'text-red-600');
+    openModal();
+    document.getElementById('userQuestion').textContent = question;
+    document.getElementById('aiAnswer').textContent = 'Error: ' + help;
+  }
+
+  document.getElementById('submitBtn').disabled = false;
+});
+
+// enable Enter key submit on textarea (Ctrl+Enter or Cmd+Enter to submit)
+document.getElementById('question').addEventListener('keydown', (e) => {
+  if((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('submitBtn').click();
+  }
+});
+
+// small UX: when modal closed, hide dev diag by default
+modal.addEventListener('click', (ev) => {
+  if(ev.target === modal) closeModal();
+});
+
+// show last modified at header too
+document.getElementById('lastModifiedHeader').textContent = 'Last modified: ' + document.lastModified;
+
+</script>
 </body>
 </html>
-
