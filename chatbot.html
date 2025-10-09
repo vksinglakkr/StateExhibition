@@ -26,7 +26,7 @@
     <!-- Header -->
     <div class="bg-gradient-to-r from-blue-800 to-indigo-600 text-white rounded-t-2xl p-6 text-center">
       <h1 class="text-2xl font-bold mb-2">State Exhibition on New Prosecution Laws – 2024</h1>
-      <p class="text-blue-100">Interactive Chatbot powered by Google Gemini</p>
+      <p class="text-blue-100">Interactive Chatbot powered by Groq + Llama 3.3</p>
     </div>
 
     <!-- Form -->
@@ -95,7 +95,8 @@
   <script>
     lucide.createIcons();
 
-    const WEBHOOK_URL = 'https://poonamvinod.app.n8n.cloud/webhook/chatbot';
+    // ✅ Updated to your working n8n webhook
+    const WEBHOOK_URL = 'https://poonamvinod.app.n8n.cloud/webhook/ai-answer';
 
     const samples = [
       "What are the three new prosecution laws implemented since 2024?",
@@ -146,8 +147,8 @@
     document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
     document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
 
-    // Language selection
-    let selectedLanguage = 'English'; // default
+    // Language selection (for future use)
+    let selectedLanguage = 'English';
     document.querySelectorAll('.langBtn').forEach(btn => {
       btn.addEventListener('click', function() {
         selectedLanguage = this.dataset.lang;
@@ -156,10 +157,11 @@
       });
     });
 
+    // ✅ Simplified payload to match your n8n workflow
     document.getElementById('submitBtn').addEventListener('click', async()=>{
-      const name = document.getElementById('name').value.trim() || 'Anonymous';
       const question = document.getElementById('question').value.trim();
       if(!question){ alert('Please select or type a question'); return; }
+      
       document.getElementById('submitBtn').disabled=true;
       document.getElementById('status').textContent='Getting response...';
 
@@ -167,22 +169,22 @@
         const res = await fetch(WEBHOOK_URL, {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({name, question, language: selectedLanguage})
+          body: JSON.stringify({ question }) // Only send question
         });
 
         let answerText = '';
-        try {
+        if (res.ok) {
           const data = await res.json();
-          answerText = data.answer || JSON.stringify(data, null, 2);
-        } catch(err) {
-          answerText = await res.text() || "AI Server: No response received.";
+          answerText = data.answer || data.error || "No answer received.";
+        } else {
+          answerText = `Error: ${res.status} ${res.statusText}`;
         }
 
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').textContent = answerText;
         openModal();
       } catch(err){
-        alert('Error contacting AI Server: ' + err.message);
+        alert('Connection failed: ' + err.message);
       } finally {
         document.getElementById('submitBtn').disabled=false;
         document.getElementById('status').textContent='';
