@@ -26,7 +26,7 @@
     <!-- Header -->
     <div class="bg-gradient-to-r from-blue-800 to-indigo-600 text-white rounded-t-2xl p-6 text-center">
       <h1 class="text-2xl font-bold mb-2">State Exhibition on New Prosecution Laws – 2024</h1>
-      <p class="text-blue-100">Interactive Chatbot powered by Groq + Llama 3.3</p>
+      <p class="text-blue-100">AI Chatbot powered by Groq + Llama 3.3</p>
     </div>
 
     <!-- Form -->
@@ -58,6 +58,12 @@
         <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
           <i data-lucide="send"></i> <span>Ask AI</span>
         </button>
+
+        <!-- Voice Input Button -->
+        <button id="voiceBtn" class="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition">
+          <i data-lucide="mic"></i> <span>Speak</span>
+        </button>
+
         <button id="mainPageBtn" class="flex items-center justify-center gap-2 bg-gray-500 text-white px-5 py-2 rounded-xl shadow hover:bg-gray-600 transition">
           <i data-lucide="home"></i> <span>Main Page</span>
         </button>
@@ -96,7 +102,7 @@
     lucide.createIcons();
 
     // ✅ Updated to your working n8n webhook
-    const WEBHOOK_URL = 'https://poonamvinod.app.n8n.cloud/webhook/ai-answer';
+    const WEBHOOK_URL = 'https://aarvisingla1609.app.n8n.cloud/webhook/ai-answer';
 
     const samples = [
       "What are the three new prosecution laws implemented since 2024?",
@@ -147,7 +153,7 @@
     document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
     document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
 
-    // Language selection (for future use)
+    // Language selection
     let selectedLanguage = 'English';
     document.querySelectorAll('.langBtn').forEach(btn => {
       btn.addEventListener('click', function() {
@@ -157,11 +163,12 @@
       });
     });
 
-    // ✅ Simplified payload to match your n8n workflow
+    // ✅ Submit handler — sends name, question, language
     document.getElementById('submitBtn').addEventListener('click', async()=>{
+      const name = document.getElementById('name').value.trim() || 'Visitor';
       const question = document.getElementById('question').value.trim();
-      if(!question){ alert('Please select or type a question'); return; }
-      
+      if(!question){ alert('Please enter a question'); return; }
+
       document.getElementById('submitBtn').disabled=true;
       document.getElementById('status').textContent='Getting response...';
 
@@ -169,8 +176,7 @@
         const res = await fetch(WEBHOOK_URL, {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-//          body: JSON.stringify({ question }) // Only send question
-          body: JSON.stringify({ name, question, language:selectedLanguage })
+          body: JSON.stringify({ name, question, language: selectedLanguage })
         });
 
         let answerText = '';
@@ -192,6 +198,64 @@
       }
     });
 
+    // ✅ Voice Input Setup
+    let recognition;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('question').value = transcript;
+        document.getElementById('status').textContent = '';
+        updateVoiceButton('mic', 'Speak');
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Voice error:', event.error);
+        document.getElementById('status').textContent = 'Voice error: ' + event.error;
+        updateVoiceButton('mic', 'Speak');
+      };
+
+      recognition.onend = () => {
+        updateVoiceButton('mic', 'Speak');
+      };
+    }
+
+    function updateVoiceButton(icon, text) {
+      document.getElementById('voiceBtn').innerHTML = `<i data-lucide="${icon}"></i> <span>${text}</span>`;
+      lucide.createIcons();
+    }
+
+    document.getElementById('voiceBtn').addEventListener('click', () => {
+      if (!recognition) {
+        alert('Voice input not supported. Try Chrome or Edge.');
+        return;
+      }
+
+      // Set language based on user selection
+      const langMap = {
+        'English': 'en-IN',
+        'Hindi': 'hi-IN',
+        'Punjabi': 'pa-IN'
+      };
+      recognition.lang = langMap[selectedLanguage] || 'en-IN';
+
+      updateVoiceButton('mic-off', 'Listening...');
+      document.getElementById('status').textContent = 'Listening... Speak now.';
+
+      try {
+        recognition.start();
+      } catch (err) {
+        console.error('Voice start error:', err);
+        document.getElementById('status').textContent = 'Voice error: ' + err.message;
+        updateVoiceButton('mic', 'Speak');
+      }
+    });
+
+    // Copy button
     document.getElementById('copyBtn').onclick = ()=>{
       navigator.clipboard.writeText(document.getElementById('aiAnswer').textContent);
       alert('Copied to clipboard');
@@ -199,5 +263,3 @@
   </script>
 </body>
 </html>
-
-
