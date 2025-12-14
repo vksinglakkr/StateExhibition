@@ -121,110 +121,21 @@
 
     const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
 
-    // Section URL mapping - Add more sections as needed
-// Comprehensive Section URL Mapping for Indian Criminal Laws
-// Add more sections as you find their exact URLs from indiacode.nic.in
+    // Section URL mapping for Indian Criminal Laws
+    // These URLs open the full law document where users can navigate to specific sections
+    const SECTION_URLS = {
+      'BNS': 'https://www.indiacode.nic.in/handle/123456789/20062',
+      'BNSS': 'https://www.indiacode.nic.in/handle/123456789/20099',
+      'BSA': 'https://www.indiacode.nic.in/handle/123456789/20063',
+      'IPC': 'https://www.indiacode.nic.in/handle/123456789/2263',
+      'CrPC': 'https://www.indiacode.nic.in/handle/123456789/1362',
+      'Evidence': 'https://www.indiacode.nic.in/handle/123456789/2188'
+    };
 
-const SECTION_URLS = {
-  // ============================================
-  // BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS) 2023
-  // ============================================
-  'BNSS-1': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=51',
-  'BNSS-2': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=52',
-  'BNSS-15': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=65',
-  'BNSS-35': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=85',
-  'BNSS-41': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=91',
-  'BNSS-43': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=93',
-  'BNSS-54': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=104',
-  'BNSS-173': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=223',
-  'BNSS-176': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=226',
-  'BNSS-187': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=237',
-  'BNSS-230': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=280',
-  'BNSS-479': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=529',
-  
-  // ============================================
-  // BHARATIYA NYAYA SANHITA (BNS) 2023
-  // ============================================
-  'BNS-1': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=133',
-  'BNS-2': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=134',
-  'BNS-103': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=235',
-  'BNS-106': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=238',
-  'BNS-111': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=243',
-  'BNS-124': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=256',
-  'BNS-152': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=284',
-  'BNS-302': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=434',
-  'BNS-303': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=435',
-  'BNS-351': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=483',
-  
-  // ============================================
-  // BHARATIYA SAKSHYA ADHINIYAM (BSA) 2023
-  // ============================================
-  'BSA-1': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=51',
-  'BSA-3': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=53',
-  'BSA-22': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=72',
-  'BSA-45': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=95',
-  'BSA-59': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=109',
-  'BSA-63': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=113',
-  
-  // ============================================
-  // INDIAN PENAL CODE (IPC) 1860 - OLD LAW
-  // ============================================
-  'IPC-1': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=1',
-  'IPC-107': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=147',
-  'IPC-302': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=342',
-  'IPC-304': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=344',
-  'IPC-354': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=394',
-  'IPC-376': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=416',
-  'IPC-420': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=460',
-  'IPC-498A': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_19_00045_186045_1523350780688&orderno=538',
-  
-  // ============================================
-  // CODE OF CRIMINAL PROCEDURE (CrPC) 1973 - OLD LAW
-  // ============================================
-  'CrPC-41': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_2_27_00010_197302_1517807324459&orderno=91',
-  'CrPC-154': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_2_27_00010_197302_1517807324459&orderno=204',
-  'CrPC-156': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_2_27_00010_197302_1517807324459&orderno=206',
-  'CrPC-173': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_2_27_00010_197302_1517807324459&orderno=223',
-  'CrPC-482': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_2_27_00010_197302_1517807324459&orderno=532',
-  
-  // ============================================
-  // INDIAN EVIDENCE ACT 1872 - OLD LAW
-  // ============================================
-  'Evidence-3': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_21_00001_187201_1523350186919&orderno=53',
-  'Evidence-24': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_21_00001_187201_1523350186919&orderno=74',
-  'Evidence-45': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_21_00001_187201_1523350186919&orderno=95',
-  'Evidence-106': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_21_00001_187201_1523350186919&orderno=156',
-  'Evidence-114': 'https://www.indiacode.nic.in/show-data?abv=NA&actid=AC_CEN_0_21_00001_187201_1523350186919&orderno=164',
-  
-  // ============================================
-  // FALLBACK URLS - Used when specific section not found
-  // ============================================
-  'BNS-default': 'https://www.indiacode.nic.in/handle/123456789/20062',
-  'BNSS-default': 'https://www.indiacode.nic.in/handle/123456789/20099',
-  'BSA-default': 'https://www.indiacode.nic.in/handle/123456789/20063',
-  'IPC-default': 'https://www.indiacode.nic.in/handle/123456789/2263',
-  'CrPC-default': 'https://www.indiacode.nic.in/handle/123456789/1362',
-  'Evidence-default': 'https://www.indiacode.nic.in/handle/123456789/2188'
-};
-
-// Helper function to get section URL
-function getSectionUrl(lawType, sectionNum) {
-  const key = `${lawType}-${sectionNum}`;
-  
-  // First try to find exact section URL
-  if (SECTION_URLS[key]) {
-    return SECTION_URLS[key];
-  }
-  
-  // Fallback to general document
-  const fallbackKey = `${lawType}-default`;
-  return SECTION_URLS[fallbackKey] || 'https://www.indiacode.nic.in';
-}
-
-// Export for use
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { SECTION_URLS, getSectionUrl };
-}
+    function getSectionUrl(lawType, sectionNum) {
+      // Return the law document URL with section number in title attribute
+      return SECTION_URLS[lawType] || 'https://www.indiacode.nic.in';
+    }
 
     const samples = [
       "What are the three new prosecution laws implemented since 2024?",
@@ -480,4 +391,3 @@ if (typeof module !== 'undefined' && module.exports) {
   </script>
 </body>
 </html>
-
