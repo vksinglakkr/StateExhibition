@@ -92,10 +92,18 @@
         <table class="w-full">
           <thead class="bg-gray-50 border-b-2 border-gray-200">
             <tr>
-              <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Law</th>
-              <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Section</th>
-              <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
-              <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Old Section</th>
+              <th onclick="sortTable('law')" class="px-4 py-3 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none">
+                Law <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i>
+              </th>
+              <th onclick="sortTable('section')" class="px-4 py-3 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none">
+                Section <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i>
+              </th>
+              <th onclick="sortTable('title')" class="px-4 py-3 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none">
+                Title <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i>
+              </th>
+              <th onclick="sortTable('oldSection')" class="px-4 py-3 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none">
+                Old Section <i data-lucide="arrow-up-down" class="w-3 h-3 inline"></i>
+              </th>
               <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
             </tr>
           </thead>
@@ -132,27 +140,89 @@
   </div>
 
   <script>
-    // Database (using your full 70 sections - abbreviated here for space)
+    // Complete Database with 70 sections
     const DATABASE = [
+      // BNSS - 25 sections
       {id: 1, law: "BNSS", section: "173", title: "Information in cognizable cases", keywords: "FIR, First Information Report, police complaint, cognizable offence, register complaint, police station, lodge FIR", searchTerms: "Section 173, cognizable, Information", oldSection: "CrPC Section 154", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
       {id: 2, law: "BNSS", section: "174", title: "Information as to non-cognizable cases", keywords: "non-cognizable, minor offences, permission", searchTerms: "Section 174, non-cognizable", oldSection: "CrPC Section 155", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
       {id: 3, law: "BNSS", section: "175", title: "Investigation of cognizable cases", keywords: "investigation, police investigation, inquiry", searchTerms: "Section 175, investigation", oldSection: "CrPC Section 156", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
       {id: 4, law: "BNSS", section: "35", title: "Arrest by police officer without warrant", keywords: "arrest, police arrest, custody, detention, warrant arrest", searchTerms: "Section 35, arrest, police", oldSection: "CrPC Section 41", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
-      {id: 5, law: "BNSS", section: "479", title: "Bail in non-bailable offences", keywords: "bail, non-bailable, surety, release, bond", searchTerms: "Section 479, bail", oldSection: "CrPC Section 437", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
-      {id: 6, law: "BNSS", section: "480", title: "Anticipatory bail", keywords: "anticipatory bail, pre-arrest bail, advance bail", searchTerms: "Section 480, anticipatory, bail", oldSection: "CrPC Section 438", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
-      {id: 7, law: "BSA", section: "63", title: "Admissibility of electronic records", keywords: "electronic evidence, digital evidence, cyber evidence, computer records", searchTerms: "Section 63, electronic, admissibility", oldSection: "Evidence Act Section 65B", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
-      {id: 8, law: "BSA", section: "61", title: "Electronic or digital record", keywords: "digital record, electronic data, computer data", searchTerms: "Section 61, electronic, digital", oldSection: "Evidence Act Section 65A", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
-      {id: 9, law: "BNS", section: "103", title: "Punishment for murder", keywords: "murder, killing, homicide, death penalty, life imprisonment", searchTerms: "Section 103, murder", oldSection: "IPC Section 302", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
-      {id: 10, law: "BNS", section: "63", title: "Rape", keywords: "rape, sexual assault, sexual violence, without consent", searchTerms: "Section 63, rape", oldSection: "IPC Section 375", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
-      {id: 11, law: "BNS", section: "303", title: "Theft", keywords: "theft, stealing, dishonestly taking, movable property", searchTerms: "Section 303, theft", oldSection: "IPC Section 378", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
-      {id: 12, law: "BNS", section: "316", title: "Cheating", keywords: "cheating, fraud, deception, dishonestly deceive, scam", searchTerms: "Section 316, cheating, fraud", oldSection: "IPC Section 415", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
-      {id: 13, law: "BNS", section: "319", title: "Cheating and dishonestly inducing delivery of property", keywords: "fraud, online fraud, cyber fraud, property fraud, financial fraud, 420", searchTerms: "Section 319, cheating", oldSection: "IPC Section 420", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
-      {id: 14, law: "BNS", section: "137", title: "Kidnapping", keywords: "kidnapping, abduction, child kidnapping, minor abduction", searchTerms: "Section 137, kidnapping", oldSection: "IPC Section 359", link: "https://www.indiacode.nic.in/handle/123456789/20062"}
-      // Add remaining 56 sections here from your full database
+      {id: 5, law: "BNSS", section: "41", title: "Arrest by Magistrate", keywords: "magistrate arrest, judicial custody, court arrest", searchTerms: "Section 41, magistrate, arrest", oldSection: "CrPC Section 44", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 6, law: "BNSS", section: "43", title: "Arrest how made", keywords: "arrest procedure, how to arrest, arrest method", searchTerms: "Section 43, arrest", oldSection: "CrPC Section 46", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 7, law: "BNSS", section: "44", title: "Search of place for person to be arrested", keywords: "search for arrest, house search for accused", searchTerms: "Section 44, search", oldSection: "CrPC Section 47", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 8, law: "BNSS", section: "72", title: "Summons to produce document", keywords: "summons, produce document, court summons", searchTerms: "Section 72, summons", oldSection: "CrPC Section 91", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 9, law: "BNSS", section: "93", title: "Search by police officer", keywords: "search, seizure, search warrant, raid, premises search", searchTerms: "Section 93, search", oldSection: "CrPC Section 165", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 10, law: "BNSS", section: "94", title: "Search warrant", keywords: "search warrant, warrant for search, court warrant", searchTerms: "Section 94, search, warrant", oldSection: "CrPC Section 93", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 11, law: "BNSS", section: "106", title: "Seizure of property", keywords: "seizure, property seizure, confiscation", searchTerms: "Section 106, seizure", oldSection: "CrPC Section 102", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 12, law: "BNSS", section: "125", title: "Maintenance of wives, children and parents", keywords: "maintenance, alimony, child support, spousal support", searchTerms: "Section 125, maintenance", oldSection: "CrPC Section 125", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 13, law: "BNSS", section: "176", title: "Police officer power to investigate", keywords: "investigation power, police power, investigate crime", searchTerms: "Section 176, investigation", oldSection: "CrPC Section 156", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 14, law: "BNSS", section: "183", title: "Recording of confessions and statements", keywords: "confession, statement recording, accused confession", searchTerms: "Section 183, confession, statement", oldSection: "CrPC Section 164", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 15, law: "BNSS", section: "187", title: "Examination of witnesses by police", keywords: "witness examination, police questioning, statement recording", searchTerms: "Section 187, witness, examination", oldSection: "CrPC Section 161", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 16, law: "BNSS", section: "193", title: "Police report", keywords: "police report, chargesheet, final report, investigation report", searchTerms: "Section 193, police, report", oldSection: "CrPC Section 173", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 17, law: "BNSS", section: "230", title: "Charge framed", keywords: "charge, framing charges, accusation, formal charge", searchTerms: "Section 230, charge", oldSection: "CrPC Section 228", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 18, law: "BNSS", section: "266", title: "Trial procedure", keywords: "trial, trial procedure, court trial, criminal trial", searchTerms: "Section 266, trial", oldSection: "CrPC Section 238", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 19, law: "BNSS", section: "346", title: "Judgment", keywords: "judgment, court judgment, verdict, decision", searchTerms: "Section 346, judgment", oldSection: "CrPC Section 353", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 20, law: "BNSS", section: "385", title: "Appeal from convictions", keywords: "appeal, conviction appeal, appellate court, appeal process", searchTerms: "Section 385, appeal", oldSection: "CrPC Section 374", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 21, law: "BNSS", section: "422", title: "Revision by High Court", keywords: "revision, high court revision, revision petition", searchTerms: "Section 422, revision", oldSection: "CrPC Section 401", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 22, law: "BNSS", section: "479", title: "Bail in non-bailable offences", keywords: "bail, non-bailable, surety, release, bond", searchTerms: "Section 479, bail", oldSection: "CrPC Section 437", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 23, law: "BNSS", section: "480", title: "Anticipatory bail", keywords: "anticipatory bail, pre-arrest bail, advance bail", searchTerms: "Section 480, anticipatory, bail", oldSection: "CrPC Section 438", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 24, law: "BNSS", section: "528", title: "Victim compensation", keywords: "victim compensation, compensation, victim rights", searchTerms: "Section 528, victim, compensation", oldSection: "CrPC Section 357A", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      {id: 25, law: "BNSS", section: "531", title: "Community service", keywords: "community service, alternative punishment, social work", searchTerms: "Section 531, community", oldSection: "New provision", link: "https://www.indiacode.nic.in/handle/123456789/20099"},
+      
+      // BSA - 15 sections
+      {id: 26, law: "BSA", section: "3", title: "Interpretation clause", keywords: "definitions, interpretation, meaning of terms", searchTerms: "Section 3, interpretation", oldSection: "Evidence Act Section 3", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 27, law: "BSA", section: "5", title: "Evidence of facts in issue and relevant facts", keywords: "evidence, relevant facts, admissible evidence", searchTerms: "Section 5, evidence, relevant", oldSection: "Evidence Act Section 5", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 28, law: "BSA", section: "24", title: "Confession caused by inducement", keywords: "confession, inducement, forced confession", searchTerms: "Section 24, confession", oldSection: "Evidence Act Section 24", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 29, law: "BSA", section: "25", title: "Confession to police officer", keywords: "confession to police, police confession", searchTerms: "Section 25, confession, police", oldSection: "Evidence Act Section 25", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 30, law: "BSA", section: "27", title: "Information received from accused", keywords: "discovery of fact, information from accused, recovery", searchTerms: "Section 27, information, accused", oldSection: "Evidence Act Section 27", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 31, law: "BSA", section: "32", title: "Statements by persons who cannot be called", keywords: "dying declaration, statements of deceased, hearsay", searchTerms: "Section 32, statement", oldSection: "Evidence Act Section 32", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 32, law: "BSA", section: "45", title: "Expert opinion", keywords: "expert opinion, expert witness, professional opinion", searchTerms: "Section 45, expert, opinion", oldSection: "Evidence Act Section 45", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 33, law: "BSA", section: "60", title: "Oral evidence", keywords: "oral evidence, testimony, verbal evidence", searchTerms: "Section 60, oral, evidence", oldSection: "Evidence Act Section 60", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 34, law: "BSA", section: "61", title: "Electronic or digital record", keywords: "digital record, electronic data, computer data", searchTerms: "Section 61, electronic, digital", oldSection: "Evidence Act Section 65A", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 35, law: "BSA", section: "62", title: "Special provisions for electronic record", keywords: "electronic evidence provisions, digital evidence rules", searchTerms: "Section 62, electronic", oldSection: "Evidence Act Section 65B", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 36, law: "BSA", section: "63", title: "Admissibility of electronic records", keywords: "electronic evidence, digital evidence, cyber evidence, computer records", searchTerms: "Section 63, electronic, admissibility", oldSection: "Evidence Act Section 65B", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 37, law: "BSA", section: "73", title: "Comparison of signatures and writing", keywords: "signature comparison, handwriting expert, forensic examination", searchTerms: "Section 73, signature, comparison", oldSection: "Evidence Act Section 73", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 38, law: "BSA", section: "114", title: "Court may presume certain facts", keywords: "presumption, court presumption, legal presumption", searchTerms: "Section 114, presumption", oldSection: "Evidence Act Section 114", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 39, law: "BSA", section: "118", title: "Who may testify", keywords: "witness, testimony, testify, competent witness", searchTerms: "Section 118, witness, testify", oldSection: "Evidence Act Section 118", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      {id: 40, law: "BSA", section: "137", title: "Examination of witness", keywords: "examination, cross examination, witness examination", searchTerms: "Section 137, examination, witness", oldSection: "Evidence Act Section 137", link: "https://www.indiacode.nic.in/handle/123456789/20063"},
+      
+      // BNS - 30 sections
+      {id: 41, law: "BNS", section: "63", title: "Rape", keywords: "rape, sexual assault, sexual violence, without consent", searchTerms: "Section 63, rape", oldSection: "IPC Section 375", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 42, law: "BNS", section: "64", title: "Punishment for rape", keywords: "rape punishment, rape penalty, sexual assault punishment", searchTerms: "Section 64, rape, punishment", oldSection: "IPC Section 376", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 43, law: "BNS", section: "80", title: "Dowry death", keywords: "dowry death, dowry harassment, bride burning", searchTerms: "Section 80, dowry death", oldSection: "IPC Section 304B", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 44, law: "BNS", section: "101", title: "Culpable homicide", keywords: "culpable homicide, causing death, unlawful killing", searchTerms: "Section 101, homicide", oldSection: "IPC Section 299", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 45, law: "BNS", section: "103", title: "Punishment for murder", keywords: "murder, killing, homicide, death penalty, life imprisonment", searchTerms: "Section 103, murder", oldSection: "IPC Section 302", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 46, law: "BNS", section: "105", title: "Culpable homicide not amounting to murder", keywords: "culpable homicide not murder, manslaughter", searchTerms: "Section 105, culpable homicide", oldSection: "IPC Section 304", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 47, law: "BNS", section: "106", title: "Causing death by negligence", keywords: "death by negligence, negligent death, accidental death", searchTerms: "Section 106, negligence, death", oldSection: "IPC Section 304A", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 48, law: "BNS", section: "115", title: "Voluntarily causing hurt", keywords: "hurt, assault, causing hurt, physical injury", searchTerms: "Section 115, hurt", oldSection: "IPC Section 323", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 49, law: "BNS", section: "117", title: "Voluntarily causing grievous hurt", keywords: "grievous hurt, serious injury, grave injury", searchTerms: "Section 117, grievous hurt", oldSection: "IPC Section 325", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 50, law: "BNS", section: "124", title: "Acid attack", keywords: "acid attack, acid throwing, corrosive substance", searchTerms: "Section 124, acid attack", oldSection: "IPC Section 326A", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 51, law: "BNS", section: "126", title: "Wrongful restraint", keywords: "wrongful restraint, obstruction, preventing movement", searchTerms: "Section 126, restraint", oldSection: "IPC Section 339", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 52, law: "BNS", section: "127", title: "Wrongful confinement", keywords: "wrongful confinement, illegal detention, unlawful restraint", searchTerms: "Section 127, confinement", oldSection: "IPC Section 342", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 53, law: "BNS", section: "137", title: "Kidnapping", keywords: "kidnapping, abduction, child kidnapping, minor abduction", searchTerms: "Section 137, kidnapping", oldSection: "IPC Section 359", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 54, law: "BNS", section: "140", title: "Kidnapping for ransom", keywords: "kidnapping for ransom, ransom, extortion", searchTerms: "Section 140, kidnapping, ransom", oldSection: "IPC Section 364A", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 55, law: "BNS", section: "191", title: "Rioting", keywords: "rioting, riot, unlawful assembly, mob violence", searchTerms: "Section 191, rioting", oldSection: "IPC Section 147", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 56, law: "BNS", section: "238", title: "Public nuisance", keywords: "public nuisance, nuisance, public annoyance", searchTerms: "Section 238, nuisance", oldSection: "IPC Section 268", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 57, law: "BNS", section: "281", title: "Rash driving", keywords: "rash driving, dangerous driving, negligent driving", searchTerms: "Section 281, rash driving", oldSection: "IPC Section 279", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 58, law: "BNS", section: "303", title: "Theft", keywords: "theft, stealing, dishonestly taking, movable property", searchTerms: "Section 303, theft", oldSection: "IPC Section 378", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 59, law: "BNS", section: "309", title: "Robbery", keywords: "robbery, armed robbery, dacoity, forceful theft", searchTerms: "Section 309, robbery", oldSection: "IPC Section 392", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 60, law: "BNS", section: "316", title: "Cheating", keywords: "cheating, fraud, deception, dishonestly deceive, scam", searchTerms: "Section 316, cheating, fraud", oldSection: "IPC Section 415", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 61, law: "BNS", section: "318", title: "Cheating by personation", keywords: "impersonation, fake identity, personation, identity theft", searchTerms: "Section 318, personation", oldSection: "IPC Section 416", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 62, law: "BNS", section: "319", title: "Cheating and dishonestly inducing delivery of property", keywords: "fraud, online fraud, cyber fraud, property fraud, financial fraud, 420", searchTerms: "Section 319, cheating", oldSection: "IPC Section 420", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 63, law: "BNS", section: "324", title: "Mischief", keywords: "mischief, property damage, damage to property", searchTerms: "Section 324, mischief", oldSection: "IPC Section 425", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 64, law: "BNS", section: "329", title: "House-trespass", keywords: "trespass, house trespass, illegal entry", searchTerms: "Section 329, trespass", oldSection: "IPC Section 442", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 65, law: "BNS", section: "331", title: "Criminal breach of trust", keywords: "breach of trust, criminal breach, misappropriation", searchTerms: "Section 331, breach of trust", oldSection: "IPC Section 405", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 66, law: "BNS", section: "336", title: "Forgery", keywords: "forgery, fake document, forged signature", searchTerms: "Section 336, forgery", oldSection: "IPC Section 463", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 67, law: "BNS", section: "338", title: "Forgery of valuable security", keywords: "forgery of security, fake cheque, forged cheque", searchTerms: "Section 338, forgery, security", oldSection: "IPC Section 467", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 68, law: "BNS", section: "351", title: "Criminal intimidation", keywords: "intimidation, threat, criminal threat, blackmail", searchTerms: "Section 351, intimidation", oldSection: "IPC Section 503", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 69, law: "BNS", section: "352", title: "Insult with intent to provoke breach of peace", keywords: "insult, provocation, breach of peace, public insult", searchTerms: "Section 352, insult", oldSection: "IPC Section 504", link: "https://www.indiacode.nic.in/handle/123456789/20062"},
+      {id: 70, law: "BNS", section: "356", title: "Defamation", keywords: "defamation, libel, slander, reputation damage", searchTerms: "Section 356, defamation", oldSection: "IPC Section 499", link: "https://www.indiacode.nic.in/handle/123456789/20062"}
     ];
 
     let currentFilter = 'ALL';
     let currentResults = [...DATABASE];
+    let sortColumn = 'section';
+    let sortDirection = 'asc';
 
     function getLawColor(law) {
       const colors = {
@@ -161,6 +231,38 @@
         'BSA': 'bg-blue-100 text-blue-800 border-blue-300'
       };
       return colors[law] || 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+
+    function sortTable(column) {
+      // Toggle direction if clicking same column, otherwise default to ascending
+      if (sortColumn === column) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortColumn = column;
+        sortDirection = 'asc';
+      }
+      
+      // Sort the results
+      currentResults.sort((a, b) => {
+        let valA, valB;
+        
+        if (column === 'section') {
+          // Convert section to number for proper sorting
+          valA = parseInt(a.section);
+          valB = parseInt(b.section);
+        } else {
+          valA = a[column].toString().toLowerCase();
+          valB = b[column].toString().toLowerCase();
+        }
+        
+        if (sortDirection === 'asc') {
+          return valA > valB ? 1 : valA < valB ? -1 : 0;
+        } else {
+          return valA < valB ? 1 : valA > valB ? -1 : 0;
+        }
+      });
+      
+      renderResults();
     }
 
     function filterByLaw(law) {
@@ -235,12 +337,52 @@
         tbody.appendChild(row);
       });
       
+      // Update sort indicators
+      updateSortIndicators();
+      
       lucide.createIcons();
       
       document.getElementById('searchStats').innerHTML = `
         <i data-lucide="book" class="w-4 h-4 inline"></i> 
         Showing ${currentResults.length} ${currentFilter === 'ALL' ? '' : currentFilter} section${currentResults.length === 1 ? '' : 's'}
+        ${sortColumn ? `<span class="ml-2 text-xs">• Sorted by: ${sortColumn} ${sortDirection === 'asc' ? '↑' : '↓'}</span>` : ''}
       `;
+      lucide.createIcons();
+    }
+
+    function updateSortIndicators() {
+      // Reset all headers
+      const headers = document.querySelectorAll('thead th');
+      headers.forEach(th => {
+        const icon = th.querySelector('i');
+        if (icon) {
+          icon.setAttribute('data-lucide', 'arrow-up-down');
+        }
+      });
+      
+      // Update current sort column icon
+      const columnMap = {
+        'law': 0,
+        'section': 1,
+        'title': 2,
+        'oldSection': 3
+      };
+      
+      const currentHeaderIndex = columnMap[sortColumn];
+      if (currentHeaderIndex !== undefined) {
+        const currentHeader = headers[currentHeaderIndex];
+        const icon = currentHeader.querySelector('i');
+        if (icon) {
+          if (sortDirection === 'asc') {
+            icon.setAttribute('data-lucide', 'arrow-up');
+            currentHeader.classList.add('bg-blue-50');
+          } else {
+            icon.setAttribute('data-lucide', 'arrow-down');
+            currentHeader.classList.add('bg-blue-50');
+          }
+        }
+      }
+      
       lucide.createIcons();
     }
 
