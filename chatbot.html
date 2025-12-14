@@ -215,51 +215,59 @@
     });
 
     function processAnswerWithLinks(text) {
+      // First, convert markdown tables to HTML tables (before other conversions)
+      text = convertMarkdownTables(text);
+
       // Convert section references to highlighted badges with direct links
-      text = text.replace(/\[BNS Section (\d+)\]/g, (match, sectionNum) => {
-        const url = getSectionUrl('BNS', sectionNum);
-        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-green-200" title="Click to view BNS Section ${sectionNum}">BNS §${sectionNum}</a>`;
-      });
-      
-      text = text.replace(/\[IPC Section (\d+)\]/g, (match, sectionNum) => {
-        const url = getSectionUrl('IPC', sectionNum);
-        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-blue-200" title="Click to view IPC Section ${sectionNum}">IPC §${sectionNum}</a>`;
-      });
-      
-      text = text.replace(/\[BNSS Section (\d+)\]/g, (match, sectionNum) => {
+      // Pattern: [BNS Section 123] or BNSS §41 or just "Section 41"
+      text = text.replace(/\[?BNS[S]?\s*(?:Section\s*)?[§]?\s*(\d+)\]?/gi, (match, sectionNum) => {
         const url = getSectionUrl('BNSS', sectionNum);
         return `<a href="${url}" target="_blank" class="section-badge inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-purple-200" title="Click to view BNSS Section ${sectionNum}">BNSS §${sectionNum}</a>`;
       });
       
-      text = text.replace(/\[CrPC Section (\d+)\]/g, (match, sectionNum) => {
+      text = text.replace(/\[?BN[S]?\s*(?:Section\s*)?[§]?\s*(\d+)\]?/gi, (match, sectionNum) => {
+        const url = getSectionUrl('BNS', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-green-200" title="Click to view BNS Section ${sectionNum}">BNS §${sectionNum}</a>`;
+      });
+      
+      text = text.replace(/\[?IPC\s*(?:Section\s*)?[§]?\s*(\d+)\]?/gi, (match, sectionNum) => {
+        const url = getSectionUrl('IPC', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-blue-200" title="Click to view IPC Section ${sectionNum}">IPC §${sectionNum}</a>`;
+      });
+      
+      text = text.replace(/\[?CrPC\s*(?:Section\s*)?[§]?\s*(\d+)\]?/gi, (match, sectionNum) => {
         const url = getSectionUrl('CrPC', sectionNum);
         return `<a href="${url}" target="_blank" class="section-badge inline-block bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-orange-200" title="Click to view CrPC Section ${sectionNum}">CrPC §${sectionNum}</a>`;
       });
       
-      text = text.replace(/\[BSA Section (\d+)\]/g, (match, sectionNum) => {
+      text = text.replace(/\[?BSA\s*(?:Section\s*)?[§]?\s*(\d+)\]?/gi, (match, sectionNum) => {
         const url = getSectionUrl('BSA', sectionNum);
         return `<a href="${url}" target="_blank" class="section-badge inline-block bg-teal-100 text-teal-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-teal-200" title="Click to view BSA Section ${sectionNum}">BSA §${sectionNum}</a>`;
       });
       
-      text = text.replace(/\[Evidence Act Section (\d+)\]/g, (match, sectionNum) => {
+      text = text.replace(/\[?(?:Evidence Act|Indian Evidence Act)\s*(?:Section\s*)?[§]?\s*(\d+)\]?/gi, (match, sectionNum) => {
         const url = getSectionUrl('Evidence', sectionNum);
         return `<a href="${url}" target="_blank" class="section-badge inline-block bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-yellow-200" title="Click to view Evidence Act Section ${sectionNum}">Evidence Act §${sectionNum}</a>`;
       });
 
-      // Convert markdown tables to HTML tables
-      text = convertMarkdownTables(text);
-
-      // Convert URLs to clickable links
-      text = text.replace(
-        /(https?:\/\/[^\s]+)/g, 
-        '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-medium">$1</a>'
-      );
+      // Convert standalone URLs to clickable links (but avoid double-converting already processed HTML)
+      text = text.replace(/(^|[^"'>])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-medium">$2</a>');
 
       // Format headers if present
-      text = text.replace(/📚 READ THE FULL LAWS:/g, '<strong class="block mt-3 mb-1">📚 READ THE FULL LAWS:</strong>');
+      text = text.replace(/📚 READ THE FULL LAWS:/g, '<strong class="block mt-3 mb-1 text-lg">📚 READ THE FULL LAWS:</strong>');
       text = text.replace(/✅ NEW LAWS \(2024\):/g, '<strong class="block mt-2 text-green-700">✅ NEW LAWS (2024):</strong>');
       text = text.replace(/📜 OLD LAWS \(For Reference\):/g, '<strong class="block mt-2 text-blue-700">📜 OLD LAWS (For Reference):</strong>');
       text = text.replace(/🔗 Official Resources:/g, '<strong class="block mt-2 text-purple-700">🔗 Official Resources:</strong>');
+      
+      // Format section headers with emojis
+      text = text.replace(/📋 GIST\/SUMMARY:/gi, '<strong class="block mt-3 mb-1 text-base">📋 GIST/SUMMARY:</strong>');
+      text = text.replace(/📖 SECTION TEXT:/gi, '<strong class="block mt-3 mb-1 text-base">📖 SECTION TEXT:</strong>');
+      text = text.replace(/⚖️ PUNISHMENT\/PENALTY:/gi, '<strong class="block mt-3 mb-1 text-base">⚖️ PUNISHMENT/PENALTY:</strong>');
+      text = text.replace(/🔄 COMPARISON TABLE:/gi, '<strong class="block mt-3 mb-1 text-base">🔄 COMPARISON TABLE:</strong>');
+      text = text.replace(/🎯 KEY ELEMENTS:/gi, '<strong class="block mt-3 mb-1 text-base">🎯 KEY ELEMENTS:</strong>');
+      text = text.replace(/📝 PRACTICAL EXAMPLES:/gi, '<strong class="block mt-3 mb-1 text-base">📝 PRACTICAL EXAMPLES:</strong>');
+      text = text.replace(/🔗 RELATED SECTIONS:/gi, '<strong class="block mt-3 mb-1 text-base">🔗 RELATED SECTIONS:</strong>');
+      text = text.replace(/💡 IMPORTANT NOTES:/gi, '<strong class="block mt-3 mb-1 text-base">💡 IMPORTANT NOTES:</strong>');
 
       // Preserve line breaks
       text = text.replace(/\n/g, '<br>');
