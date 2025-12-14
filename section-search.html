@@ -29,12 +29,19 @@
             <p class="text-sm text-white/80">Search 70 sections across BNSS, BNS, BSA</p>
           </div>
         </div>
-        <button onclick="window.location.href='chatbot.html'" class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition text-sm font-medium">
-          <i data-lucide="home" class="w-4 h-4"></i> Chatbot
-        </button>
+        <div class="flex gap-2">
+          <button onclick="toggleGuide()" id="guideBtn" class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition text-sm font-medium">
+            <i data-lucide="info" class="w-4 h-4"></i>
+            <span id="guideBtnText">Show Guide</span>
+            <span id="guideArrow" class="text-lg">▼</span>
+          </button>
+          <button onclick="window.location.href='chatbot.html'" class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition text-sm font-medium">
+            <i data-lucide="home" class="w-4 h-4"></i> Chatbot
+          </button>
+        </div>
       </div>
 
-      <!-- Quick Summary Row -->
+      <!-- Quick Summary Row - Always Visible -->
       <div class="grid grid-cols-3 gap-3 mt-3">
         <div class="bg-purple-700/50 rounded-lg px-3 py-2 text-center">
           <div class="font-bold text-sm mb-1">BNSS (Procedure)</div>
@@ -47,6 +54,114 @@
         <div class="bg-blue-700/50 rounded-lg px-3 py-2 text-center">
           <div class="font-bold text-sm mb-1">BSA (Evidence)</div>
           <div class="text-xs text-blue-100">Electronic Records, Proof, Witness</div>
+        </div>
+      </div>
+      
+      <!-- Detailed Guide - Expandable -->
+      <div id="detailedGuide" class="hidden mt-4 pt-4 border-t border-white/20">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-purple-300 rounded-full"></div>
+              <h3 class="font-bold">BNSS</h3>
+            </div>
+            <p class="text-purple-100 text-xs mb-2 font-semibold">Bharatiya Nagarik Suraksha Sanhita</p>
+            <p class="text-white/80 text-xs mb-2">Replaced: CrPC 1973</p>
+            <div class="bg-purple-900/30 rounded p-2 mb-2">
+              <p class="text-xs font-semibold mb-1">👮 WHEN TO SEARCH:</p>
+              <ul class="text-xs space-y-1 text-purple-100">
+                <li>• FIR & Complaints</li>
+                <li>• Arrest & Custody</li>
+                <li>• Bail & Release</li>
+                <li>• Investigation Process</li>
+                <li>• Court Procedures</li>
+                <li>• Search & Seizure</li>
+                <li>• Trial & Appeals</li>
+                <li>• Witness Examination</li>
+              </ul>
+            </div>
+            <p class="text-xs text-purple-200 italic">Think: "How is a case handled?"</p>
+          </div>
+
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-green-300 rounded-full"></div>
+              <h3 class="font-bold">BNS</h3>
+            </div>
+            <p class="text-green-100 text-xs mb-2 font-semibold">Bharatiya Nyaya Sanhita</p>
+            <p class="text-white/80 text-xs mb-2">Replaced: IPC 1860</p>
+            <div class="bg-green-900/30 rounded p-2 mb-2">
+              <p class="text-xs font-semibold mb-1">⚖️ WHEN TO SEARCH:</p>
+              <ul class="text-xs space-y-1 text-green-100">
+                <li>• What is the crime?</li>
+                <li>• Murder, Theft, Rape</li>
+                <li>• Fraud & Cheating</li>
+                <li>• Kidnapping</li>
+                <li>• What's the punishment?</li>
+                <li>• Cybercrime offences</li>
+                <li>• Assault & Hurt</li>
+                <li>• Defamation</li>
+              </ul>
+            </div>
+            <p class="text-xs text-green-200 italic">Think: "What crime & punishment?"</p>
+          </div>
+
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-blue-300 rounded-full"></div>
+              <h3 class="font-bold">BSA</h3>
+            </div>
+            <p class="text-blue-100 text-xs mb-2 font-semibold">Bharatiya Sakshya Adhiniyam</p>
+            <p class="text-white/80 text-xs mb-2">Replaced: Evidence Act 1872</p>
+            <div class="bg-blue-900/30 rounded p-2 mb-2">
+              <p class="text-xs font-semibold mb-1">📁 WHEN TO SEARCH:</p>
+              <ul class="text-xs space-y-1 text-blue-100">
+                <li>• Electronic Evidence</li>
+                <li>• Digital Records</li>
+                <li>• What can be proved?</li>
+                <li>• Witness testimony</li>
+                <li>• Document admissibility</li>
+                <li>• How to prove in court?</li>
+                <li>• Expert Opinion</li>
+                <li>• Confessions</li>
+              </ul>
+            </div>
+            <p class="text-xs text-blue-200 italic">Think: "How to prove it?"</p>
+          </div>
+        </div>
+
+        <!-- Additional Help Section -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 mt-4">
+          <h3 class="font-bold text-sm mb-2 flex items-center gap-2">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i>
+            Quick Tips for Using This Database:
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div>
+              <p class="font-semibold mb-1">🔍 Search Tips:</p>
+              <ul class="space-y-1 text-white/90">
+                <li>• Use simple keywords</li>
+                <li>• Try "FIR", "bail", "murder"</li>
+                <li>• Click headers to sort</li>
+              </ul>
+            </div>
+            <div>
+              <p class="font-semibold mb-1">📋 Filter Tips:</p>
+              <ul class="space-y-1 text-white/90">
+                <li>• Use law tabs (BNSS/BNS/BSA)</li>
+                <li>• Combine with search</li>
+                <li>• Sort by section number</li>
+              </ul>
+            </div>
+            <div>
+              <p class="font-semibold mb-1">🔗 India Code Tips:</p>
+              <ul class="space-y-1 text-white/90">
+                <li>• Use Ctrl+F to search</li>
+                <li>• Look in "Sections" tab</li>
+                <li>• Bookmark important pages</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
