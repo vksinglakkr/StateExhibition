@@ -62,7 +62,7 @@
         <button class="langBtn px-3 py-1 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition" data-lang="Punjabi">Punjabi</button>
       </div>
 
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-4 flex-wrap gap-2">
         <button id="submitBtn" class="flex items-center justify-center gap-2 bg-blue-700 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-800 transition">
           <i data-lucide="send"></i> <span>Ask AI</span>
         </button>
@@ -70,6 +70,11 @@
         <!-- Voice Input Button -->
         <button id="voiceBtn" class="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition">
           <i data-lucide="mic"></i> <span>Speak</span>
+        </button>
+
+        <!-- NEW: Search Sections Button -->
+        <button id="searchSectionsBtn" class="flex items-center justify-center gap-2 bg-purple-600 text-white px-5 py-2 rounded-xl shadow hover:bg-purple-700 transition">
+          <i data-lucide="database"></i> <span>Search Sections</span>
         </button>
 
         <button id="mainPageBtn" class="flex items-center justify-center gap-2 bg-gray-500 text-white px-5 py-2 rounded-xl shadow hover:bg-gray-600 transition">
@@ -80,15 +85,15 @@
     </div>
 
     <!-- Footer -->
-  <footer style="text-align:center; font-size:13px; color:#666; margin-top:30px; padding:12px; border-top:1px solid #ccc;">
-  <p><strong>Disclaimer:</strong> This is an AI-generated response. Accuracy is not guaranteed and the content may be based on outdated information. Please verify through official sources.</p>
-  <p>Designed by <strong>NIC, Kurukshetra</strong> for <strong>District Administration, Kurukshetra</strong></p>
-  <p>Last Modified: <span id="lastModified"></span></p>
-  
-  <script>
-    document.getElementById("lastModified").textContent = new Date(document.lastModified).toLocaleString();
-  </script>
-</footer>
+    <footer style="text-align:center; font-size:13px; color:#666; margin-top:30px; padding:12px; border-top:1px solid #ccc;">
+      <p><strong>Disclaimer:</strong> This is an AI-generated response. Accuracy is not guaranteed and the content may be based on outdated information. Please verify through official sources.</p>
+      <p>Designed by <strong>NIC, Kurukshetra</strong> for <strong>District Administration, Kurukshetra</strong></p>
+      <p>Last Modified: <span id="lastModified"></span></p>
+      
+      <script>
+        document.getElementById("lastModified").textContent = new Date(document.lastModified).toLocaleString();
+      </script>
+    </footer>
 
   </div>
 
@@ -152,7 +157,6 @@
     const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
 
     // Section URL mapping for Indian Criminal Laws
-    // These URLs open the full law document where users can navigate to specific sections
     const SECTION_URLS = {
       'BNS': 'https://www.indiacode.nic.in/handle/123456789/20062',
       'BNSS': 'https://www.indiacode.nic.in/handle/123456789/20099',
@@ -163,7 +167,6 @@
     };
 
     function getSectionUrl(lawType, sectionNum) {
-      // Return the law document URL with section number in title attribute
       return SECTION_URLS[lawType] || 'https://www.indiacode.nic.in';
     }
 
@@ -216,6 +219,11 @@
     document.getElementById('mainPageBtn').onclick = () => { window.location.href = 'index.html'; }
     document.getElementById('mainPageModalBtn').onclick = () => { window.location.href = 'index.html'; }
 
+    // NEW: Search Sections Button
+    document.getElementById('searchSectionsBtn').onclick = () => { 
+      window.location.href = 'section-search.html'; 
+    }
+
     // Language selection
     let selectedLanguage = 'English';
     document.querySelectorAll('.langBtn').forEach(btn => {
@@ -227,11 +235,10 @@
     });
 
     function processAnswerWithLinks(text) {
-      // First, convert markdown tables to HTML tables (before other conversions)
+      // Convert markdown tables to HTML tables
       text = convertMarkdownTables(text);
 
       // Convert section references to highlighted badges with direct links
-      // Pattern: [BNS Section 123] or BNSS §41 or just "Section 41"
       text = text.replace(/\[?BNS[S]?\s*(?:Section\s*)?[§]?\s*(\d+)\]?/gi, (match, sectionNum) => {
         const url = getSectionUrl('BNSS', sectionNum);
         return `<a href="${url}" target="_blank" class="section-badge inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-purple-200" title="Click to view BNSS Section ${sectionNum}">BNSS §${sectionNum}</a>`;
@@ -262,10 +269,10 @@
         return `<a href="${url}" target="_blank" class="section-badge inline-block bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-yellow-200" title="Click to view Evidence Act Section ${sectionNum}">Evidence Act §${sectionNum}</a>`;
       });
 
-      // Convert standalone URLs to clickable links (but avoid double-converting already processed HTML)
+      // Convert standalone URLs to clickable links
       text = text.replace(/(^|[^"'>])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-medium">$2</a>');
 
-      // Format headers if present
+      // Format headers
       text = text.replace(/📚 READ THE FULL LAWS:/g, '<strong class="block mt-3 mb-1 text-lg">📚 READ THE FULL LAWS:</strong>');
       text = text.replace(/✅ NEW LAWS \(2024\):/g, '<strong class="block mt-2 text-green-700">✅ NEW LAWS (2024):</strong>');
       text = text.replace(/📜 OLD LAWS \(For Reference\):/g, '<strong class="block mt-2 text-blue-700">📜 OLD LAWS (For Reference):</strong>');
@@ -424,7 +431,6 @@
     let pendingSectionUrl = '';
     let showHelpModal = localStorage.getItem('showSectionHelp') !== 'false';
 
-    // Handle section link clicks
     document.addEventListener('click', function(e) {
       if (e.target.classList.contains('section-link')) {
         e.preventDefault();
@@ -435,13 +441,11 @@
         pendingSectionUrl = url;
         
         if (showHelpModal) {
-          // Show help modal
           document.getElementById('helpSectionText').textContent = `${law} Section ${section}`;
           document.getElementById('helpSectionNum').textContent = section;
           helpModal.classList.remove('hidden');
           lucide.createIcons();
         } else {
-          // Open directly
           window.open(url, '_blank');
         }
       }
