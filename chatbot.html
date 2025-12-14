@@ -119,8 +119,41 @@
       lucide.createIcons();
     });
 
-    // ✅ Updated to your working n8n webhook
     const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
+
+    // Section URL mapping - Add more sections as needed
+    const SECTION_URLS = {
+      // BNS Sections
+      'BNS-41': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=173',
+      'BNS-103': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=235',
+      'BNS-302': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00049_202346_1719552320687&orderno=434',
+      
+      // BNSS Sections
+      'BNSS-41': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=91',
+      'BNSS-54': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=104',
+      'BNSS-173': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00051_202346_1719552615058&orderno=223',
+      
+      // BSA Sections
+      'BSA-22': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=72',
+      'BSA-45': 'https://www.indiacode.nic.in/show-data?abv=MH&actid=AC_CEN_5_23_00050_202346_1719552420711&orderno=95',
+      
+      // Fallback URLs for general access
+      'BNS-default': 'https://www.indiacode.nic.in/handle/123456789/20062',
+      'BNSS-default': 'https://www.indiacode.nic.in/handle/123456789/20099',
+      'BSA-default': 'https://www.indiacode.nic.in/handle/123456789/20063',
+      'IPC-default': 'https://www.indiacode.nic.in/handle/123456789/2263',
+      'CrPC-default': 'https://www.indiacode.nic.in/handle/123456789/1362',
+      'Evidence-default': 'https://www.indiacode.nic.in/handle/123456789/2188'
+    };
+
+    function getSectionUrl(lawType, sectionNum) {
+      const key = `${lawType}-${sectionNum}`;
+      if (SECTION_URLS[key]) {
+        return SECTION_URLS[key];
+      }
+      // Fallback to general document
+      return SECTION_URLS[`${lawType}-default`] || '#';
+    }
 
     const samples = [
       "What are the three new prosecution laws implemented since 2024?",
@@ -181,26 +214,37 @@
       });
     });
 
-    // ✅ Function to process answer and make links clickable
     function processAnswerWithLinks(text) {
-      // Convert section references to highlighted badges
-      text = text.replace(/\[BNS Section (\d+)\]/g, 
-        '<span class="section-badge inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold mx-1" data-law="BNS" title="Click to view full BNS document">BNS §$1</span>');
+      // Convert section references to highlighted badges with direct links
+      text = text.replace(/\[BNS Section (\d+)\]/g, (match, sectionNum) => {
+        const url = getSectionUrl('BNS', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-green-200" title="Click to view BNS Section ${sectionNum}">BNS §${sectionNum}</a>`;
+      });
       
-      text = text.replace(/\[IPC Section (\d+)\]/g, 
-        '<span class="section-badge inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold mx-1" data-law="IPC" title="Click to view full IPC document">IPC §$1</span>');
+      text = text.replace(/\[IPC Section (\d+)\]/g, (match, sectionNum) => {
+        const url = getSectionUrl('IPC', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-blue-200" title="Click to view IPC Section ${sectionNum}">IPC §${sectionNum}</a>`;
+      });
       
-      text = text.replace(/\[BNSS Section (\d+)\]/g, 
-        '<span class="section-badge inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-semibold mx-1" data-law="BNSS" title="Click to view full BNSS document">BNSS §$1</span>');
+      text = text.replace(/\[BNSS Section (\d+)\]/g, (match, sectionNum) => {
+        const url = getSectionUrl('BNSS', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-purple-200" title="Click to view BNSS Section ${sectionNum}">BNSS §${sectionNum}</a>`;
+      });
       
-      text = text.replace(/\[CrPC Section (\d+)\]/g, 
-        '<span class="section-badge inline-block bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-semibold mx-1" data-law="CrPC" title="Click to view full CrPC document">CrPC §$1</span>');
+      text = text.replace(/\[CrPC Section (\d+)\]/g, (match, sectionNum) => {
+        const url = getSectionUrl('CrPC', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-orange-200" title="Click to view CrPC Section ${sectionNum}">CrPC §${sectionNum}</a>`;
+      });
       
-      text = text.replace(/\[BSA Section (\d+)\]/g, 
-        '<span class="section-badge inline-block bg-teal-100 text-teal-800 px-2 py-1 rounded text-sm font-semibold mx-1" data-law="BSA" title="Click to view full BSA document">BSA §$1</span>');
+      text = text.replace(/\[BSA Section (\d+)\]/g, (match, sectionNum) => {
+        const url = getSectionUrl('BSA', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-teal-100 text-teal-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-teal-200" title="Click to view BSA Section ${sectionNum}">BSA §${sectionNum}</a>`;
+      });
       
-      text = text.replace(/\[Evidence Act Section (\d+)\]/g, 
-        '<span class="section-badge inline-block bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-semibold mx-1" data-law="Evidence" title="Click to view full Evidence Act">Evidence Act §$1</span>');
+      text = text.replace(/\[Evidence Act Section (\d+)\]/g, (match, sectionNum) => {
+        const url = getSectionUrl('Evidence', sectionNum);
+        return `<a href="${url}" target="_blank" class="section-badge inline-block bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-semibold mx-1 hover:bg-yellow-200" title="Click to view Evidence Act Section ${sectionNum}">Evidence Act §${sectionNum}</a>`;
+      });
 
       // Convert markdown tables to HTML tables
       text = convertMarkdownTables(text);
@@ -223,31 +267,22 @@
       return text;
     }
 
-    // ✅ Function to convert markdown tables to HTML tables
     function convertMarkdownTables(text) {
-      // Match markdown table pattern: | col1 | col2 | col3 |
       const tableRegex = /\|(.+)\|[\r\n]+\|[\s\-:|]+\|[\r\n]+((?:\|.+\|[\r\n]*)+)/g;
       
       return text.replace(tableRegex, function(match, headerRow, bodyRows) {
-        // Parse header
         const headers = headerRow.split('|').map(h => h.trim()).filter(h => h);
-        
-        // Parse body rows
         const rows = bodyRows.trim().split('\n').map(row => {
           return row.split('|').map(cell => cell.trim()).filter(cell => cell);
         });
         
-        // Build HTML table
         let html = '<table class="w-full border-collapse border border-gray-300 my-4">';
-        
-        // Header
         html += '<thead class="bg-blue-100"><tr>';
         headers.forEach(header => {
           html += `<th class="border border-gray-300 px-4 py-2 text-left font-semibold">${header}</th>`;
         });
         html += '</tr></thead>';
         
-        // Body
         html += '<tbody>';
         rows.forEach(row => {
           if (row.length > 0) {
@@ -264,28 +299,6 @@
       });
     }
 
-    // ✅ Add click handlers to section badges
-    function addSectionQuickJumps() {
-      const sectionMap = {
-        'BNS': 'https://www.indiacode.nic.in/handle/123456789/20062',
-        'IPC': 'https://www.indiacode.nic.in/handle/123456789/2263',
-        'BNSS': 'https://www.indiacode.nic.in/handle/123456789/20099',
-        'CrPC': 'https://www.indiacode.nic.in/handle/123456789/1362',
-        'BSA': 'https://www.indiacode.nic.in/handle/123456789/20063',
-        'Evidence': 'https://www.indiacode.nic.in/handle/123456789/2188'
-      };
-
-      document.querySelectorAll('.section-badge').forEach(badge => {
-        badge.addEventListener('click', function() {
-          const lawType = this.getAttribute('data-law');
-          if (sectionMap[lawType]) {
-            window.open(sectionMap[lawType], '_blank');
-          }
-        });
-      });
-    }
-
-    // ✅ Submit handler – sends name, question, language
     document.getElementById('submitBtn').addEventListener('click', async()=>{
       const name = document.getElementById('name').value.trim() || 'Visitor';
       const question = document.getElementById('question').value.trim();
@@ -309,14 +322,10 @@
           answerText = `Error: ${res.status} ${res.statusText}`;
         }
 
-        // Process the answer for clickable links
         answerText = processAnswerWithLinks(answerText);
 
         document.getElementById('userQuestion').textContent = question;
         document.getElementById('aiAnswer').innerHTML = answerText;
-        
-        // Add click handlers to section badges
-        setTimeout(() => addSectionQuickJumps(), 100);
         
         openModal();
       } catch(err){
@@ -327,7 +336,7 @@
       }
     });
 
-    // ✅ Voice Input Setup
+    // Voice Input Setup
     let recognition;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -364,7 +373,6 @@
         return;
       }
 
-      // Set language based on user selection
       const langMap = {
         'English': 'en-IN',
         'Hindi': 'hi-IN',
@@ -384,7 +392,6 @@
       }
     });
 
-    // Copy button
     document.getElementById('copyBtn').onclick = ()=>{
       const answerDiv = document.getElementById('aiAnswer');
       const textContent = answerDiv.innerText || answerDiv.textContent;
