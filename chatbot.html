@@ -189,7 +189,7 @@
         let answerText = '';
         if (res.ok) {
           const data = await res.json();
-          answerText = data.answer || data.error || "No answer received.";
+          answerText = data.content || data.error || "No answer received.";
         } else {
           answerText = `Error: ${res.status} ${res.statusText}`;
         }
@@ -270,6 +270,7 @@
   </script>
 </body>
 </html>
+
 
 
 
