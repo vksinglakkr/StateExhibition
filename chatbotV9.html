@@ -461,8 +461,8 @@
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-4" id="profileSelector">
           <label class="block text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">👤</span>
-            Who are you? <span class="text-red-600">*</span>
-            <span class="text-xs font-normal text-gray-600">(Required for personalized answers)</span>
+            Who are you?
+            <span class="text-xs font-normal text-gray-600">(Default: General Citizen - Change if needed)</span>
           </label>
           
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -491,8 +491,8 @@
             </div>
           </div>
           
-          <p class="text-xs text-blue-700 mt-2 text-center italic" id="profileHint">
-            ⚠️ Please select your profile above - this is required to get relevant answers
+          <p class="text-xs text-blue-700 mt-2 text-center italic font-semibold" id="profileHint">
+            ✓ Default: General Citizen (You can change this above)
           </p>
         </div>
       </div>
@@ -704,11 +704,25 @@
   <script>
     console.log('🚀 LawBot 2024 initializing...');
     
-    // Update Last Modified DateTime - STATIC VERSION
+    // Update Last Modified DateTime - AUTOMATIC DETECTION
     function updateLastModified() {
       try {
-        // Set a STATIC last modified date (update this manually when you modify the file)
-        const lastModDate = new Date('2024-12-15T21:18:00+05:30'); // IST timezone
+        // Get document's actual last modified date
+        let lastModDate;
+        
+        if (document.lastModified) {
+          // Parse the document.lastModified string
+          lastModDate = new Date(document.lastModified);
+          console.log('📅 Document last modified:', document.lastModified);
+        } else {
+          // Fallback to current date if not available
+          lastModDate = new Date();
+        }
+        
+        // Validate date
+        if (isNaN(lastModDate.getTime())) {
+          lastModDate = new Date();
+        }
         
         const day = lastModDate.getDate();
         const suffix = (day) => {
@@ -733,7 +747,7 @@
         const element = document.getElementById('lastModified');
         if (element) {
           element.textContent = formattedDate;
-          console.log('✅ Last Modified set to:', formattedDate);
+          console.log('✅ Last Modified displayed:', formattedDate);
         }
       } catch (error) {
         console.error('❌ Last Modified error:', error);
@@ -751,11 +765,25 @@
       updateLastModified();
     }
     
+    // Set default profile on page load
+    function setDefaultProfile() {
+      // Default to General Citizen (most common user type)
+      selectMainUser('citizen');
+      console.log('✅ Default profile set: General Citizen');
+    }
+    
+    // Initialize default profile when page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setDefaultProfile);
+    } else {
+      setDefaultProfile();
+    }
+    
     const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
     
     let currentQuestion = '';
     let currentAI = 'groq';
-    let selectedUser = '';
+    let selectedUser = 'citizen'; // Default to General Citizen
     let selectedTopic = '';
     let selectedQueryType = 'custom';
     let aiUsed = {
@@ -1239,31 +1267,10 @@
         return;
       }
       
-      // MANDATORY: Profile must be selected
-      if (!selectedUser) {
-        alert(
-          '⚠️ Profile Selection Required!\n\n' +
-          'कृपया अपनी प्रोफ़ाइल चुनें / Please select your profile first:\n\n' +
-          '👮 Police Officer - Practical procedures\n' +
-          '⚖️ Legal Professional - Technical analysis\n' +
-          '👨‍🎓 Student/Researcher - Educational content\n' +
-          '🧑‍💼 General Citizen - Simple guidance\n\n' +
-          'Your profile helps us provide relevant answers tailored to your needs!'
-        );
-        
-        // Scroll to profile selector and highlight it
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        // Add attention animation to profile section
-        const profileSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
-        if (profileSection) {
-          profileSection.style.animation = 'pulse 0.5s ease-in-out 3';
-          setTimeout(() => {
-            profileSection.style.animation = '';
-          }, 1500);
-        }
-        
-        return; // STOP - Don't proceed without profile
+      // Profile is always selected (default: citizen) so no need to validate
+      // But show a gentle reminder if user hasn't explicitly selected
+      if (selectedUser === 'citizen' && !document.getElementById('userCitizenMain').classList.contains('selected')) {
+        console.log('ℹ️ Using default profile: General Citizen');
       }
       
       // Reset for new question
