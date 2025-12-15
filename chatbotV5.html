@@ -357,7 +357,7 @@
           
 <!-- Step 1: Select Law -->
           <div class="mb-4">
-            <label class="block text-sm font-bold text-gray-700 mb-3">Step 1️⃣: Select Law</label>
+            <label class="block text-sm font-bold text-gray-700 mb-3">Step 1️⃣: Select Law or Terminology</label>
             <div class="law-radio-group">
               <div class="law-radio selected" id="lawAll" onclick="selectLaw('All')">
                 <input type="radio" name="lawType" value="All" checked>
@@ -374,6 +374,10 @@
               <div class="law-radio" id="lawBSA" onclick="selectLaw('BSA')">
                 <input type="radio" name="lawType" value="BSA">
                 <label class="law-radio-label cursor-pointer">🟩 BSA (Sakshya Adhiniyam)</label>
+              </div>
+              <div class="law-radio" id="lawTerminology" onclick="selectLaw('Terminology')">
+                <input type="radio" name="lawType" value="Terminology">
+                <label class="law-radio-label cursor-pointer">📖 Terminology (All Terms)</label>
               </div>
             </div>
           </div>
@@ -393,10 +397,6 @@
               <div class="law-radio" id="levelAdvanced" onclick="selectLevel('Advanced')">
                 <input type="radio" name="levelType" value="Advanced">
                 <label class="law-radio-label cursor-pointer">⭐⭐⭐ Advanced</label>
-              </div>
-              <div class="law-radio" id="levelTerminology" onclick="selectLevel('Terminology')">
-                <input type="radio" name="levelType" value="Terminology">
-                <label class="law-radio-label cursor-pointer">📖 Terminology</label>
               </div>
             </div>
           </div>    
@@ -1022,6 +1022,22 @@
       document.getElementById('law' + law).classList.add('selected');
       document.querySelector(`input[value="${law}"]`).checked = true;
       
+      // Show/hide Level section based on selection
+      const levelSection = document.getElementById('levelSection');
+      if (law === 'Terminology') {
+        levelSection.style.display = 'none';
+        selectedLevel = 'Terminology'; // Auto-set level for Terminology
+      } else {
+        levelSection.style.display = 'block';
+        // Reset to Beginner if coming from Terminology
+        if (selectedLevel === 'Terminology') {
+          selectedLevel = 'Beginner';
+          document.querySelectorAll('[id^="level"]').forEach(el => el.classList.remove('selected'));
+          document.getElementById('levelBeginner').classList.add('selected');
+          document.querySelector('input[value="Beginner"]').checked = true;
+        }
+      }
+      
       populateCategories();
       console.log('✅ Law selected:', law);
     }
@@ -1053,11 +1069,11 @@
       
       let categories = [];
       
-      if (selectedLevel === 'Terminology') {
-        // For Terminology - show direct categories from Terminology section
+      if (selectedLaw === 'Terminology') {
+        // Terminology is now a law choice, not a level
         categories = Object.keys(QUESTIONS[selectedLanguage]['Terminology'] || {});
       } else if (selectedLaw === 'All') {
-        // Combine all laws
+        // Combine all laws (not including Terminology)
         ['BNS', 'BNSS', 'BSA'].forEach(law => {
           const lawData = QUESTIONS[selectedLanguage][law];
           if (lawData && lawData[selectedLevel]) {
@@ -1067,7 +1083,7 @@
           }
         });
       } else {
-        // Single law
+        // Single law (BNS, BNSS, or BSA)
         const lawData = QUESTIONS[selectedLanguage][selectedLaw];
         if (lawData && lawData[selectedLevel]) {
           categories = Object.keys(lawData[selectedLevel]);
@@ -1093,7 +1109,8 @@
       
       let questions = [];
       
-      if (selectedLevel === 'Terminology') {
+      if (selectedLaw === 'Terminology') {
+        // Get questions directly from Terminology
         questions = QUESTIONS[selectedLanguage]['Terminology'][category] || [];
       } else if (selectedLaw === 'All' && category.includes(':')) {
         const [law, cat] = category.split(': ');
