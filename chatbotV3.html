@@ -156,6 +156,16 @@
       box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
     }
     
+    .question-badge {
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .question-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(147, 51, 234, 0.15);
+    }
+    
     .mic-btn {
       transition: all 0.3s;
     }
@@ -305,15 +315,23 @@
           </div>
         </div>
 
-        <!-- Ready Questions Dropdown -->
-        <div id="readyQuestionDiv" class="hidden mb-8 fade-in">
+        <!-- Ready Questions Section -->
+        <div id="readyQuestionDiv" style="display: none;" class="mb-8 fade-in">
           <div class="flex items-center justify-between mb-4">
-            <label class="text-lg font-bold text-gray-800">Select a Question</label>
+            <label class="text-lg font-bold text-gray-800">Popular Questions 👇</label>
             <div class="lang-toggle">
               <button class="langBtn active" data-lang="English">English</button>
               <button class="langBtn" data-lang="Hindi">हिंदी</button>
             </div>
           </div>
+          
+          <!-- Popular Questions Grid -->
+          <div id="popularQuestions" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-2 mb-4">
+            <!-- Questions will be populated here by JavaScript -->
+          </div>
+          
+          <!-- Or use dropdown -->
+          <div class="text-center text-sm text-gray-500 mb-2">Or select from dropdown:</div>
           <select id="questionSelect" class="block w-full px-5 py-4 text-base border-2 border-gray-200 focus:ring-3 focus:ring-blue-500 rounded-2xl bg-white shadow-md transition-all font-medium">
             <option value="" selected disabled>Select Question</option>
           </select>
@@ -445,7 +463,11 @@
   </div>
 
   <script>
-    lucide.createIcons();
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', function() {
+      lucide.createIcons();
+      console.log('✅ Page loaded');
+    });
 
     const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
 
@@ -491,70 +513,43 @@
 
     // Populate ready questions
     function populateQuestions() {
-      const select = document.getElementById('questionSelect');
-      select.innerHTML = '<option value="" selected disabled>Select Question</option>';
+      console.log('🔄 Populating questions for:', selectedLanguage);
       
-      QUESTIONS[selectedLanguage].forEach(q => {
+      const select = document.getElementById('questionSelect');
+      const grid = document.getElementById('popularQuestions');
+      
+      if (!select || !grid) {
+        console.error('❌ Elements not found!');
+        return;
+      }
+      
+      // Clear existing
+      select.innerHTML = '<option value="" selected disabled>Select Question</option>';
+      grid.innerHTML = '';
+      
+      const questions = QUESTIONS[selectedLanguage];
+      console.log('📝 Number of questions:', questions.length);
+      
+      // Populate both dropdown and grid
+      questions.forEach((q, index) => {
+        // Add to dropdown
         const option = document.createElement('option');
         option.value = q;
         option.textContent = q;
         select.appendChild(option);
+        
+        // Add to grid
+        const div = document.createElement('div');
+        div.className = 'question-badge bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 p-3 rounded-lg border-2 border-purple-200 transition-all duration-200';
+        div.onclick = () => selectQuestion(q);
+        div.innerHTML = `<p class="text-xs font-medium text-gray-800 line-clamp-2">${q}</p>`;
+        grid.appendChild(div);
       });
-    }
-
-    // Toggle query type
-    function selectQueryType(type) {
-      selectedQueryType = type;
       
-      document.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
-      
-      if (type === 'custom') {
-        document.getElementById('customCard').classList.add('selected');
-        document.getElementById('customQuestionDiv').classList.remove('hidden');
-        document.getElementById('readyQuestionDiv').classList.add('hidden');
-      } else {
-        document.getElementById('readyCard').classList.add('selected');
-        document.getElementById('customQuestionDiv').classList.add('hidden');
-        document.getElementById('readyQuestionDiv').classList.remove('hidden');
-        populateQuestions();
-      }
+      console.log('✅ Populated! Grid has', grid.children.length, 'cards');
     }
-
-    window.selectQueryType = selectQueryType;
-
-    // Language toggle
-    document.querySelectorAll('.langBtn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        selectedLanguage = this.getAttribute('data-lang');
-        document.querySelectorAll('.langBtn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        populateQuestions();
-      });
-    });
-
-    // Voice input
-    let recognition;
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('userInput').value = transcript;
-      };
-
-      document.getElementById('voiceBtn').addEventListener('click', () => {
-        if (!recognition) {
-          alert('Voice input not supported. Try Chrome or Edge.');
-          return;
-        }
-
-        const langMap = { 'English': 'en-IN', 'Hindi': 'hi-IN' };
-        recognition.lang = langMap[selectedLanguage] || 'en-IN';
-
-        try {
-          recognition.start();
-        } catch (err) {
-          console.error('Voice error
+    
+    function selectQuestion(question) {
+      console.log('✅ Question selected:', question);
+      document.getElementById('userInput').value = question;
+      const select
