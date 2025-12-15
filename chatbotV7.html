@@ -260,6 +260,13 @@
       box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
     }
     
+    .ai-try-btn.active {
+      border-color: #8b5cf6;
+      background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+      transform: scale(1.05);
+    }
+    
     .ai-try-btn.used {
       opacity: 0.5;
       cursor: not-allowed;
@@ -486,9 +493,14 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
-          Not satisfied? Try another AI engine:
+          Compare with other AI engines:
         </p>
-        <div class="flex gap-3 justify-center mb-3">
+        <div class="flex gap-2 justify-center mb-3 flex-wrap">
+          <button id="tryGroq" class="ai-try-btn active" onclick="retryWithAI('groq')">
+            <span class="text-2xl">🚀</span>
+            <div class="text-xs font-bold">Groq</div>
+            <div class="text-xs opacity-70">Fastest</div>
+          </button>
           <button id="tryGemini" class="ai-try-btn" onclick="retryWithAI('gemini')">
             <span class="text-2xl">💎</span>
             <div class="text-xs font-bold">Gemini</div>
@@ -565,6 +577,7 @@
     const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
     
     let currentQuestion = '';
+    let currentAI = 'groq';
     let selectedUser = '';
     let selectedTopic = '';
     let selectedQueryType = 'custom';
@@ -576,6 +589,9 @@
     
     // Main answer function
     async function getAnswer(provider) {
+      currentAI = provider;
+      aiUsed[provider] = true;
+      
       const loadingMessages = {
         groq: '⚡ Groq is processing at lightning speed...',
         chatgpt: '🤖 ChatGPT is analyzing deeply...',
@@ -632,11 +648,7 @@
     
     // Retry with different AI
     function retryWithAI(provider) {
-      if (aiUsed[provider]) {
-        alert('Already tried ' + provider.toUpperCase() + ' for this question!');
-        return;
-      }
-      
+      // Allow switching to any AI at any time
       aiUsed[provider] = true;
       getAnswer(provider);
     }
@@ -646,19 +658,20 @@
     // Update AI button states
     function updateAIButtons() {
       const buttons = {
+        groq: document.getElementById('tryGroq'),
         gemini: document.getElementById('tryGemini'),
         chatgpt: document.getElementById('tryChatGPT')
       };
       
+      // Remove active class from all buttons
       Object.keys(buttons).forEach(function(provider) {
-        if (aiUsed[provider]) {
-          buttons[provider].classList.add('used');
-          buttons[provider].disabled = true;
-        } else {
-          buttons[provider].classList.remove('used');
-          buttons[provider].disabled = false;
-        }
+        buttons[provider].classList.remove('active');
       });
+      
+      // Add active class to current AI
+      if (buttons[currentAI]) {
+        buttons[currentAI].classList.add('active');
+      }
     }
     
     // Update Modal Header with AI Provider
