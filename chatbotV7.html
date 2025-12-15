@@ -319,6 +319,37 @@
       .radio-option { min-height: 50px; padding: 8px 10px; }
       .radio-icon { font-size: 18px; }
     }
+    
+    /* Tablet and larger - optimize topic cards for 2-3 columns */
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .topic-card { padding: 10px 12px; }
+      .topic-title { font-size: 12px; }
+      .topic-subtitle { font-size: 9px; }
+    }
+    
+    /* Desktop - optimize for 3 column layout */
+    @media (min-width: 1024px) {
+      .topic-card { 
+        padding: 10px 14px;
+        min-height: 70px;
+      }
+      .user-card {
+        min-height: 95px;
+      }
+    }
+    
+    /* Large desktop - more comfortable spacing */
+    @media (min-width: 1280px) {
+      .topic-card { 
+        padding: 12px 16px;
+        min-height: 75px;
+      }
+      .user-card {
+        min-height: 100px;
+        padding: 14px;
+      }
+      .user-icon { font-size: 36px; }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -442,7 +473,7 @@
             </label>
             <p class="text-xs text-gray-600 mb-4 ml-10">Choose a topic - we'll find the right law for you</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="topicContainer">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="topicContainer">
               <!-- Topics will load here dynamically -->
             </div>
           </div>
