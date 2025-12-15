@@ -67,6 +67,17 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
+    @keyframes pulse {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+      }
+      50% { 
+        transform: scale(1.02);
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+      }
+    }
+    
     .query-type-selector {
       background: linear-gradient(135deg, #fef3c7, #fed7aa);
       border: 3px solid #f59e0b;
@@ -441,10 +452,11 @@
       
       <!-- ALWAYS VISIBLE: Who are you? -->
       <div class="mb-4">
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-4">
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-4" id="profileSelector">
           <label class="block text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">👤</span>
-            Who are you? (Select your profile for personalized answers)
+            Who are you? <span class="text-red-600">*</span>
+            <span class="text-xs font-normal text-gray-600">(Required for personalized answers)</span>
           </label>
           
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -470,7 +482,7 @@
           </div>
           
           <p class="text-xs text-blue-700 mt-2 text-center italic" id="profileHint">
-            💡 Your answers will be customized based on your profile
+            ⚠️ Please select your profile above - this is required to get relevant answers
           </p>
         </div>
       </div>
@@ -1273,22 +1285,31 @@
         return;
       }
       
-      // Friendly reminder if no profile selected
+      // MANDATORY: Profile must be selected
       if (!selectedUser) {
-        const confirmProceed = confirm(
-          '💡 Tip: Select your profile above for personalized answers!\n\n' +
-          '• Police → Practical procedures\n' +
-          '• Legal → Technical analysis\n' +
-          '• Student → Educational content\n' +
-          '• Citizen → Simple guidance\n\n' +
-          'Continue with generic answer?'
+        alert(
+          '⚠️ Profile Selection Required!\n\n' +
+          'कृपया अपनी प्रोफ़ाइल चुनें / Please select your profile first:\n\n' +
+          '👮 Police Officer - Practical procedures\n' +
+          '⚖️ Legal Professional - Technical analysis\n' +
+          '👨‍🎓 Student/Researcher - Educational content\n' +
+          '🧑‍💼 General Citizen - Simple guidance\n\n' +
+          'Your profile helps us provide relevant answers tailored to your needs!'
         );
         
-        if (!confirmProceed) {
-          // Scroll to profile selector
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          return;
+        // Scroll to profile selector and highlight it
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Add attention animation to profile section
+        const profileSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
+        if (profileSection) {
+          profileSection.style.animation = 'pulse 0.5s ease-in-out 3';
+          setTimeout(() => {
+            profileSection.style.animation = '';
+          }, 1500);
         }
+        
+        return; // STOP - Don't proceed without profile
       }
       
       // Reset for new question
