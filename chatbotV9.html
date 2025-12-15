@@ -189,7 +189,7 @@
       cursor: pointer;
       transition: all 0.3s;
       text-align: center;
-      min-height: 70px;
+      min-height: 85px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -215,6 +215,12 @@
       font-weight: 700;
       color: #1f2937;
       line-height: 1.2;
+    }
+    .user-desc-small {
+      font-size: 9px;
+      color: #6b7280;
+      line-height: 1.2;
+      margin-top: 2px;
     }
     
     .topic-card {
@@ -462,22 +468,26 @@
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
             <div class="user-card-small" id="userPoliceMain" onclick="selectMainUser('police')">
               <div class="user-icon-small">👮</div>
-              <div class="user-title-small">Police</div>
+              <div class="user-title-small">Police Officer</div>
+              <div class="user-desc-small">Investigation, FIR, Procedures</div>
             </div>
             
             <div class="user-card-small" id="userLegalMain" onclick="selectMainUser('legal')">
               <div class="user-icon-small">⚖️</div>
-              <div class="user-title-small">Legal Pro</div>
+              <div class="user-title-small">Legal Professional</div>
+              <div class="user-desc-small">Lawyers, Judges, Prosecutors</div>
             </div>
             
             <div class="user-card-small" id="userStudentMain" onclick="selectMainUser('student')">
               <div class="user-icon-small">👨‍🎓</div>
-              <div class="user-title-small">Student</div>
+              <div class="user-title-small">Student/Researcher</div>
+              <div class="user-desc-small">Law students, Academics</div>
             </div>
             
             <div class="user-card-small" id="userCitizenMain" onclick="selectMainUser('citizen')">
               <div class="user-icon-small">🧑‍💼</div>
-              <div class="user-title-small">Citizen</div>
+              <div class="user-title-small">General Citizen</div>
+              <div class="user-desc-small">Rights, Complaints, Info</div>
             </div>
           </div>
           
@@ -540,45 +550,10 @@
         <!-- READY QUESTIONS DIV -->
         <div id="readyQuestionDiv" style="display: none;" class="mb-8 fade-in">
           
-          <!-- Step 1: WHO ARE YOU? -->
-          <div class="mb-6">
-            <label class="block text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
-              👤 Who are you?
-            </label>
-            <p class="text-xs text-gray-600 mb-4 ml-10">Select your profile to get relevant questions</p>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div class="user-card" id="userPolice" onclick="selectUser('police')">
-                <div class="user-icon">👮</div>
-                <div class="user-title">Police Officer</div>
-                <div class="user-desc">Investigation, FIR, Procedures</div>
-              </div>
-              
-              <div class="user-card" id="userLegal" onclick="selectUser('legal')">
-                <div class="user-icon">⚖️</div>
-                <div class="user-title">Legal Professional</div>
-                <div class="user-desc">Lawyers, Judges, Prosecutors</div>
-              </div>
-              
-              <div class="user-card" id="userStudent" onclick="selectUser('student')">
-                <div class="user-icon">👨‍🎓</div>
-                <div class="user-title">Student/Researcher</div>
-                <div class="user-desc">Law students, Academics</div>
-              </div>
-              
-              <div class="user-card" id="userCitizen" onclick="selectUser('citizen')">
-                <div class="user-icon">🧑‍💼</div>
-                <div class="user-title">General Citizen</div>
-                <div class="user-desc">Rights, Complaints, Info</div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Step 2: WHAT TOPIC? -->
+          <!-- Step 1: WHAT TOPIC? (Profile already selected at top) -->
           <div class="mb-6" id="topicSection" style="display: none;">
             <label class="block text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
+              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
               📚 What do you want to know about?
             </label>
             <p class="text-xs text-gray-600 mb-4 ml-10">Choose a topic - we'll find the right law for you</p>
@@ -588,10 +563,10 @@
             </div>
           </div>
           
-          <!-- Step 3: SELECT YOUR QUESTION -->
+          <!-- Step 2: SELECT YOUR QUESTION -->
           <div class="mb-6" id="questionSelectSection" style="display: none;">
             <label class="block text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
+              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
               ❓ Select Your Question
             </label>
             
@@ -1113,17 +1088,6 @@
       const mainCard = document.getElementById('user' + userType.charAt(0).toUpperCase() + userType.slice(1) + 'Main');
       if (mainCard) mainCard.classList.add('selected');
       
-      // Also update ready-made selector if visible
-      const readyUserCard = document.getElementById('user' + userType.charAt(0).toUpperCase() + userType.slice(1));
-      if (readyUserCard) {
-        document.querySelectorAll('#readyQuestionDiv .user-card').forEach(el => el.classList.remove('selected'));
-        readyUserCard.classList.add('selected');
-        
-        // Load topics for this user in ready-made section
-        loadTopics(userType);
-        document.getElementById('topicSection').style.display = 'block';
-      }
-      
       // Update hint text
       const userNames = {
         police: 'Police Officer - Get practical, procedural answers',
@@ -1134,41 +1098,21 @@
       
       document.getElementById('profileHint').textContent = '✓ Selected: ' + userNames[userType];
       
+      // If ready-made questions section is visible, load topics automatically
+      const readyDiv = document.getElementById('readyQuestionDiv');
+      if (readyDiv && readyDiv.style.display !== 'none') {
+        loadTopics(userType);
+        document.getElementById('topicSection').style.display = 'block';
+      }
+      
       console.log('✅ Main user profile selected:', userType);
     }
     
     window.selectMainUser = selectMainUser;
 
     function selectUser(userType) {
-      selectedUser = userType;
-      
-      // Update ready-made UI
-      document.querySelectorAll('#readyQuestionDiv .user-card').forEach(el => el.classList.remove('selected'));
-      const userCard = document.getElementById('user' + userType.charAt(0).toUpperCase() + userType.slice(1));
-      if (userCard) userCard.classList.add('selected');
-      
-      // Also update main selector
-      document.querySelectorAll('.user-card-small').forEach(el => el.classList.remove('selected'));
-      const mainCard = document.getElementById('user' + userType.charAt(0).toUpperCase() + userType.slice(1) + 'Main');
-      if (mainCard) mainCard.classList.add('selected');
-      
-      // Update hint
-      const userNames = {
-        police: 'Police Officer - Get practical, procedural answers',
-        legal: 'Legal Professional - Get detailed technical analysis',
-        student: 'Student/Researcher - Get educational explanations',
-        citizen: 'General Citizen - Get simple, practical guidance'
-      };
-      document.getElementById('profileHint').textContent = '✓ Selected: ' + userNames[userType];
-      
-      // Load topics for this user
-      loadTopics(userType);
-      
-      // Show topic section, hide question section
-      document.getElementById('topicSection').style.display = 'block';
-      document.getElementById('questionSelectSection').style.display = 'none';
-      
-      console.log('✅ User selected:', userType);
+      // This function is now deprecated - selectMainUser handles everything
+      selectMainUser(userType);
     }
     
     window.selectUser = selectUser;
