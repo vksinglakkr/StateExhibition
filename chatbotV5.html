@@ -112,6 +112,9 @@
     }
     
     .radio-icon { font-size: 24px; margin-right: 8px; flex-shrink: 0; }
+    .radio-label {
+      flex: 1;
+    }
     .radio-label-title {
       font-size: 15px;
       font-weight: 700;
@@ -125,72 +128,88 @@
       margin-top: 2px;
     }
     
-    .law-radio-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
+    .user-card {
+      padding: 18px;
+      background: white;
+      border: 3px solid #e5e7eb;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
     
-    .law-radio {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
+    .user-card:hover {
+      border-color: #f59e0b;
+      transform: translateY(-6px);
+      box-shadow: 0 10px 28px rgba(245, 158, 11, 0.3);
+    }
+    
+    .user-card.selected {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      box-shadow: 0 8px 28px rgba(245, 158, 11, 0.4);
+      transform: scale(1.05);
+    }
+    
+    .user-icon { font-size: 42px; margin-bottom: 10px; }
+    .user-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+    .user-desc {
+      font-size: 10px;
+      color: #6b7280;
+      line-height: 1.3;
+    }
+    
+    .topic-card {
+      padding: 14px 18px;
       background: white;
       border: 3px solid #e5e7eb;
       border-radius: 14px;
       cursor: pointer;
       transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
     }
     
-    .law-radio:hover {
+    .topic-card:hover {
       border-color: #3b82f6;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+      transform: translateX(6px);
+      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.2);
     }
     
-    .law-radio.selected {
+    .topic-card.selected {
       border-color: #3b82f6;
       background: linear-gradient(135deg, #eff6ff, #dbeafe);
-      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+      box-shadow: 0 6px 22px rgba(59, 130, 246, 0.3);
     }
     
-    .law-radio input[type="radio"] {
-      width: 18px;
-      height: 18px;
-      margin-right: 10px;
-      cursor: pointer;
-      accent-color: #3b82f6;
-    }
-    
-    .law-radio-label {
+    .topic-icon { font-size: 26px; flex-shrink: 0; }
+    .topic-title {
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       color: #1f2937;
+      margin-bottom: 2px;
     }
-    
-    .lang-toggle {
-      display: inline-flex;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 12px;
-      padding: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    .topic-subtitle {
+      font-size: 10px;
+      color: #6b7280;
     }
-    
-    .lang-toggle button {
-      padding: 8px 20px;
-      border-radius: 10px;
-      transition: all 0.3s;
-      font-size: 14px;
+    .topic-law {
+      font-size: 10px;
+      color: #3b82f6;
       font-weight: 600;
-      border: none;
-      background: transparent;
-      color: #64748b;
-    }
-    
-    .lang-toggle button.active {
-      background: linear-gradient(135deg, #1e40af, #3b82f6);
-      color: white;
-      box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+      margin-top: 2px;
     }
     
     .mic-btn { transition: all 0.3s; }
@@ -220,44 +239,13 @@
       transform: translateY(-2px);
       box-shadow: 0 12px 32px rgba(255, 107, 53, 0.5);
     }
-    
-    .event-card {
-      border-radius: 20px;
-      padding: 20px;
-      transition: all 0.3s;
-      cursor: pointer;
-    }
-    
-    .event-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.2);
-    }
-    
-    .quote-section {
-      background: linear-gradient(135deg, #eff6ff, #dbeafe);
-      border-left: 6px solid #3b82f6;
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
-      position: relative;
-    }
-    
-    .quote-section::before {
-      content: '"';
-      position: absolute;
-      top: -20px;
-      left: 20px;
-      font-size: 120px;
-      color: rgba(59, 130, 246, 0.1);
-      font-family: Georgia, serif;
-    }
 
     @media (max-width: 768px) {
       .header-glow { padding: 12px 16px 8px !important; }
       .header-glow h1 { font-size: 2.5rem !important; }
-      .event-card { padding: 12px !important; }
-      .quote-section { padding: 16px !important; }
-      .law-radio-group { grid-template-columns: 1fr; }
+      .user-card { min-height: 110px; padding: 14px; }
+      .user-icon { font-size: 32px; }
+      .user-title { font-size: 13px; }
     }
   </style>
 </head>
@@ -282,12 +270,6 @@
           </h2>
         </div>
       </div>
-      
-      <div class="mt-3 text-center">
-        <p class="text-xs text-gray-600 font-semibold">
-          Last Modified: <span id="lastModified" class="text-orange-700"></span>
-        </p>
-      </div>
     </div>
 
     <div class="p-2">
@@ -303,31 +285,32 @@
         <div class="radio-option selected" id="customCard" onclick="selectQueryType('custom')">
           <input type="radio" name="queryType" value="custom" checked>
           <span class="radio-icon">✏️</span>
-          <label class="radio-label cursor-pointer flex-1">
+          <div class="radio-label">
             <div class="radio-label-title">Ask Your Own Question</div>
             <div class="radio-label-desc">Type any question about criminal laws</div>
-          </label>
+          </div>
         </div>
         
         <div class="radio-option" id="readyCard" onclick="selectQueryType('ready')">
           <input type="radio" name="queryType" value="ready">
           <span class="radio-icon">📋</span>
-          <label class="radio-label cursor-pointer flex-1">
+          <div class="radio-label">
             <div class="radio-label-title">Select Ready-Made Question</div>
-            <div class="radio-label-desc">Choose from 550+ categorized questions</div>
-          </label>
+            <div class="radio-label-desc">Choose by your profile and topic</div>
+          </div>
         </div>
       </div>
 
       <div id="questionSection">
         
+        <!-- CUSTOM QUESTION DIV -->
         <div id="customQuestionDiv" class="mb-8 fade-in">
           <div class="relative">
             <textarea
               id="userInput"
               rows="3"
               class="w-full rounded-2xl border-4 border-orange-400 p-4 pb-12 text-gray-900 bg-gradient-to-br from-white to-orange-50 shadow-2xl resize-none focus:border-orange-500 focus:ring-4 focus:ring-orange-200 transition-all duration-300"
-              placeholder="Type your question here... (e.g., What are the changes in FIR process?)"
+              placeholder="Type your question here... (e.g., What are my rights during arrest?)"
             ></textarea>
             <button
               id="voiceBtn"
@@ -341,80 +324,69 @@
           </div>
         </div>
 
+        <!-- READY QUESTIONS DIV -->
         <div id="readyQuestionDiv" style="display: none;" class="mb-8 fade-in">
-          <div class="flex items-center justify-between mb-4">
-            <label class="text-lg font-bold text-gray-800 flex items-center gap-2">
-              <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-              </svg>
-              Select Question
+          
+          <!-- Step 1: WHO ARE YOU? -->
+          <div class="mb-6">
+            <label class="block text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
+              👤 Who are you?
             </label>
-            <div class="lang-toggle">
-              <button class="langBtn active" data-lang="English">English</button>
-              <button class="langBtn" data-lang="Hindi">हिंदी</button>
+            <p class="text-xs text-gray-600 mb-4 ml-10">Select your profile to get relevant questions</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div class="user-card" id="userPolice" onclick="selectUser('police')">
+                <div class="user-icon">👮</div>
+                <div class="user-title">Police Officer</div>
+                <div class="user-desc">Investigation, FIR, Procedures</div>
+              </div>
+              
+              <div class="user-card" id="userLegal" onclick="selectUser('legal')">
+                <div class="user-icon">⚖️</div>
+                <div class="user-title">Legal Professional</div>
+                <div class="user-desc">Lawyers, Judges, Prosecutors</div>
+              </div>
+              
+              <div class="user-card" id="userStudent" onclick="selectUser('student')">
+                <div class="user-icon">👨‍🎓</div>
+                <div class="user-title">Student/Researcher</div>
+                <div class="user-desc">Law students, Academics</div>
+              </div>
+              
+              <div class="user-card" id="userCitizen" onclick="selectUser('citizen')">
+                <div class="user-icon">🧑‍💼</div>
+                <div class="user-title">General Citizen</div>
+                <div class="user-desc">Rights, Complaints, Info</div>
+              </div>
             </div>
           </div>
           
-<!-- Step 1: Select Law -->
-          <div class="mb-4">
-            <label class="block text-sm font-bold text-gray-700 mb-3">Step 1️⃣: Select Law</label>
-            <div class="law-radio-group">
-              <div class="law-radio selected" id="lawAll" onclick="selectLaw('All')">
-                <input type="radio" name="lawType" value="All" checked>
-                <label class="law-radio-label cursor-pointer">🔵 All Laws</label>
-              </div>
-              <div class="law-radio" id="lawBNS" onclick="selectLaw('BNS')">
-                <input type="radio" name="lawType" value="BNS">
-                <label class="law-radio-label cursor-pointer">🟥 BNS (Nyaya Sanhita)</label>
-              </div>
-              <div class="law-radio" id="lawBNSS" onclick="selectLaw('BNSS')">
-                <input type="radio" name="lawType" value="BNSS">
-                <label class="law-radio-label cursor-pointer">🟦 BNSS (Suraksha Sanhita)</label>
-              </div>
-              <div class="law-radio" id="lawBSA" onclick="selectLaw('BSA')">
-                <input type="radio" name="lawType" value="BSA">
-                <label class="law-radio-label cursor-pointer">🟩 BSA (Sakshya Adhiniyam)</label>
-              </div>
+          <!-- Step 2: WHAT TOPIC? -->
+          <div class="mb-6" id="topicSection" style="display: none;">
+            <label class="block text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
+              📚 What do you want to know about?
+            </label>
+            <p class="text-xs text-gray-600 mb-4 ml-10">Choose a topic - we'll find the right law for you</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="topicContainer">
+              <!-- Topics will load here dynamically -->
             </div>
           </div>
           
-          <!-- Step 2: Select Level -->
-          <div class="mb-4" id="levelSection">
-            <label class="block text-sm font-bold text-gray-700 mb-3">Step 2️⃣: Select Difficulty Level</label>
-            <div class="law-radio-group">
-              <div class="law-radio selected" id="levelBeginner" onclick="selectLevel('Beginner')">
-                <input type="radio" name="levelType" value="Beginner" checked>
-                <label class="law-radio-label cursor-pointer">⭐ Beginner</label>
-              </div>
-              <div class="law-radio" id="levelIntermediate" onclick="selectLevel('Intermediate')">
-                <input type="radio" name="levelType" value="Intermediate">
-                <label class="law-radio-label cursor-pointer">⭐⭐ Intermediate</label>
-              </div>
-              <div class="law-radio" id="levelAdvanced" onclick="selectLevel('Advanced')">
-                <input type="radio" name="levelType" value="Advanced">
-                <label class="law-radio-label cursor-pointer">⭐⭐⭐ Advanced</label>
-              </div>
-              <div class="law-radio" id="levelTerminology" onclick="selectLevel('Terminology')">
-                <input type="radio" name="levelType" value="Terminology">
-                <label class="law-radio-label cursor-pointer">📖 Terminology</label>
-              </div>
-            </div>
-          </div>    
-          <!-- Step 3: Select Category -->
-          <div class="mb-4">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Step 3️⃣: Choose Category</label>
-            <select id="categorySelect" class="block w-full px-5 py-4 text-base border-3 border-orange-400 focus:ring-4 focus:ring-orange-200 rounded-2xl bg-gradient-to-br from-white to-orange-50 shadow-lg transition-all font-medium">
-              <option value="" selected disabled>Choose a category...</option>
+          <!-- Step 3: SELECT YOUR QUESTION -->
+          <div class="mb-6" id="questionSelectSection" style="display: none;">
+            <label class="block text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
+              ❓ Select Your Question
+            </label>
+            
+            <select id="questionSelect" class="block w-full px-5 py-4 text-base border-3 border-orange-400 focus:ring-4 focus:ring-orange-200 rounded-2xl bg-gradient-to-br from-white to-orange-50 shadow-lg transition-all font-medium mb-4">
+              <option value="" selected disabled>Select a question...</option>
             </select>
           </div>
           
-          <!-- Step 4: Select Question -->
-          <div class="mb-4">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Step 4️⃣: Select Question</label>
-            <select id="questionSelect" class="block w-full px-5 py-4 text-base border-3 border-blue-400 focus:ring-4 focus:ring-blue-200 rounded-2xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all font-medium">
-              <option value="" selected disabled>First select steps above...</option>
-            </select>
-          </div>
         </div>
 
         <button 
@@ -422,66 +394,11 @@
           class="w-full btn-primary flex items-center justify-center gap-3 text-xl fade-in"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
           </svg>
-          Ask LawBot
+          Get Answer
         </button>
-      </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4 mt-4 px-2">
-        <a href="https://www.indiacode.nic.in/handle/123456789/20062" target="_blank" class="block">
-          <div class="event-card bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-green-600 shadow-lg">
-            <div class="flex items-center gap-3">
-              <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-              <div class="flex-1">
-                <p class="font-bold text-gray-900 text-base">BNS 2023</p>
-                <p class="text-xs text-gray-600">Bharatiya Nyaya Sanhita</p>
-              </div>
-            </div>
-          </div>
-        </a>
-
-        <a href="https://www.indiacode.nic.in/handle/123456789/20099" target="_blank" class="block">
-          <div class="event-card bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-600 shadow-lg">
-            <div class="flex items-center gap-3">
-              <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
-              </svg>
-              <div class="flex-1">
-                <p class="font-bold text-gray-900 text-base">BNSS 2023</p>
-                <p class="text-xs text-gray-600">Nagarik Suraksha Sanhita</p>
-              </div>
-            </div>
-          </div>
-        </a>
-
-        <a href="https://www.indiacode.nic.in/handle/123456789/20063" target="_blank" class="block">
-          <div class="event-card bg-gradient-to-br from-purple-50 to-purple-100 border-l-4 border-purple-600 shadow-lg">
-            <div class="flex items-center gap-3">
-              <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-              <div class="flex-1">
-                <p class="font-bold text-gray-900 text-base">BSA 2023</p>
-                <p class="text-xs text-gray-600">Bharatiya Sakshya Adhiniyam</p>
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="quote-section mb-1">
-        <p class="text-xl text-gray-900 text-center leading-relaxed mb-2 relative z-10 font-semibold italic">
-          "Justice delayed is justice denied."
-        </p>
-        <p class="text-right text-gray-600 text-sm mb-1 mt-1 font-medium">
-          – W. Edwards Deming
-        </p>
-        <p class="text-center text-sm text-gray-700 mb-0 mt-2 font-light leading-relaxed">
-          The new criminal laws aim to ensure speedy justice for all citizens of India.
-        </p>
       </div>
 
     </div>
@@ -492,6 +409,9 @@
       </p>
       <p class="text-gray-500 text-xs mb-3">
         Designed by <strong>NIC, Kurukshetra</strong> for <strong>District Administration, Kurukshetra</strong>
+      </p>
+      <p class="text-xs text-gray-600 font-semibold">
+        Last Modified: <span id="lastModified" class="text-orange-700 font-bold">Loading...</span>
       </p>
     </div>
 
@@ -546,452 +466,123 @@
   <script>
     console.log('🚀 LawBot 2024 initializing...');
     
-    document.addEventListener('DOMContentLoaded', function() {
-      lucide.createIcons();
-      console.log('✅ Page loaded');
-      
-      // Update Last Modified DateTime
-      const now = new Date();
-      const options = { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Kolkata'
-      };
-      const formattedDate = now.toLocaleString('en-IN', options) + ' IST';
-      document.getElementById('lastModified').textContent = formattedDate;
-    });
-
-    const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
-
-    // Complete question bank - 550+ questions
-    const QUESTIONS = {
-      'English': {
-        'BNS': {
-          'Beginner': {
-            'Offences Against Human Body': [
-              'What is murder under BNS?',
-              'What is hurt?',
-              'What is grievous hurt?',
-              'What is kidnapping?',
-              'What is wrongful confinement?',
-              'What is criminal force?'
-            ],
-            'Offences Against Women & Children': [
-              'What is rape under BNS?',
-              'What is sexual harassment?',
-              'What is outraging modesty?',
-              'What is stalking?',
-              'What is trafficking?'
-            ],
-            'Property & Economic Offences': [
-              'What is theft?',
-              'What is robbery?',
-              'What is dacoity?',
-              'What is cheating?',
-              'What is criminal breach of trust?'
-            ],
-            'Terrorism & Organized Crime': [
-              'What is terrorism under BNS?',
-              'What is organized crime?'
-            ],
-            'Public Order & Society': [
-              'What is unlawful assembly?',
-              'What is rioting?',
-              'What is public nuisance?'
-            ],
-            'Forgery & Cyber Offences': [
-              'What is forgery?',
-              'What is cyber fraud?',
-              'What is identity theft?'
-            ],
-            'Public Servant & Election Offences': [
-              'What is bribery of a public servant?',
-              'What is obstruction of a public servant?'
-            ],
-            'General Principles': [
-              'What does BNS replace?',
-              'What is an offence under BNS?',
-              'What is intention?',
-              'What is abetment?'
-            ]
-          },
-          'Intermediate': {
-            'Offences Against Human Body': [
-              'How does BNS differentiate between murder and culpable homicide?',
-              'When can causing death be treated as an accident?',
-              'When can private defence extend to causing death?',
-              'What makes hurt "grievous" under BNS?',
-              'What is death by negligence?',
-              'What is aggravated wrongful confinement?'
-            ],
-            'Offences Against Women & Children': [
-              'What circumstances convert sexual intercourse into rape?',
-              'When does stalking become punishable?',
-              'What acts constitute sexual harassment?',
-              'What protections exist for minors under BNS?',
-              'What is assault with intent to disrobe?',
-              'What is voyeurism?'
-            ],
-            'Property & Economic Offences': [
-              'What mental element proves theft?',
-              'What additional elements convert theft into robbery?',
-              'When does extortion become robbery?',
-              'What must be proved to establish cheating?',
-              'How does cyber fraud differ from traditional fraud?'
-            ],
-            'Terrorism & Organized Crime': [
-              'What are the essential elements of terrorism?',
-              'What acts endanger national security?',
-              'What characteristics define an organized crime group?',
-              'What is terror funding as per BNS?'
-            ],
-            'Public Order & Society': [
-              'When does a protest become unlawful assembly?',
-              'What is armed rioting?',
-              'What is spreading harmful rumours likely to cause fear?',
-              'What behaviours amount to hurting religious feelings?'
-            ],
-            'Forgery & Cyber Offences': [
-              'What makes a digital document "forged"?',
-              'What is cyber impersonation?',
-              'What actions constitute electronic record tampering?',
-              'What is the offence of creating fake electronic documents?'
-            ],
-            'Public Servant & Election Offences': [
-              'What is misconduct by a public servant?',
-              'When does giving false information become punishable?',
-              'How is impersonation in elections handled under BNS?'
-            ],
-            'General Principles': [
-              'What distinguishes preparation from attempt?',
-              'What is criminal conspiracy under BNS?',
-              'What are the elements of abetment?',
-              'How does intention differ from knowledge?'
-            ]
-          },
-          'Advanced': {
-            'Offences Against Human Body': [
-              'What are the legal distinctions between murder, culpable homicide, and grievous homicide as per BNS?',
-              'How does BNS define the stages of culpable homicide (intention, knowledge, likelihood)?',
-              'How does BNS handle "knowledge" versus "intention" in homicide cases?',
-              'Explain the doctrine of transferred malice with examples.',
-              'What constitutes aggravated hurt under BNS?'
-            ],
-            'Offences Against Women & Children': [
-              'What statutory presumptions apply in rape cases under BNS?',
-              'How does BNS treat rape leading to permanent disability or vegetative state?',
-              'What elements convert rape into "aggravated rape"?',
-              'How does BNS treat digital/online sexual assault?',
-              'How is "consent" defined and interpreted under BNS?'
-            ],
-            'Property & Economic Offences': [
-              'What distinct mental elements (mens rea) apply to theft, cheating, and misappropriation?',
-              'What elements convert robbery into aggravated robbery?',
-              'How does BNS treat organized financial fraud differently?',
-              'Explain criminal breach of trust by a banker/public servant.',
-              'What is "fraudulent transfer of property"?'
-            ],
-            'Terrorism & Organized Crime': [
-              'How does BNS expand the definition of terrorism compared to IPC?',
-              'What is the legal test for "intent to strike terror"?',
-              'How is cyber-terrorism defined and differentiated?',
-              'What constitutes "terror funding" and aiding terror groups?',
-              'What legal elements prove "organized crime syndicate"?'
-            ],
-            'General Principles': [
-              'What is mens rea under BNS and how is it applied differently?',
-              'How is "illegal omission" defined in BNS?',
-              'What are general exceptions (mistake, accident, good faith)?',
-              'How does BNS apply vicarious liability?',
-              'What is distinction between intention, knowledge, and recklessness?'
-            ]
-          }
-        },
-        'BNSS': {
-          'Beginner': {
-            'FIR & Complaint': [
-              'What does BNSS replace?',
-              'What is Zero FIR?',
-              'What is preliminary inquiry?',
-              'What is cognizable offence?',
-              'What is non-cognizable offence?'
-            ],
-            'Arrest & Custody': [
-              'What is arrest under BNSS?',
-              'What is police custody?',
-              'What is judicial custody?'
-            ],
-            'Investigation': [
-              'What is an online FIR?',
-              'What is a digital case diary?',
-              'What is forensic investigation?'
-            ],
-            'Bail': [
-              'What is bailable offence?',
-              'What is non-bailable offence?'
-            ],
-            'Trial & Court Process': [
-              'What is summary trial?',
-              'What is plea bargaining?'
-            ],
-            'Witness & Victim': [
-              'What is witness protection?',
-              'What is victim compensation?',
-              'What is victim\'s right to receive updates?'
-            ],
-            'Technology Use': [
-              'What is video recording of search?',
-              'What is electronic summons?'
-            ]
-          },
-          'Intermediate': {
-            'FIR & Complaint': [
-              'When is preliminary inquiry permitted before registering FIR?',
-              'What is the difference between FIR and a complaint?',
-              'In which situations can FIR be transferred to another police station?',
-              'How does Zero FIR help victims in emergency cases?',
-              'When is refusal to register FIR allowed in BNSS?'
-            ],
-            'Arrest & Custody': [
-              'Under what conditions can police arrest without warrant?',
-              'What rules apply for arresting women at night?',
-              'What is the purpose of an arrest memo?',
-              'What is the rule regarding use of handcuffs?',
-              'What must be communicated to the arrested person?'
-            ],
-            'Investigation': [
-              'When is forensic examination mandatory?',
-              'How should seizure of evidence be recorded?',
-              'What is mandatory videography of crime scene/search?',
-              'What is the time limit for completing investigation in serious offences?',
-              'When is police custody justified?'
-            ],
-            'Bail': [
-              'What factors are considered for bail in non-bailable offences?',
-              'When can anticipatory bail be rejected?',
-              'What conditions can be imposed while granting bail?',
-              'When does default bail become applicable?'
-            ],
-            'Trial & Court Process': [
-              'What is framing of charges?',
-              'When can the accused be discharged?',
-              'How is evidence recorded digitally?',
-              'What is the process of plea bargaining?',
-              'When does summary trial apply?'
-            ]
-          },
-          'Advanced': {
-            'FIR & Complaint': [
-              'When is a preliminary inquiry legally justified before FIR?',
-              'What constitutes delay in FIR and how is it evaluated?',
-              'When can FIR be quashed by higher courts?',
-              'How does BNSS ensure accountability for refusal to file FIR?',
-              'What is FIR in cross-jurisdiction criminal acts?'
-            ],
-            'Investigation': [
-              'How does BNSS enforce forensic-led investigation?',
-              'What is the rule regarding DNA profiling?',
-              'How does BNSS handle cross-border evidence collection?',
-              'What is the rule on seizure of digital devices?',
-              'What makes an investigation "malicious"?'
-            ],
-            'Bail': [
-              'What conditions limit grant of anticipatory bail?',
-              'When does default bail override court discretion?',
-              'How is bail decided in organized crime cases?',
-              'What factors justify cancellation of bail?',
-              'How does BNSS treat bail for repeat offenders?'
-            ]
-          }
-        },
-        'BSA': {
-          'Beginner': {
-            'Relevancy & Basics': [
-              'What does BSA replace?',
-              'What is evidence under BSA?',
-              'What is a relevant fact?'
-            ],
-            'Electronic Evidence': [
-              'What is electronic evidence?',
-              'What is admissible digital record?',
-              'What is digital certificate?',
-              'What is hash value?'
-            ],
-            'Statements & Witness': [
-              'What is dying declaration?',
-              'What is cross-examination?',
-              'What is expert evidence?'
-            ]
-          },
-          'Intermediate': {
-            'Relevancy of Facts': [
-              'What makes a fact relevant in criminal cases?',
-              'How is motive treated as relevant fact?',
-              'How is conduct of parties relevant?'
-            ],
-            'Electronic Evidence': [
-              'What makes electronic records admissible?',
-              'Why is hash value important?',
-              'How are WhatsApp chats authenticated?',
-              'What certification is required for electronic evidence?',
-              'When can digital evidence be rejected?'
-            ],
-            'Statements & Confessions': [
-              'When is confession admissible?',
-              'Why is police confession generally inadmissible?',
-              'What is the value of dying declaration?',
-              'When can an admission be used as evidence?'
-            ],
-            'Witness & Testimony': [
-              'Who is a competent witness?',
-              'When can a child witness testify?',
-              'What affects witness credibility?',
-              'What weakens expert witness testimony?',
-              'How is cross-examination used to test reliability?'
-            ]
-          },
-          'Advanced': {
-            'Relevancy & Admissibility': [
-              'What is the difference between relevancy and admissibility?',
-              'What is doctrine of res gestae?',
-              'How are similar fact patterns admitted?',
-              'How is illegally obtained evidence treated?',
-              'What is the rule on corroboration?'
-            ],
-            'Electronic Evidence': [
-              'What is legal importance of hash value?',
-              'What certifies authenticity of WhatsApp chats?',
-              'When can electronic evidence be rejected?',
-              'What is chain of custody for digital files?',
-              'How is deepfake evidence evaluated?'
-            ],
-            'Witness & Testimony': [
-              'What makes witness testimony unreliable?',
-              'What is contradiction vs omission?',
-              'How is child witness credibility tested?',
-              'When is expert witness testimony excluded?',
-              'What is retracted confession and its value?'
-            ]
-          }
-        },
-        'Terminology': {
-          'BNS - Offence Terms': [
-            'What is culpable homicide?',
-            'What is mens rea?',
-            'What is actus reus?',
-            'What is intention?',
-            'What is knowledge?',
-            'What is abetment?',
-            'What is conspiracy?',
-            'What is sedition?'
-          ],
-          'BNS - Property Crime Terms': [
-            'What is theft?',
-            'What is extortion?',
-            'What is robbery?',
-            'What is dacoity?',
-            'What is criminal breach of trust?',
-            'What is cheating?',
-            'What is forgery?'
-          ],
-          'BNSS - Court Terms': [
-            'What is a court?',
-            'What is jurisdiction?',
-            'What is a trial?',
-            'What is cognizable offence?',
-            'What is non-cognizable offence?',
-            'What is bailable offence?',
-            'What is non-bailable offence?',
-            'What is summons case?',
-            'What is warrant case?'
-          ],
-          'BNSS - Investigation Terms': [
-            'What is an FIR?',
-            'What is investigation?',
-            'What is arrest?',
-            'What is custody?',
-            'What is police custody?',
-            'What is judicial custody?',
-            'What is remand?',
-            'What is charge sheet?',
-            'What is bail?',
-            'What is anticipatory bail?'
-          ],
-          'BSA - Evidence Terms': [
-            'What is evidence?',
-            'What is primary evidence?',
-            'What is secondary evidence?',
-            'What is oral evidence?',
-            'What is documentary evidence?',
-            'What is electronic evidence?',
-            'What is relevancy?',
-            'What is admissibility?',
-            'What is burden of proof?',
-            'What is presumption?'
-          ]
+    // Update Last Modified DateTime - FIXED
+    function updateLastModified() {
+      try {
+        const now = new Date();
+        const day = now.getDate();
+        const month = now.toLocaleString('en-IN', { month: 'long' });
+        const year = now.getFullYear();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        
+        const formattedDate = day + ' ' + month + ' ' + year + ' • ' + hours + ':' + minutes + ' IST';
+        const element = document.getElementById('lastModified');
+        if (element) {
+          element.textContent = formattedDate;
+          console.log('✅ Last Modified updated:', formattedDate);
         }
-      },
-      'Hindi': {
-        'BNS': {
-          'Beginner': {
-            'मानव शरीर के विरुद्ध अपराध': [
-              'BNS के तहत हत्या क्या है?',
-              'चोट क्या है?',
-              'गंभीर चोट क्या है?',
-              'अपहरण क्या है?',
-              'गलत तरीके से कैद करना क्या है?',
-              'आपराधिक बल क्या है?'
-            ],
-            'महिलाओं और बच्चों के विरुद्ध अपराध': [
-              'BNS के तहत बलात्कार क्या है?',
-              'यौन उत्पीड़न क्या है?',
-              'शील भंग क्या है?',
-              'पीछा करना क्या है?',
-              'तस्करी क्या है?'
-            ],
-            'संपत्ति और आर्थिक अपराध': [
-              'चोरी क्या है?',
-              'लूट क्या है?',
-              'डकैती क्या है?',
-              'धोखाधड़ी क्या है?',
-              'विश्वासघात क्या है?'
-            ]
-          }
-        },
-        'BNSS': {
-          'Beginner': {
-            'FIR और शिकायत': [
-              'BNSS क्या प्रतिस्थापित करता है?',
-              'जीरो FIR क्या है?',
-              'प्रारंभिक जांच क्या है?',
-              'संज्ञेय अपराध क्या है?',
-              'गैर-संज्ञेय अपराध क्या है?'
-            ]
-          }
-        },
-        'BSA': {
-          'Beginner': {
-            'प्रासंगिकता और मूल बातें': [
-              'BSA क्या प्रतिस्थापित करता है?',
-              'BSA के तहत साक्ष्य क्या है?',
-              'प्रासंगिक तथ्य क्या है?'
-            ]
-          }
+      } catch (error) {
+        console.error('❌ Last Modified error:', error);
+        const element = document.getElementById('lastModified');
+        if (element) {
+          element.textContent = '16 December 2024 • 12:00 IST';
         }
       }
+    }
+    
+    // Call immediately when script loads
+    if (document.getElementById('lastModified')) {
+      updateLastModified();
+    }
+    
+    // Call again when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      updateLastModified();
+    });
+    
+    const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
+    
+    // TOPICS organized by user type
+    const TOPICS = {
+      police: [
+        { id: 'fir', icon: '📝', title: 'FIR & Complaints', subtitle: 'Registration, Zero FIR, Refusal', law: 'BNSS' },
+        { id: 'arrest', icon: '🚔', title: 'Arrest & Custody', subtitle: 'Warrant, Remand, Rights', law: 'BNSS' },
+        { id: 'investigation', icon: '🔍', title: 'Investigation', subtitle: 'Evidence, Search, Seizure', law: 'BNSS' },
+        { id: 'evidence', icon: '📊', title: 'Evidence Handling', subtitle: 'Digital, Chain of custody', law: 'BSA' },
+        { id: 'chargesheet', icon: '📋', title: 'Charge Sheet', subtitle: 'Filing, Timeline', law: 'BNSS' },
+        { id: 'crimes', icon: '⚠️', title: 'Common Crimes', subtitle: 'Theft, Assault, Cyber', law: 'BNS' },
+        { id: 'rights', icon: '👥', title: 'Rights of Accused', subtitle: 'During arrest, trial', law: 'BNSS' },
+        { id: 'terminology', icon: '📚', title: 'Legal Terms', subtitle: 'Cognizable, Bailable', law: 'All' }
+      ],
+      legal: [
+        { id: 'bail', icon: '🏛️', title: 'Bail & Bonds', subtitle: 'Regular, Anticipatory', law: 'BNSS' },
+        { id: 'trial', icon: '⚖️', title: 'Trial Process', subtitle: 'Summons, Warrant, Sessions', law: 'BNSS' },
+        { id: 'evidence', icon: '📊', title: 'Evidence Law', subtitle: 'Admissibility, Electronic', law: 'BSA' },
+        { id: 'appeals', icon: '📑', title: 'Appeals & Revision', subtitle: 'High Court, Supreme Court', law: 'BNSS' },
+        { id: 'punishments', icon: '⚖️', title: 'Punishments', subtitle: 'IPC vs BNS changes', law: 'BNS' },
+        { id: 'procedures', icon: '📋', title: 'Court Procedures', subtitle: 'Filing, Documentation', law: 'BNSS' },
+        { id: 'comparison', icon: '🔄', title: 'Old vs New Laws', subtitle: 'Key changes', law: 'All' },
+        { id: 'terminology', icon: '📚', title: 'Legal Terminology', subtitle: 'Advanced concepts', law: 'All' }
+      ],
+      student: [
+        { id: 'comparison', icon: '🔄', title: 'Old vs New Laws', subtitle: 'IPC→BNS, CrPC→BNSS', law: 'All' },
+        { id: 'terminology', icon: '📚', title: 'Legal Terminology', subtitle: 'All important terms', law: 'All' },
+        { id: 'concepts', icon: '💡', title: 'Key Concepts', subtitle: 'Mens rea, Actus reus', law: 'BNS' },
+        { id: 'criminal', icon: '⚠️', title: 'Criminal Offences', subtitle: 'Classification, Types', law: 'BNS' },
+        { id: 'procedure', icon: '📋', title: 'Criminal Procedure', subtitle: 'FIR to Judgment', law: 'BNSS' },
+        { id: 'evidence_law', icon: '📊', title: 'Evidence Law', subtitle: 'Types, Admissibility', law: 'BSA' },
+        { id: 'amendments', icon: '📝', title: 'Key Amendments', subtitle: 'Major changes 2024', law: 'All' },
+        { id: 'casestudies', icon: '📖', title: 'Examples', subtitle: 'Real-world scenarios', law: 'All' }
+      ],
+      citizen: [
+        { id: 'rights', icon: '👥', title: 'Your Rights', subtitle: 'Arrest, trial, investigation', law: 'BNSS' },
+        { id: 'complaint', icon: '📝', title: 'How to Complain', subtitle: 'FIR, Online complaint', law: 'BNSS' },
+        { id: 'bail', icon: '🏛️', title: 'Bail & Release', subtitle: 'How to get bail', law: 'BNSS' },
+        { id: 'common', icon: '❓', title: 'Common Situations', subtitle: 'Theft, Accident, Dispute', law: 'BNS' },
+        { id: 'legal_aid', icon: '⚖️', title: 'Legal Help', subtitle: 'Free legal aid', law: 'All' },
+        { id: 'cybercrime', icon: '💻', title: 'Cyber Crimes', subtitle: 'Fraud, Harassment', law: 'BNS' },
+        { id: 'women', icon: '👩', title: 'Women & Children', subtitle: 'Protection laws', law: 'BNS' },
+        { id: 'basics', icon: '📚', title: 'Basic Terms', subtitle: 'Simple explanations', law: 'All' }
+      ]
     };
-
-    let selectedLanguage = 'English';
+    
+    // Sample questions for each topic
+    const TOPIC_QUESTIONS = {
+      fir: ['How to register an FIR?', 'What is Zero FIR?', 'When can police refuse FIR?', 'FIR vs Complaint difference?', 'Online FIR filing process?'],
+      arrest: ['When can police arrest without warrant?', 'What is police custody vs judicial custody?', 'Rights of arrested person?', 'Medical examination during arrest?', 'Arrest procedures for women?'],
+      investigation: ['What are investigation powers?', 'Search and seizure rules?', 'Chain of custody importance?', 'Timeline for investigation?', 'Rights during investigation?'],
+      evidence: ['How to collect digital evidence?', 'Evidence preservation rules?', 'Chain of custody requirements?', 'Electronic evidence admissibility?', 'Evidence tampering consequences?'],
+      chargesheet: ['How to file charge sheet?', 'Timeline for filing charge sheet?', 'What documents required?', 'Charge sheet vs FIR difference?', 'Can charge sheet be challenged?'],
+      crimes: ['What is theft under BNS?', 'How is assault defined?', 'Cybercrime reporting process?', 'Difference between theft and robbery?', 'Fraud vs cheating definition?'],
+      rights: ['What are my rights during arrest?', 'Can I refuse to give statement?', 'Right to lawyer when?', 'Rights during interrogation?', 'What if rights violated?'],
+      bail: ['How to apply for bail?', 'Regular bail vs anticipatory bail?', 'What are bail conditions?', 'Bail amount calculation?', 'When can bail be cancelled?'],
+      trial: ['Summons case vs warrant case?', 'Trial procedure steps?', 'How long does trial take?', 'Rights during trial?', 'Can trial be fast-tracked?'],
+      appeals: ['How to file appeal?', 'Appeal time limits?', 'High Court vs Supreme Court appeals?', 'Appeal procedure steps?', 'Cost of filing appeal?'],
+      punishments: ['What changed from IPC to BNS?', 'Punishment for theft?', 'Sentencing guidelines?', 'Mitigating factors in sentencing?', 'Maximum punishment for murder?'],
+      procedures: ['How to file case?', 'Court documentation required?', 'Timeline for hearings?', 'Court fees structure?', 'How to get court orders?'],
+      comparison: ['Key changes IPC to BNS?', 'BNSS vs CrPC differences?', 'BSA vs Evidence Act changes?', 'Why were laws changed?', 'Implementation timeline?'],
+      terminology: ['What is cognizable offence?', 'Define bailable offence?', 'What is mens rea?', 'Explain actus reus?', 'What is compounding?'],
+      concepts: ['Explain criminal liability?', 'What is actus reus?', 'Right of private defence?', 'General exceptions concept?', 'Vicarious liability meaning?'],
+      criminal: ['Classification of offences?', 'Types of crimes?', 'Punishment categories?', 'Cognizable vs non-cognizable?', 'Bailable vs non-bailable?'],
+      procedure: ['From FIR to judgment process?', 'Investigation timeline?', 'Trial stages?', 'Appeal process steps?', 'Entire criminal procedure overview?'],
+      evidence_law: ['Types of evidence?', 'Admissibility rules?', 'Burden of proof?', 'Electronic evidence rules?', 'Witness testimony validity?'],
+      amendments: ['Major changes in 2024?', 'Why laws changed?', 'Impact of new laws?', 'Transitional provisions?', 'What stayed same?'],
+      casestudies: ['Real-world examples?', 'Case studies?', 'Practical scenarios?', 'Application of laws?', 'Common situations explained?'],
+      complaint: ['How to file FIR?', 'Online complaint process?', 'What if police refuse?', 'NCW complaint process?', 'Consumer court complaint?'],
+      common: ['What to do if theft?', 'Accident procedure?', 'Property dispute resolution?', 'Neighbor dispute handling?', 'Cheque bounce remedy?'],
+      legal_aid: ['How to get free legal aid?', 'Legal help resources?', 'Helpline numbers?', 'Government legal services?', 'NGOs for legal help?'],
+      cybercrime: ['How to report online fraud?', 'Cyber harassment complaint?', 'Online safety tips?', 'Social media crime reporting?', 'Digital evidence collection?'],
+      women: ['Women protection laws?', 'Child protection provisions?', 'Emergency helplines?', 'Domestic violence remedy?', 'Sexual harassment complaint?'],
+      basics: ['Basic legal terms?', 'Simple explanations?', 'Common legal words?', 'Court terminology?', 'Legal process basics?']
+    };
+    
+    let selectedUser = '';
+    let selectedTopic = '';
     let selectedQueryType = 'custom';
-    let selectedLaw = 'All';
-    let selectedLevel = 'Beginner';
-    let selectedCategory = '';
 
+    // FIXED: Proper radio button handling
     function selectQueryType(type) {
-      console.log('📘 Query type:', type);
       selectedQueryType = type;
       
       const customCard = document.getElementById('customCard');
@@ -999,6 +590,7 @@
       const customDiv = document.getElementById('customQuestionDiv');
       const readyDiv = document.getElementById('readyQuestionDiv');
       
+      // Remove selected class from both
       customCard.classList.remove('selected');
       readyCard.classList.remove('selected');
       
@@ -1007,138 +599,99 @@
         document.querySelector('input[value="custom"]').checked = true;
         customDiv.style.display = 'block';
         readyDiv.style.display = 'none';
-        console.log('✅ Custom mode');
       } else {
         readyCard.classList.add('selected');
         document.querySelector('input[value="ready"]').checked = true;
         customDiv.style.display = 'none';
         readyDiv.style.display = 'block';
-        populateCategories();
-        console.log('✅ Ready mode');
       }
+      
+      console.log('✅ Query type selected:', type);
     }
     
     window.selectQueryType = selectQueryType;
 
-    function selectLaw(law) {
-      selectedLaw = law;
+    function selectUser(userType) {
+      selectedUser = userType;
       
       // Update UI
-      document.querySelectorAll('.law-radio').forEach(el => el.classList.remove('selected'));
-      document.getElementById('law' + law).classList.add('selected');
-      document.querySelector(`input[value="${law}"]`).checked = true;
+      document.querySelectorAll('.user-card').forEach(el => el.classList.remove('selected'));
+      const userCard = document.getElementById('user' + userType.charAt(0).toUpperCase() + userType.slice(1));
+      if (userCard) userCard.classList.add('selected');
       
-      populateCategories();
-      console.log('✅ Law selected:', law);
+      // Load topics for this user
+      loadTopics(userType);
+      
+      // Show topic section, hide question section
+      document.getElementById('topicSection').style.display = 'block';
+      document.getElementById('questionSelectSection').style.display = 'none';
+      
+      console.log('✅ User selected:', userType);
     }
     
-    window.selectLaw = selectLaw;
+    window.selectUser = selectUser;
 
-    function selectLevel(level) {
-      selectedLevel = level;
+    function loadTopics(userType) {
+      const container = document.getElementById('topicContainer');
+      container.innerHTML = '';
       
-      // Update UI
-      document.querySelectorAll('[id^="level"]').forEach(el => el.classList.remove('selected'));
-      document.getElementById('level' + level).classList.add('selected');
-      document.querySelector(`input[value="${level}"]`).checked = true;
+      const topics = TOPICS[userType] || [];
       
-      populateCategories();
-      console.log('✅ Level selected:', level);
-    }
-    
-    window.selectLevel = selectLevel;
-
-    function populateCategories() {
-      const categorySelect = document.getElementById('categorySelect');
-      const questionSelect = document.getElementById('questionSelect');
-      
-      if (!categorySelect) return;
-      
-      categorySelect.innerHTML = '<option value="" selected disabled>Choose a category...</option>';
-      questionSelect.innerHTML = '<option value="" selected disabled>First select steps above...</option>';
-      
-      let categories = [];
-      
-      if (selectedLevel === 'Terminology') {
-        // For Terminology - show direct categories from Terminology section
-        categories = Object.keys(QUESTIONS[selectedLanguage]['Terminology'] || {});
-      } else if (selectedLaw === 'All') {
-        // Combine all laws
-        ['BNS', 'BNSS', 'BSA'].forEach(law => {
-          const lawData = QUESTIONS[selectedLanguage][law];
-          if (lawData && lawData[selectedLevel]) {
-            Object.keys(lawData[selectedLevel]).forEach(cat => {
-              categories.push(`${law}: ${cat}`);
-            });
-          }
-        });
-      } else {
-        // Single law
-        const lawData = QUESTIONS[selectedLanguage][selectedLaw];
-        if (lawData && lawData[selectedLevel]) {
-          categories = Object.keys(lawData[selectedLevel]);
-        }
-      }
-      
-      categories.forEach((category) => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        categorySelect.appendChild(option);
+      topics.forEach(function(topic) {
+        const topicCard = document.createElement('div');
+        topicCard.className = 'topic-card';
+        topicCard.id = 'topic-' + topic.id;
+        topicCard.onclick = function() { selectTopic(topic.id); };
+        
+        topicCard.innerHTML = '<div class="topic-icon">' + topic.icon + '</div>' +
+          '<div class="flex-1">' +
+          '<div class="topic-title">' + topic.title + '</div>' +
+          '<div class="topic-subtitle">' + topic.subtitle + '</div>' +
+          '<div class="topic-law">' + topic.law + '</div>' +
+          '</div>';
+        
+        container.appendChild(topicCard);
       });
-      
-      console.log('✅ Categories populated:', categories.length);
     }
 
-    function populateQuestions(category) {
+    function selectTopic(topicId) {
+      selectedTopic = topicId;
+      
+      // Update UI
+      document.querySelectorAll('.topic-card').forEach(function(el) {
+        el.classList.remove('selected');
+      });
+      const topicCard = document.getElementById('topic-' + topicId);
+      if (topicCard) topicCard.classList.add('selected');
+      
+      // Load questions for this topic
+      loadQuestionsForTopic(topicId);
+      
+      // Show question section
+      document.getElementById('questionSelectSection').style.display = 'block';
+      
+      console.log('✅ Topic selected:', topicId);
+    }
+
+    function loadQuestionsForTopic(topicId) {
       const questionSelect = document.getElementById('questionSelect');
-      
-      if (!questionSelect || !category) return;
-      
       questionSelect.innerHTML = '<option value="" selected disabled>Select a question...</option>';
       
-      let questions = [];
+      const questions = TOPIC_QUESTIONS[topicId] || [];
       
-      if (selectedLevel === 'Terminology') {
-        questions = QUESTIONS[selectedLanguage]['Terminology'][category] || [];
-      } else if (selectedLaw === 'All' && category.includes(':')) {
-        const [law, cat] = category.split(': ');
-        questions = QUESTIONS[selectedLanguage][law]?.[selectedLevel]?.[cat] || [];
-      } else {
-        questions = QUESTIONS[selectedLanguage][selectedLaw]?.[selectedLevel]?.[category] || [];
-      }
-      
-      questions.forEach((q) => {
+      questions.forEach(function(q) {
         const option = document.createElement('option');
         option.value = q;
         option.textContent = q;
         questionSelect.appendChild(option);
       });
-      
-      console.log('✅ Questions populated:', questions.length);
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const langButtons = document.querySelectorAll('.langBtn');
-      langButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-          langButtons.forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          selectedLanguage = this.getAttribute('data-lang');
-          populateCategories();
-        });
-      });
-      
-      document.getElementById('categorySelect').addEventListener('change', function() {
-        selectedCategory = this.value;
-        populateQuestions(selectedCategory);
-      });
-      
-      document.getElementById('questionSelect').addEventListener('change', function() {
-        document.getElementById('userInput').value = this.value;
-      });
+    document.getElementById('questionSelect').addEventListener('change', function() {
+      document.getElementById('userInput').value = this.value;
     });
 
+    // Voice recognition
     let recognition;
     let isRecording = false;
 
@@ -1149,27 +702,27 @@
       recognition.interimResults = false;
       recognition.lang = 'hi-IN';
 
-      recognition.onstart = () => {
+      recognition.onstart = function() {
         isRecording = true;
         document.getElementById('voiceBtn').classList.add('recording');
       };
 
-      recognition.onresult = (event) => {
+      recognition.onresult = function(event) {
         document.getElementById('userInput').value = event.results[0][0].transcript;
       };
 
-      recognition.onend = () => {
+      recognition.onend = function() {
         isRecording = false;
         document.getElementById('voiceBtn').classList.remove('recording');
       };
 
-      recognition.onerror = () => {
+      recognition.onerror = function() {
         isRecording = false;
         document.getElementById('voiceBtn').classList.remove('recording');
       };
     }
 
-    document.getElementById('voiceBtn').addEventListener('click', (e) => {
+    document.getElementById('voiceBtn').addEventListener('click', function(e) {
       e.preventDefault();
       if (recognition) {
         if (isRecording) {
@@ -1182,7 +735,7 @@
       }
     });
 
-    document.getElementById('submitBtn').addEventListener('click', async () => {
+    document.getElementById('submitBtn').addEventListener('click', async function() {
       const question = document.getElementById('userInput').value.trim();
       
       if (!question) {
@@ -1200,21 +753,19 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             question: question,
-            language: selectedLanguage,
+            userType: selectedUser,
+            topic: selectedTopic,
             queryType: selectedQueryType,
-            law: selectedLaw,
-            level: selectedLevel,
-            category: selectedCategory || 'custom',
             timestamp: new Date().toISOString()
           })
         });
         
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
         
         const data = await response.json();
         let answerText = data.answer || data.response || 'No response';
         
-        // Replace [SEARCH_BUTTON] placeholder with nothing (button is in footer now)
+        // Remove [SEARCH_BUTTON] placeholder
         answerText = answerText.replace('[SEARCH_BUTTON]', '');
         
         document.getElementById('modalAnswer').textContent = answerText;
@@ -1226,15 +777,15 @@
       }
     });
 
-    document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('closeModal').addEventListener('click', function() {
       document.getElementById('aiModal').classList.add('hidden');
     });
 
-    document.getElementById('closeBtn').addEventListener('click', () => {
+    document.getElementById('closeBtn').addEventListener('click', function() {
       document.getElementById('aiModal').classList.add('hidden');
     });
 
-    console.log('✅ LawBot ready!');
+    console.log('✅ LawBot Topic-Based ready!');
   </script>
 
 </body>
