@@ -350,6 +350,7 @@
           </div>
           
           <!-- Step 1: Select Law -->
+<!-- Step 1: Select Law -->
           <div class="mb-4">
             <label class="block text-sm font-bold text-gray-700 mb-3">Step 1️⃣: Select Law</label>
             <div class="law-radio-group">
@@ -369,11 +370,15 @@
                 <input type="radio" name="lawType" value="BSA">
                 <label class="law-radio-label cursor-pointer">🟩 BSA (Sakshya Adhiniyam)</label>
               </div>
+              <div class="law-radio" id="lawTerminology" onclick="selectLaw('Terminology')">
+                <input type="radio" name="lawType" value="Terminology">
+                <label class="law-radio-label cursor-pointer">📖 Terminology</label>
+              </div>
             </div>
           </div>
           
           <!-- Step 2: Select Level -->
-          <div class="mb-4">
+          <div class="mb-4" id="levelSection">
             <label class="block text-sm font-bold text-gray-700 mb-3">Step 2️⃣: Select Difficulty Level</label>
             <div class="law-radio-group">
               <div class="law-radio selected" id="levelBeginner" onclick="selectLevel('Beginner')">
@@ -388,13 +393,8 @@
                 <input type="radio" name="levelType" value="Advanced">
                 <label class="law-radio-label cursor-pointer">⭐⭐⭐ Advanced</label>
               </div>
-              <div class="law-radio" id="levelTerminology" onclick="selectLevel('Terminology')">
-                <input type="radio" name="levelType" value="Terminology">
-                <label class="law-radio-label cursor-pointer">📖 Terminology</label>
-              </div>
             </div>
-          </div>
-          
+          </div>          
           <!-- Step 3: Select Category -->
           <div class="mb-4">
             <label class="block text-sm font-semibold text-gray-700 mb-2">Step 3️⃣: Choose Category</label>
