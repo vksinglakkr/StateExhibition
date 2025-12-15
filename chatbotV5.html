@@ -357,7 +357,7 @@
           
 <!-- Step 1: Select Law -->
           <div class="mb-4">
-            <label class="block text-sm font-bold text-gray-700 mb-3">Step 1️⃣: Select Law or Terminology</label>
+            <label class="block text-sm font-bold text-gray-700 mb-3">Step 1️⃣: Select Law</label>
             <div class="law-radio-group">
               <div class="law-radio selected" id="lawAll" onclick="selectLaw('All')">
                 <input type="radio" name="lawType" value="All" checked>
@@ -374,10 +374,6 @@
               <div class="law-radio" id="lawBSA" onclick="selectLaw('BSA')">
                 <input type="radio" name="lawType" value="BSA">
                 <label class="law-radio-label cursor-pointer">🟩 BSA (Sakshya Adhiniyam)</label>
-              </div>
-              <div class="law-radio" id="lawTerminology" onclick="selectLaw('Terminology')">
-                <input type="radio" name="lawType" value="Terminology">
-                <label class="law-radio-label cursor-pointer">📖 Terminology (All Terms)</label>
               </div>
             </div>
           </div>
@@ -397,6 +393,10 @@
               <div class="law-radio" id="levelAdvanced" onclick="selectLevel('Advanced')">
                 <input type="radio" name="levelType" value="Advanced">
                 <label class="law-radio-label cursor-pointer">⭐⭐⭐ Advanced</label>
+              </div>
+              <div class="law-radio" id="levelTerminology" onclick="selectLevel('Terminology')">
+                <input type="radio" name="levelType" value="Terminology">
+                <label class="law-radio-label cursor-pointer">📖 Terminology</label>
               </div>
             </div>
           </div>    
@@ -530,6 +530,12 @@
       </div>
 
       <div class="border-t-2 border-gray-200 p-3 bg-white flex justify-center gap-2">
+        <button onclick="window.open('section-search.html', '_blank')" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-5 py-2 rounded-xl hover:from-green-700 hover:to-green-800 transition text-sm font-bold shadow-lg flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          Search Exact Section
+        </button>
         <button id="closeBtn" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-2 rounded-xl hover:from-blue-700 hover:to-blue-800 transition text-sm font-bold shadow-lg">
           Close
         </button>
@@ -1022,22 +1028,6 @@
       document.getElementById('law' + law).classList.add('selected');
       document.querySelector(`input[value="${law}"]`).checked = true;
       
-      // Show/hide Level section based on selection
-      const levelSection = document.getElementById('levelSection');
-      if (law === 'Terminology') {
-        levelSection.style.display = 'none';
-        selectedLevel = 'Terminology'; // Auto-set level for Terminology
-      } else {
-        levelSection.style.display = 'block';
-        // Reset to Beginner if coming from Terminology
-        if (selectedLevel === 'Terminology') {
-          selectedLevel = 'Beginner';
-          document.querySelectorAll('[id^="level"]').forEach(el => el.classList.remove('selected'));
-          document.getElementById('levelBeginner').classList.add('selected');
-          document.querySelector('input[value="Beginner"]').checked = true;
-        }
-      }
-      
       populateCategories();
       console.log('✅ Law selected:', law);
     }
@@ -1069,11 +1059,11 @@
       
       let categories = [];
       
-      if (selectedLaw === 'Terminology') {
-        // Terminology is now a law choice, not a level
+      if (selectedLevel === 'Terminology') {
+        // For Terminology - show direct categories from Terminology section
         categories = Object.keys(QUESTIONS[selectedLanguage]['Terminology'] || {});
       } else if (selectedLaw === 'All') {
-        // Combine all laws (not including Terminology)
+        // Combine all laws
         ['BNS', 'BNSS', 'BSA'].forEach(law => {
           const lawData = QUESTIONS[selectedLanguage][law];
           if (lawData && lawData[selectedLevel]) {
@@ -1083,7 +1073,7 @@
           }
         });
       } else {
-        // Single law (BNS, BNSS, or BSA)
+        // Single law
         const lawData = QUESTIONS[selectedLanguage][selectedLaw];
         if (lawData && lawData[selectedLevel]) {
           categories = Object.keys(lawData[selectedLevel]);
@@ -1109,8 +1099,7 @@
       
       let questions = [];
       
-      if (selectedLaw === 'Terminology') {
-        // Get questions directly from Terminology
+      if (selectedLevel === 'Terminology') {
         questions = QUESTIONS[selectedLanguage]['Terminology'][category] || [];
       } else if (selectedLaw === 'All' && category.includes(':')) {
         const [law, cat] = category.split(': ');
@@ -1223,7 +1212,12 @@
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
-        document.getElementById('modalAnswer').textContent = data.answer || data.response || 'No response';
+        let answerText = data.answer || data.response || 'No response';
+        
+        // Replace [SEARCH_BUTTON] placeholder with nothing (button is in footer now)
+        answerText = answerText.replace('[SEARCH_BUTTON]', '');
+        
+        document.getElementById('modalAnswer').textContent = answerText;
         console.log('✅ Response received');
         
       } catch (error) {
