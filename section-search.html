@@ -416,16 +416,20 @@
     }
 
     function performSearch() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      let query = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      // Remove common punctuation at the end
+      query = query.replace(/[?!.,;:]+$/g, '');
       
       // Filter by law
       let filtered = currentFilter === 'ALL' ? [...DATABASE] : DATABASE.filter(s => s.law === currentFilter);
       
       // Filter by search query with OR logic
       if (query.length >= 2) {
-        // Split by common separators: comma, space, OR, |
-        const keywords = query.split(/[\s,|]+|OR/i)
+        // Split by common separators: comma, space, OR, |, plus
+        const keywords = query.split(/[\s,|+]+|OR/i)
           .map(k => k.trim())
+          .map(k => k.replace(/[?!.,;:]+$/g, ''))  // Clean each keyword
           .filter(k => k.length >= 2); // Only keywords with 2+ chars
         
         if (keywords.length > 0) {
@@ -553,9 +557,17 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Check for URL parameters (search keywords from chatbot)
       const urlParams = new URLSearchParams(window.location.search);
-      const searchQuery = urlParams.get('search') || urlParams.get('q') || urlParams.get('keywords');
+      let searchQuery = urlParams.get('search') || urlParams.get('q') || urlParams.get('keywords');
       
       if (searchQuery) {
+        // Clean the search query
+        searchQuery = searchQuery
+          .trim()
+          .replace(/\+/g, ' ')  // Replace + with spaces
+          .replace(/[?!.,;:]+$/g, '')  // Remove trailing punctuation
+          .replace(/\s+/g, ' ')  // Normalize spaces
+          .trim();
+        
         console.log('🔍 Search keywords from URL:', searchQuery);
         
         // Set the search input so user can see and edit it
