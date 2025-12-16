@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LawBot 2024 – New Criminal Laws Assistant</title>
+  <title>LawBot 2024 – New Criminal Laws Assistant [ARRAY-FIX-v2]</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -818,6 +818,10 @@
     
     const WEBHOOK_URL = 'https://n8n-workflow-test.duckdns.org/webhook/chatbot';
     
+    // VERSION CHECK - This will appear in console immediately
+    console.log('🔥 LawBot Version: ARRAY-FIX-v2 - Loaded at', new Date().toISOString());
+    console.log('🔥 If you see this, the new version is loaded!');
+    
     let currentQuestion = '';
     let currentAI = 'groq';
     let selectedUser = 'citizen'; // Default to General Citizen
@@ -923,28 +927,37 @@
         if (!response.ok) throw new Error('HTTP ' + response.status);
         
         let data = await response.json();
-        console.log('📥 Received data:', data); // Debug log
+        console.log('📥 RAW Received data:', JSON.stringify(data).substring(0, 200));
+        console.log('📥 Is Array?', Array.isArray(data));
+        console.log('📥 Type:', typeof data);
         
         // n8n returns an array, get first item
         if (Array.isArray(data) && data.length > 0) {
+          console.log('📦 Extracting from array, length:', data.length);
           data = data[0];
-          console.log('📦 Extracted from array:', data);
+          console.log('📦 Extracted object:', data);
         }
         
         // Handle different response formats
         let answerText = '';
         if (typeof data === 'string') {
+          console.log('✅ Format: Direct string');
           answerText = data;
-        } else if (data.answer) {
+        } else if (data && data.answer) {
+          console.log('✅ Format: Object with answer property');
+          console.log('✅ Answer length:', data.answer.length);
           answerText = data.answer;
-        } else if (data.response) {
+        } else if (data && data.response) {
+          console.log('✅ Format: Object with response property');
           answerText = data.response;
-        } else if (data.choices && data.choices[0] && data.choices[0].message) {
-          // Direct Groq format (if n8n passes through)
+        } else if (data && data.choices && data.choices[0] && data.choices[0].message) {
+          console.log('✅ Format: Groq API format');
           answerText = data.choices[0].message.content;
         } else {
+          console.error('❌ Could not find answer in data');
+          console.error('❌ Data keys:', data ? Object.keys(data) : 'null');
+          console.error('❌ Full data:', data);
           answerText = 'No answer generated (empty model output).';
-          console.error('❌ Unexpected response format:', data);
         }
         
         // Clean up any remaining issues
