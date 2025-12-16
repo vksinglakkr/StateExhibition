@@ -342,6 +342,22 @@
     let sortColumn = 'section';
     let sortDirection = 'asc';
 
+    function toggleGuide() {
+      const guide = document.getElementById('detailedGuide');
+      const btnText = document.getElementById('guideBtnText');
+      const arrow = document.getElementById('guideArrow');
+      
+      if (guide.classList.contains('hidden')) {
+        guide.classList.remove('hidden');
+        btnText.textContent = 'Hide Guide';
+        arrow.textContent = '▲';
+      } else {
+        guide.classList.add('hidden');
+        btnText.textContent = 'Show Guide';
+        arrow.textContent = '▼';
+      }
+    }
+
     function getLawColor(law) {
       const colors = {
         'BNS': 'bg-green-100 text-green-800 border-green-300',
@@ -610,20 +626,39 @@
       }
       
       if (searchQuery) {
+        console.log('🔍 Search keywords from URL:', searchQuery);
+        
         // Set the search input so user can see and edit it
         const searchInput = document.getElementById('searchInput');
         searchInput.value = searchQuery;
         
+        // Add visual indicator that keywords are loaded
+        searchInput.classList.add('ring-2', 'ring-blue-400');
+        setTimeout(() => {
+          searchInput.classList.remove('ring-2', 'ring-blue-400');
+        }, 2000);
+        
+        // Update placeholder to show it's from URL
+        const originalPlaceholder = searchInput.placeholder;
+        searchInput.placeholder = '✓ Keywords loaded from link - Edit to refine search';
+        setTimeout(() => {
+          searchInput.placeholder = originalPlaceholder;
+        }, 5000);
+        
         // Trigger search
         performSearch();
         
-        // Scroll to results after a short delay
+        // Scroll to search box and results after a short delay
         setTimeout(() => {
           searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Optionally focus the input so user can immediately edit
+          // Focus and select all text so user can easily replace or edit
           searchInput.focus();
-        }, 300);
+          searchInput.select();
+        }, 500);
+        
+        console.log('✅ Search performed with keywords:', searchQuery);
       } else {
+        console.log('ℹ️ No URL parameters, showing all results');
         renderResults();
       }
       
