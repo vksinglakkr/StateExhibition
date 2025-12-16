@@ -897,7 +897,7 @@
       };
       
       document.getElementById('modalQuestion').textContent = currentQuestion;
-      document.getElementById('modalAnswer').textContent = loadingMessages[provider];
+      document.getElementById('modalAnswer').innerHTML = loadingMessages[provider];
       document.getElementById('aiModal').classList.remove('hidden');
       
       updateModalHeader(provider);
@@ -964,22 +964,38 @@
         answerText = answerText.replace('[SEARCH_BUTTON]', '');
         answerText = answerText.replace(/🔍 SEARCH KEYWORDS:.*?\n\n/gs, '');
         
+        // Convert markdown links to HTML
+        function convertMarkdownLinksToHTML(text) {
+          // Convert [Text](URL) to <a href="URL" target="_blank">Text</a>
+          return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color: #3b82f6; text-decoration: underline;">$1</a>');
+        }
+        
+        // Convert newlines to <br> and links to HTML
+        answerText = answerText
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\n/g, '<br>');
+        
+        // Now convert markdown links (after escaping HTML)
+        answerText = convertMarkdownLinksToHTML(answerText);
+        
         const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
         
         // Add metadata footer
         const levelEmoji = ANSWER_LEVELS[answerLevel].icon;
         const userTypeLabel = selectedUser ? ` | 👤 ${selectedUser.charAt(0).toUpperCase() + selectedUser.slice(1)}` : '';
         
-        document.getElementById('modalAnswer').textContent = answerText + 
-          '\n\n━━━━━━━━━━━━━━━━━━━━━━━\n' +
-          `${levelEmoji} ${answerLevel.charAt(0).toUpperCase() + answerLevel.slice(1)} Answer${userTypeLabel}\n` +
+        document.getElementById('modalAnswer').innerHTML = answerText + 
+          '<br><br>━━━━━━━━━━━━━━━━━━━━━━━<br>' +
+          `${levelEmoji} ${answerLevel.charAt(0).toUpperCase() + answerLevel.slice(1)} Answer${userTypeLabel}<br>` +
           `⏱️ Response: ${responseTime}s with ${providerNames[provider]}`;
         
         console.log('✅ Response from', provider, 'in', responseTime, 'seconds');
         
       } catch (error) {
         console.error('❌ Error:', error);
-        document.getElementById('modalAnswer').textContent = 'Error: Could not connect to ' + provider.toUpperCase() + '. Please try again.';
+        document.getElementById('modalAnswer').innerHTML = 'Error: Could not connect to ' + provider.toUpperCase() + '. Please try again.';
       }
     }
     
