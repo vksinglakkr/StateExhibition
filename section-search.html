@@ -199,10 +199,9 @@
         <div id="searchStats" class="mt-2 text-sm text-gray-600"></div>
       </div>
 
-      <!-- Results Table - Desktop and Mobile Responsive -->
+      <!-- Results Table -->
       <div class="overflow-x-auto border border-gray-200 rounded-lg">
-        <!-- Desktop Table View -->
-        <table class="w-full hidden md:table">
+        <table class="w-full">
           <thead class="bg-gray-50 border-b-2 border-gray-200">
             <tr>
               <th onclick="sortTable('law')" class="px-4 py-3 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none">
@@ -221,14 +220,9 @@
             </tr>
           </thead>
           <tbody id="resultsTable">
-            <!-- Desktop results will be inserted here -->
+            <!-- Results will be inserted here -->
           </tbody>
         </table>
-        
-        <!-- Mobile Card View -->
-        <div id="resultsCards" class="md:hidden space-y-3 p-3">
-          <!-- Mobile card results will be inserted here -->
-        </div>
       </div>
     </div>
 
@@ -450,18 +444,14 @@
 
     function renderResults() {
       const tbody = document.getElementById('resultsTable');
-      const cardsDiv = document.getElementById('resultsCards');
       tbody.innerHTML = '';
-      cardsDiv.innerHTML = '';
       
       if (currentResults.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">No sections found. Try different keywords.</td></tr>';
-        cardsDiv.innerHTML = '<div class="px-4 py-8 text-center text-gray-500">No sections found. Try different keywords.</div>';
         document.getElementById('searchStats').textContent = 'No results found';
         return;
       }
       
-      // Render Desktop Table
       currentResults.forEach(section => {
         const row = document.createElement('tr');
         row.className = 'section-row border-b border-gray-100 cursor-pointer';
@@ -482,29 +472,6 @@
         `;
         
         tbody.appendChild(row);
-      });
-      
-      // Render Mobile Cards
-      currentResults.forEach(section => {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition';
-        card.onclick = () => showSectionDetails(section);
-        
-        card.innerHTML = `
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-1 rounded text-xs font-semibold ${getLawColor(section.law)}">${section.law}</span>
-              <span class="font-mono font-bold text-gray-900">${section.section}</span>
-            </div>
-            <a href="${section.link}" target="_blank" onclick="event.stopPropagation()" class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 shrink-0">
-              <i data-lucide="external-link" class="w-4 h-4"></i>
-            </a>
-          </div>
-          <div class="text-sm font-medium text-gray-800 mb-2">${section.title}</div>
-          <div class="text-xs text-gray-500">Old: ${section.oldSection}</div>
-        `;
-        
-        cardsDiv.appendChild(card);
       });
       
       // Update sort indicators
@@ -586,44 +553,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Check for URL parameters (search keywords from chatbot)
       const urlParams = new URLSearchParams(window.location.search);
-      
-      // Support multiple parameter names
-      let searchQuery = urlParams.get('search') || urlParams.get('q') || urlParams.get('keywords');
-      
-      // Handle 'sections' parameter - extract keywords from section references
-      const sectionsParam = urlParams.get('sections');
-      if (sectionsParam && !searchQuery) {
-        // Parse sections parameter: "BNS-2023,BNSS-2023,BSA-2023" -> extract law names
-        const sectionRefs = sectionsParam.split(',').map(s => s.trim());
-        const keywords = [];
-        
-        sectionRefs.forEach(ref => {
-          // Extract meaningful keywords from section reference
-          // Example: "BNS-2023" -> "BNS"
-          // Example: "BNSS Section 173" -> "BNSS 173"
-          // Example: "arrest bail" -> "arrest bail"
-          
-          if (ref.includes('-')) {
-            // Format: "BNS-2023" -> extract law name
-            const lawName = ref.split('-')[0].trim();
-            if (['BNS', 'BNSS', 'BSA'].includes(lawName)) {
-              keywords.push(lawName);
-            }
-          } else if (ref.match(/^\d+$/)) {
-            // Just a number, add it
-            keywords.push(ref);
-          } else {
-            // Plain text keywords
-            keywords.push(ref);
-          }
-        });
-        
-        // If we got only law names, that's not useful for search
-        // So in this case, just show all results
-        if (keywords.length > 0 && !keywords.every(k => ['BNS', 'BNSS', 'BSA'].includes(k))) {
-          searchQuery = keywords.join(' ');
-        }
-      }
+      const searchQuery = urlParams.get('search') || urlParams.get('q') || urlParams.get('keywords');
       
       if (searchQuery) {
         console.log('🔍 Search keywords from URL:', searchQuery);
@@ -638,9 +568,9 @@
           searchInput.classList.remove('ring-2', 'ring-blue-400');
         }, 2000);
         
-        // Update placeholder to show it's from URL
+        // Update placeholder temporarily
         const originalPlaceholder = searchInput.placeholder;
-        searchInput.placeholder = '✓ Keywords loaded from link - Edit to refine search';
+        searchInput.placeholder = '✓ Keywords loaded - Edit to refine search';
         setTimeout(() => {
           searchInput.placeholder = originalPlaceholder;
         }, 5000);
@@ -648,17 +578,15 @@
         // Trigger search
         performSearch();
         
-        // Scroll to search box and results after a short delay
+        // Scroll to search box and select text
         setTimeout(() => {
           searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Focus and select all text so user can easily replace or edit
           searchInput.focus();
           searchInput.select();
         }, 500);
         
         console.log('✅ Search performed with keywords:', searchQuery);
       } else {
-        console.log('ℹ️ No URL parameters, showing all results');
         renderResults();
       }
       
