@@ -853,62 +853,7 @@
       }
     };
     
-    // ENHANCED FORMATTING INSTRUCTIONS (Critical for quality)
-    const FORMATTING_GUIDELINES = `
-CRITICAL FORMATTING RULES - FOLLOW EXACTLY:
-
-1. NO RAW URLS - Convert all links to clickable text:
-   ❌ BAD: https://www.indiacode.nic.in/handle/123456789/20062
-   ✅ GOOD: [View BNS 2023 Full Text](https://www.indiacode.nic.in/handle/123456789/20062)
-
-2. NO SEARCH KEYWORDS SECTION - Remove completely
-   ❌ NEVER show: "🔍 SEARCH KEYWORDS: "Accident" OR "Road accident""
-   
-3. COMPREHENSIVE STRUCTURE - Follow this exact format:
-
-📋 SUMMARY:
-[Provide 4-6 paragraph comprehensive summary covering all key aspects]
-
-📖 DETAILED EXPLANATION:
-[Main content with proper headings and structure]
-
-⚖️ RELEVANT SECTIONS:
-• Section X of [Law Name] - [Brief description]
-• Section Y of [Law Name] - [Brief description]
-
-💡 PRACTICAL GUIDANCE:
-• Step 1: [Clear action]
-• Step 2: [Clear action]
-• Step 3: [Clear action]
-
-📚 REFERENCES:
-• [New Criminal Laws 2024](link) - Official texts
-• [MHA Guidelines](link) - Ministry resources
-
-4. SECTION REFERENCES:
-   ✅ ALWAYS mention: "Section X of BNS/BNSS/BSA"
-   ✅ ALWAYS explain what the section says in simple terms
-   
-5. NO IMAGES - Do not include image links (they don't work)
-
-6. MAKE IT SUBSTANTIAL:
-   • Minimum 6-8 paragraphs for standard answers
-   • Use clear headings with emojis
-   • Include examples and scenarios
-   • Provide step-by-step procedures
-   
-7. LANGUAGE STYLE:
-   • Write in complete paragraphs
-   • Use bullet points sparingly
-   • Include relevant examples
-   • Connect concepts logically
-
-8. DISCLAIMER (at end):
-⚠️ DISCLAIMER: This information is for educational purposes only. For specific legal matters, consult official legal texts or a qualified legal professional.
-`;
-    
-    
-    // Multi-level answer depth options
+    // Multi-level answer depth options (sent to n8n as metadata)
     const ANSWER_LEVELS = {
       brief: {
         label: '📝 Brief',
