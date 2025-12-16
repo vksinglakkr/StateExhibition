@@ -570,16 +570,58 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Check for URL parameters (search keywords from chatbot)
       const urlParams = new URLSearchParams(window.location.search);
-      const searchQuery = urlParams.get('search') || urlParams.get('q') || urlParams.get('keywords');
+      
+      // Support multiple parameter names
+      let searchQuery = urlParams.get('search') || urlParams.get('q') || urlParams.get('keywords');
+      
+      // Handle 'sections' parameter - extract keywords from section references
+      const sectionsParam = urlParams.get('sections');
+      if (sectionsParam && !searchQuery) {
+        // Parse sections parameter: "BNS-2023,BNSS-2023,BSA-2023" -> extract law names
+        const sectionRefs = sectionsParam.split(',').map(s => s.trim());
+        const keywords = [];
+        
+        sectionRefs.forEach(ref => {
+          // Extract meaningful keywords from section reference
+          // Example: "BNS-2023" -> "BNS"
+          // Example: "BNSS Section 173" -> "BNSS 173"
+          // Example: "arrest bail" -> "arrest bail"
+          
+          if (ref.includes('-')) {
+            // Format: "BNS-2023" -> extract law name
+            const lawName = ref.split('-')[0].trim();
+            if (['BNS', 'BNSS', 'BSA'].includes(lawName)) {
+              keywords.push(lawName);
+            }
+          } else if (ref.match(/^\d+$/)) {
+            // Just a number, add it
+            keywords.push(ref);
+          } else {
+            // Plain text keywords
+            keywords.push(ref);
+          }
+        });
+        
+        // If we got only law names, that's not useful for search
+        // So in this case, just show all results
+        if (keywords.length > 0 && !keywords.every(k => ['BNS', 'BNSS', 'BSA'].includes(k))) {
+          searchQuery = keywords.join(' ');
+        }
+      }
       
       if (searchQuery) {
-        // Set the search input
-        document.getElementById('searchInput').value = searchQuery;
+        // Set the search input so user can see and edit it
+        const searchInput = document.getElementById('searchInput');
+        searchInput.value = searchQuery;
+        
         // Trigger search
         performSearch();
-        // Scroll to results
+        
+        // Scroll to results after a short delay
         setTimeout(() => {
-          document.getElementById('searchInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Optionally focus the input so user can immediately edit
+          searchInput.focus();
         }, 300);
       } else {
         renderResults();
