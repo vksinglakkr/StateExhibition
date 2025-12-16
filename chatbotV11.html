@@ -923,7 +923,23 @@
         if (!response.ok) throw new Error('HTTP ' + response.status);
         
         const data = await response.json();
-        let answerText = data.answer || data.response || 'No response';
+        console.log('📥 Received data:', data); // Debug log
+        
+        // Handle different response formats
+        let answerText = '';
+        if (typeof data === 'string') {
+          answerText = data;
+        } else if (data.answer) {
+          answerText = data.answer;
+        } else if (data.response) {
+          answerText = data.response;
+        } else if (data.choices && data.choices[0] && data.choices[0].message) {
+          // Direct Groq format (if n8n passes through)
+          answerText = data.choices[0].message.content;
+        } else {
+          answerText = 'No answer generated (empty model output).';
+          console.error('❌ Unexpected response format:', data);
+        }
         
         // Clean up any remaining issues
         answerText = answerText.replace('[SEARCH_BUTTON]', '');
