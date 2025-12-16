@@ -725,7 +725,7 @@
               </svg>
             </button>
             
-            <button onclick="openSectionSearch()" class="icon-btn bg-blue-600 hover:bg-blue-700" title="Search Exact Section">
+            <button onclick="openSectionSearch()" class="icon-btn bg-blue-600 hover:bg-blue-700" title="Search Related Sections (Opens with keywords from your question)">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
@@ -1370,35 +1370,72 @@
     
     window.shareOnWhatsApp = shareOnWhatsApp;
 
-    // Extract Section Numbers from Response
-    function extractSectionNumbers(text) {
-      const matches = text.match(/(BNSS|BNS|BSA)\s*(?:Section)?\s*(\d+)/gi);
-      if (!matches) return [];
+    // Extract Keywords from User's Question
+    function extractKeywords(question) {
+      // Convert to lowercase for processing
+      const text = question.toLowerCase();
       
-      const sections = [];
-      matches.forEach(function(m) {
-        const parts = m.match(/(BNSS|BNS|BSA)\s*(?:Section)?\s*(\d+)/i);
-        if (parts) {
-          sections.push({ law: parts[1], section: parts[2] });
-        }
-      });
-      return sections;
+      // Remove common question words
+      const stopWords = ['what', 'when', 'where', 'how', 'why', 'who', 'is', 'are', 'the', 'a', 'an', 
+                         'can', 'could', 'should', 'would', 'do', 'does', 'did', 'have', 'has', 'had',
+                         'will', 'shall', 'may', 'might', 'must', 'को', 'का', 'के', 'में', 'से', 'है', 'हैं'];
+      
+      // Split into words and filter
+      const words = text.split(/\s+/)
+        .filter(word => word.length > 2)  // At least 3 characters
+        .filter(word => !stopWords.includes(word))
+        .filter(word => !/^\d+$/.test(word));  // Remove pure numbers
+      
+      // Take first 4-5 meaningful words as keywords
+      const keywords = words.slice(0, 5);
+      
+      // If we have very few keywords, try to extract key phrases
+      if (keywords.length < 3) {
+        // Look for important legal terms
+        const importantTerms = [
+          'arrest', 'bail', 'fir', 'complaint', 'investigation', 'search', 'seizure',
+          'evidence', 'witness', 'trial', 'court', 'judge', 'lawyer', 'police',
+          'custody', 'detention', 'rights', 'punishment', 'crime', 'offence',
+          'murder', 'theft', 'fraud', 'rape', 'kidnapping', 'cybercrime',
+          'electronic', 'digital', 'cyber', 'appeal', 'revision', 'judgment',
+          'charge', 'chargesheet', 'confession', 'anticipatory', 'cognizable',
+          'bailable', 'warrant', 'summons', 'victim', 'compensation'
+        ];
+        
+        importantTerms.forEach(term => {
+          if (text.includes(term) && !keywords.includes(term)) {
+            keywords.push(term);
+          }
+        });
+      }
+      
+      return keywords.filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
     }
 
-    // Open Section Search with Parameters
+    // Open Section Search with Keywords from Question
     function openSectionSearch() {
-      const answer = document.getElementById('modalAnswer').textContent;
-      const sections = extractSectionNumbers(answer);
+      // Get the original question
+      const question = document.getElementById('modalQuestion').textContent;
       
-      if (sections.length > 0) {
-        const params = sections.map(function(s) {
-          return s.law + '-' + s.section;
-        }).join(',');
-        window.open('section-search.html?sections=' + params, '_blank');
-        console.log('✅ Opening section search with:', params);
+      if (question && question.trim()) {
+        // Extract keywords from the question
+        const keywords = extractKeywords(question);
+        
+        if (keywords.length > 0) {
+          // Build URL with keywords
+          const searchQuery = keywords.join('+');
+          const url = 'section-search.html?search=' + encodeURIComponent(searchQuery);
+          window.open(url, '_blank');
+          console.log('✅ Opening section search with keywords:', keywords.join(' '));
+        } else {
+          // Fallback: open without keywords
+          window.open('section-search.html', '_blank');
+          console.log('⚠️ No keywords extracted, opening section search');
+        }
       } else {
+        // No question available, just open section search
         window.open('section-search.html', '_blank');
-        console.log('✅ Opening section search (no sections found)');
+        console.log('✅ Opening section search (no question available)');
       }
     }
     
