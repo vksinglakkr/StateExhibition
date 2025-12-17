@@ -918,6 +918,7 @@ if (document.readyState === 'loading') {
       
       document.getElementById('modalQuestion').textContent = currentQuestion;
       document.getElementById('modalAnswer').innerHTML = loadingMessages[provider];
+      showRelatedQuestions(currentQuestion, selectedUser);  // ← ADD THIS LINE
       document.getElementById('aiModal').classList.remove('hidden');
       
       updateModalHeader(provider);
@@ -2172,74 +2173,57 @@ const TOPIC_QUESTIONS = {
     
     window.shareOnWhatsApp = shareOnWhatsApp;
 
-    // Extract Keywords from User's Question
-    function extractKeywords(question) {
-      // Convert to lowercase for processing
-      const text = question.toLowerCase();
-      
-      // Remove common question words
-      const stopWords = ['what', 'when', 'where', 'how', 'why', 'who', 'is', 'are', 'the', 'a', 'an', 
-                         'can', 'could', 'should', 'would', 'do', 'does', 'did', 'have', 'has', 'had',
-                         'will', 'shall', 'may', 'might', 'must', 'को', 'का', 'के', 'में', 'से', 'है', 'हैं'];
-      
-      // Split into words and filter
-      const words = text.split(/\s+/)
-        .filter(word => word.length > 2)  // At least 3 characters
-        .filter(word => !stopWords.includes(word))
-        .filter(word => !/^\d+$/.test(word));  // Remove pure numbers
-      
-      // Take first 4-5 meaningful words as keywords
-      const keywords = words.slice(0, 5);
-      
-      // If we have very few keywords, try to extract key phrases
-      if (keywords.length < 3) {
-        // Look for important legal terms
-        const importantTerms = [
-          'arrest', 'bail', 'fir', 'complaint', 'investigation', 'search', 'seizure',
-          'evidence', 'witness', 'trial', 'court', 'judge', 'lawyer', 'police',
-          'custody', 'detention', 'rights', 'punishment', 'crime', 'offence',
-          'murder', 'theft', 'fraud', 'rape', 'kidnapping', 'cybercrime',
-          'electronic', 'digital', 'cyber', 'appeal', 'revision', 'judgment',
-          'charge', 'chargesheet', 'confession', 'anticipatory', 'cognizable',
-          'bailable', 'warrant', 'summons', 'victim', 'compensation'
-        ];
-        
-        importantTerms.forEach(term => {
-          if (text.includes(term) && !keywords.includes(term)) {
-            keywords.push(term);
-          }
-        });
-      }
-      
-      return keywords.filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
-    }
+// Extract Keywords from User's Question
+function extractKeywords(question) {
+  // Convert to lowercase for processing
+  const text = question.toLowerCase();
+  
+  // Remove common question words
+  const stopWords = ['what', 'when', 'where', 'how', 'why', 'who', 'is', 'are', 'the', 'a', 'an', 
+                     'can', 'could', 'should', 'would', 'do', 'does', 'did', 'have', 'has', 'had',
+                     'will', 'shall', 'may', 'might', 'must', 'for', 'of', 'to', 'in', 'on', 'at',
+                     'from', 'with', 'by'];
+  
+  // Split into words and filter
+  const words = text.split(/\s+/)
+    .filter(word => word.length > 2)  // At least 3 characters
+    .filter(word => !stopWords.includes(word))
+    .filter(word => !/^\d+$/.test(word))  // Remove pure numbers
+    .filter(word => !/[?!.,;:]+$/.test(word)); // Remove punctuation
+  
+  // Take first 4-5 meaningful words as keywords
+  const keywords = words.slice(0, 5);
+  
+  // Remove duplicates
+  return [...new Set(keywords)];
+}
 
-    // Open Section Search with Keywords from Question
-    function openSectionSearch() {
-      // Get the original question
-      const question = document.getElementById('modalQuestion').textContent;
-      
-      if (question && question.trim()) {
-        // Extract keywords from the question
-        const keywords = extractKeywords(question);
-        
-        if (keywords.length > 0) {
-          // Build URL with keywords
-          const searchQuery = keywords.join('+');
-          const url = 'section-search.html?search=' + encodeURIComponent(searchQuery);
-          window.open(url, '_blank');
-          console.log('✅ Opening section search with keywords:', keywords.join(' '));
-        } else {
-          // Fallback: open without keywords
-          window.open('section-search.html', '_blank');
-          console.log('⚠️ No keywords extracted, opening section search');
-        }
-      } else {
-        // No question available, just open section search
-        window.open('section-search.html', '_blank');
-        console.log('✅ Opening section search (no question available)');
-      }
+// Open Section Search with Keywords from Question
+function openSectionSearch() {
+  // Get the original question
+  const question = document.getElementById('modalQuestion').textContent;
+  
+  if (question && question.trim()) {
+    // Extract keywords from the question
+    const keywords = extractKeywords(question);
+    
+    if (keywords.length > 0) {
+      // Join with spaces (OR logic in section-search)
+      const searchQuery = keywords.join(' ');  // ← SPACE, not +
+      const url = 'section-search.html?search=' + encodeURIComponent(searchQuery);
+      window.open(url, '_blank');
+      console.log('✅ Opening section search with keywords:', searchQuery);
+    } else {
+      // Fallback: open without keywords
+      window.open('section-search.html', '_blank');
+      console.log('⚠️ No keywords extracted, opening section search');
     }
+  } else {
+    // No question available, just open section search
+    window.open('section-search.html', '_blank');
+    console.log('✅ Opening section search (no question available)');
+  }
+}
     
     window.openSectionSearch = openSectionSearch;
 
