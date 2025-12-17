@@ -555,7 +555,7 @@
         </h3>
         
         <div class="radio-option selected" id="customCard" onclick="selectQueryType('custom')">
-          <input type="radio" name="queryType" value="custom" checked>
+          <input type="radio" name="queryType" value="custom" checked onclick="event.stopPropagation(); selectQueryType('custom')">
           <span class="radio-icon">✏️</span>
           <div class="radio-label">
             <div class="radio-label-title">Ask Your Own Question</div>
@@ -564,7 +564,7 @@
         </div>
         
         <div class="radio-option" id="readyCard" onclick="selectQueryType('ready')">
-          <input type="radio" name="queryType" value="ready">
+          <input type="radio" name="queryType" value="ready" onclick="event.stopPropagation(); selectQueryType('ready')">
           <span class="radio-icon">📋</span>
           <div class="radio-label">
             <div class="radio-label-title">Select Ready-Made Question</div>
@@ -583,6 +583,8 @@
               rows="3"
               class="w-full rounded-2xl border-4 border-orange-400 p-4 pb-12 text-gray-900 bg-gradient-to-br from-white to-orange-50 shadow-2xl resize-none focus:border-orange-500 focus:ring-4 focus:ring-orange-200 transition-all duration-300"
               placeholder="Type your question here... (e.g., What are my rights during arrest?)"
+              oninput="showAutocompleteSuggestions()"
+              onfocus="showAutocompleteSuggestions()"
             ></textarea>
             <button
               id="voiceBtn"
@@ -593,6 +595,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
               </svg>
             </button>
+          </div>
+          
+          <!-- Autocomplete Suggestions Box -->
+          <div id="autocompleteSuggestions" class="hidden mt-2 bg-white border-2 border-orange-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <!-- Suggestions will be added here dynamically -->
           </div>
         </div>
 
@@ -744,56 +751,22 @@
   <script>
     console.log('🚀 LawBot 2024 initializing...');
     
-    // Update Last Modified DateTime - AUTOMATIC DETECTION
+    // Update Last Modified DateTime - FIXED DATE
     function updateLastModified() {
       try {
-        // Get document's actual last modified date
-        let lastModDate;
-        
-        if (document.lastModified) {
-          // Parse the document.lastModified string
-          lastModDate = new Date(document.lastModified);
-          console.log('📅 Document last modified:', document.lastModified);
-        } else {
-          // Fallback to current date if not available
-          lastModDate = new Date();
-        }
-        
-        // Validate date
-        if (isNaN(lastModDate.getTime())) {
-          lastModDate = new Date();
-        }
-        
-        const day = lastModDate.getDate();
-        const suffix = (day) => {
-          if (day > 3 && day < 21) return 'th';
-          switch (day % 10) {
-            case 1: return 'st';
-            case 2: return 'nd';
-            case 3: return 'rd';
-            default: return 'th';
-          }
-        };
-        
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                           'July', 'August', 'September', 'October', 'November', 'December'];
-        const month = monthNames[lastModDate.getMonth()];
-        const year = lastModDate.getFullYear();
-        const hours = lastModDate.getHours().toString().padStart(2, '0');
-        const minutes = lastModDate.getMinutes().toString().padStart(2, '0');
-        
-        const formattedDate = `${day}${suffix(day)} ${month} ${year}, ${hours}:${minutes} IST`;
+        // FIXED DATE - Update this manually when making changes
+        const FIXED_DATE = '17th December 2024, 23:30 IST';
         
         const element = document.getElementById('lastModified');
         if (element) {
-          element.textContent = formattedDate;
-          console.log('✅ Last Modified displayed:', formattedDate);
+          element.textContent = FIXED_DATE;
+          console.log('✅ Last Modified displayed (FIXED):', FIXED_DATE);
         }
       } catch (error) {
         console.error('❌ Last Modified error:', error);
         const element = document.getElementById('lastModified');
         if (element) {
-          element.textContent = '15th December 2024, 21:18 IST';
+          element.textContent = '17th December 2024, 23:30 IST';
         }
       }
     }
@@ -2225,6 +2198,64 @@ const TOPIC_QUESTIONS = {
     }
     
     window.openSectionSearch = openSectionSearch;
+
+    // Autocomplete Suggestions for Custom Questions
+    function showAutocompleteSuggestions() {
+      const input = document.getElementById('userInput');
+      const suggestionsBox = document.getElementById('autocompleteSuggestions');
+      const query = input.value.toLowerCase().trim();
+      
+      // Hide if input is too short
+      if (query.length < 3) {
+        suggestionsBox.classList.add('hidden');
+        return;
+      }
+      
+      // Get all questions from TOPIC_QUESTIONS
+      const allQuestions = [];
+      for (const topic in TOPIC_QUESTIONS) {
+        allQuestions.push(...TOPIC_QUESTIONS[topic]);
+      }
+      
+      // Filter matching questions
+      const matches = allQuestions.filter(q => 
+        q.toLowerCase().includes(query)
+      ).slice(0, 10); // Limit to 10 suggestions
+      
+      // Show suggestions
+      if (matches.length > 0) {
+        suggestionsBox.innerHTML = matches.map(q => `
+          <div class="p-3 hover:bg-orange-50 cursor-pointer border-b border-orange-100 text-sm transition"
+               onclick="selectSuggestion('${q.replace(/'/g, "\\'")}')">
+            ${q}
+          </div>
+        `).join('');
+        suggestionsBox.classList.remove('hidden');
+      } else {
+        suggestionsBox.classList.add('hidden');
+      }
+    }
+    
+    function selectSuggestion(question) {
+      const input = document.getElementById('userInput');
+      const suggestionsBox = document.getElementById('autocompleteSuggestions');
+      
+      input.value = question;
+      suggestionsBox.classList.add('hidden');
+      input.focus();
+    }
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(event) {
+      const suggestionsBox = document.getElementById('autocompleteSuggestions');
+      const input = document.getElementById('userInput');
+      
+      if (!suggestionsBox.contains(event.target) && event.target !== input) {
+        suggestionsBox.classList.add('hidden');
+      }
+    });
+    
+    console.log('✅ NyayaMitra ready with autocomplete!');
 
     console.log('✅ LawBot Topic-Based ready!');
   </script>
