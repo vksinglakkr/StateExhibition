@@ -977,28 +977,81 @@
         // Now convert markdown links (after escaping HTML)
         answerText = convertMarkdownLinksToHTML(answerText);
         
-        // Extract related questions from answer (if present)
+        // ============================================
+        // EXTRACT RELATED QUESTIONS - ROBUST VERSION
+        // ============================================
         let relatedQuestions = [];
-        const relatedMatch = answerText.match(/❓ RELATED QUESTIONS([\s\S]*?)(?=⚠️|━━━|$)/i);
         
-        if (relatedMatch) {
-          const relatedSection = relatedMatch[1];
-          // Extract bullet points or numbered items
-          relatedQuestions = relatedSection
-            .split(/<br>/gi)
-            .map(line => line.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'))
-            .filter(line => {
-              const trimmed = line.trim();
-              return (trimmed.match(/^[•\-\d]+[\.\)]\s*/)) && trimmed.length > 15;
-            })
-            .map(line => line.replace(/^[•\-\d]+[\.\)]\s*/, '').trim())
-            .filter(q => q.length > 10)
-            .slice(0, 3);  // Maximum 3 questions
+        console.log('🔍 Starting related questions extraction...');
+        console.log('🔍 Answer text length:', answerText.length);
+        
+        // Look for related questions section - try multiple patterns
+        let relatedSection = '';
+        
+        // Check if "RELATED QUESTION" exists anywhere (case insensitive)
+        const hasRelated = answerText.toLowerCase().includes('related question');
+        console.log('🔍 Contains "related question":', hasRelated);
+        
+        if (hasRelated) {
+          // Split answer by <br> tags
+          const lines = answerText.split(/<br\s*\/?>/gi);
+          console.log('🔍 Total lines in answer:', lines.length);
           
-          console.log('📋 Extracted related questions:', relatedQuestions);
+          let inRelatedSection = false;
+          let sectionLines = [];
           
-          // Remove related questions section from main answer
-          answerText = answerText.replace(/❓ RELATED QUESTIONS[\s\S]*?(?=⚠️|━━━|$)/i, '');
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i]
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&amp;/g, '&')
+              .replace(/&quot;/g, '"')
+              .trim();
+            
+            // Check if this line starts the related questions section
+            if (line.match(/❓.*related.*question/i) || line.match(/related.*question/i)) {
+              inRelatedSection = true;
+              console.log('📍 Found related questions section at line', i, ':', line.substring(0, 50));
+              continue;
+            }
+            
+            // Check if we're leaving the section
+            if (inRelatedSection) {
+              if (line.match(/⚠️|disclaimer|warning|━━━/i) || 
+                  line.toLowerCase().includes('educational purposes') ||
+                  line.toLowerCase().includes('consult') ||
+                  (line.length > 50 && !line.includes('?'))) {
+                console.log('📍 Leaving related questions section at line', i);
+                break;
+              }
+              
+              // If line has content, add to section
+              if (line.length > 5) {
+                sectionLines.push(line);
+              }
+            }
+          }
+          
+          console.log('📋 Collected section lines:', sectionLines.length);
+          
+          // Extract questions from collected lines
+          for (let line of sectionLines) {
+            // Remove bullets, numbers, dashes at start
+            let cleaned = line.replace(/^[\s•\-\d\.\)\]]+/, '').trim();
+            
+            // Must have a question mark and be reasonable length
+            if (cleaned.includes('?') && cleaned.length > 15 && cleaned.length < 200) {
+              // Make sure it's not a heading or instruction
+              if (!cleaned.match(/^(format|suggest|should be|questions)/i)) {
+                relatedQuestions.push(cleaned);
+                console.log('✅ Extracted question:', cleaned.substring(0, 60) + '...');
+              }
+            }
+          }
+          
+          // Remove duplicates and limit to 3
+          relatedQuestions = [...new Set(relatedQuestions)].slice(0, 3);
+          console.log('📋 Final related questions count:', relatedQuestions.length);
         }
         
         const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -1012,33 +1065,45 @@
           `${levelEmoji} ${answerLevel.charAt(0).toUpperCase() + answerLevel.slice(1)} Answer${userTypeLabel}<br>` +
           `⏱️ Response: ${responseTime}s with ${providerNames[provider]}`;
         
-        // Add related questions in collapsible dropdown
+        // ============================================
+        // DISPLAY RELATED QUESTIONS IN DROPDOWN
+        // ============================================
         if (relatedQuestions.length > 0) {
+          console.log('✅ Adding related questions dropdown to UI');
+          
           finalHTML += '<br><br>' +
-            '<details class="mt-2" style="background: linear-gradient(to right, #fff7ed, #fef3c7); padding: 12px; border-radius: 12px; border: 2px solid #fb923c;">' +
-              '<summary style="cursor: pointer; font-weight: bold; color: #1f2937; display: flex; align-items: center; gap: 8px;">' +
+            '<details open style="background: linear-gradient(to right, #fff7ed, #fef3c7); padding: 12px; border-radius: 12px; border: 2px solid #fb923c; margin-top: 8px;">' +
+              '<summary style="cursor: pointer; font-weight: bold; color: #1f2937; display: flex; align-items: center; gap: 8px; list-style: none;">' +
                 '<span style="font-size: 18px;">❓</span> ' +
-                '<span>Related Questions (' + relatedQuestions.length + ')</span> ' +
-                '<span style="font-size: 12px; color: #6b7280;">(Click to expand)</span>' +
+                '<span style="font-size: 16px;">Related Questions (' + relatedQuestions.length + ')</span> ' +
+                '<span style="font-size: 12px; color: #6b7280; margin-left: auto;">(Click question to ask)</span>' +
               '</summary>' +
               '<div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">';
           
           relatedQuestions.forEach((q, idx) => {
+            // Escape quotes for onclick
+            const escapedQuestion = q.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            
             finalHTML += 
-              '<div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #fb923c; cursor: pointer; transition: all 0.2s;" ' +
-                   'onmouseover="this.style.background=\'#fff7ed\'; this.style.borderLeftColor=\'#f97316\';" ' +
-                   'onmouseout="this.style.background=\'white\'; this.style.borderLeftColor=\'#fb923c\';" ' +
-                   'onclick="askRelatedQuestion(\'' + q.replace(/'/g, "\\'") + '\')">' +
-                '<div style="display: flex; align-items: start; gap: 8px;">' +
-                  '<span style="color: #f97316; font-weight: bold; font-size: 14px; margin-top: 2px;">' + (idx + 1) + '.</span>' +
-                  '<span style="color: #374151; font-size: 14px;">' + q + '</span>' +
+              '<div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #fb923c; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" ' +
+                   'onmouseover="this.style.background=\'#fff7ed\'; this.style.borderLeftColor=\'#f97316\'; this.style.boxShadow=\'0 2px 6px rgba(0,0,0,0.15)\';" ' +
+                   'onmouseout="this.style.background=\'white\'; this.style.borderLeftColor=\'#fb923c\'; this.style.boxShadow=\'0 1px 3px rgba(0,0,0,0.1)\';" ' +
+                   'onclick="askRelatedQuestion(\'' + escapedQuestion + '\')">' +
+                '<div style="display: flex; align-items: start; gap: 10px;">' +
+                  '<span style="color: #f97316; font-weight: bold; font-size: 16px; min-width: 24px;">' + (idx + 1) + '.</span>' +
+                  '<span style="color: #374151; font-size: 14px; line-height: 1.5;">' + q + '</span>' +
                 '</div>' +
               '</div>';
           });
           
           finalHTML += '</div></details>';
+          
+          console.log('✅ Related questions UI added successfully');
+        } else {
+          console.log('⚠️ No related questions found - dropdown not added');
         }
         
+        // Display the final HTML
         document.getElementById('modalAnswer').innerHTML = finalHTML;
         
         console.log('✅ Response from', provider, 'in', responseTime, 'seconds');
