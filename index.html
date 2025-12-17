@@ -633,6 +633,22 @@
           
         </div>
 
+        <!-- Language Selection - Before Submit Button -->
+        <div class="mb-4 fade-in">
+          <div class="flex items-center justify-between bg-gradient-to-r from-orange-50 to-yellow-50 p-3 rounded-xl border-2 border-orange-200">
+            <label class="text-sm font-bold text-gray-800 flex items-center gap-2">
+              <span class="text-xl">🌐</span>
+              Response Language:
+            </label>
+            <select id="languageSelect" 
+                    class="px-4 py-2 border-2 border-orange-400 rounded-lg bg-white text-sm font-bold text-gray-800 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition cursor-pointer hover:bg-orange-50">
+              <option value="english">🇬🇧 English</option>
+              <option value="hindi">🇮🇳 हिंदी</option>
+              <option value="punjabi">🇮🇳 ਪੰਜਾਬੀ</option>
+            </select>
+          </div>
+        </div>
+
         <button 
           id="submitBtn" 
           class="w-full btn-primary flex items-center justify-center gap-3 text-xl fade-in"
@@ -717,8 +733,7 @@
             <div class="flex items-center gap-2">
               <label class="text-xs font-bold text-gray-700 whitespace-nowrap">🤖 AI:</label>
               <select id="aiSelector" class="compact-dropdown" onchange="retryWithAI(this.value)">
-                <option value="groq" selected>🚀 Groq</option>
-                <option value="gemini">💎 Gemini</option>
+                <option value="groq" selected>🚀 Groq Llama</option>
                 <option value="chatgpt">🤖 ChatGPT</option>
               </select>
             </div>
@@ -749,67 +764,65 @@
   </div>
 
   <script>
-    console.log('🚀 LawBot 2024 initializing...');
+    console.log('🚀 NyayaMitra initializing...');
     
-// Update Last Modified DateTime - SHOWS FILE'S ACTUAL LAST MODIFIED DATE
-function updateLastModified() {
-  try {
-    let lastModDate;
-    
-    // Try to get file's last modified date from server
-    if (document.lastModified) {
-      lastModDate = new Date(document.lastModified);
-      console.log('📅 Raw document.lastModified:', document.lastModified);
-    }
-    
-    // If invalid or not available, fallback
-    if (!lastModDate || isNaN(lastModDate.getTime())) {
-      console.warn('⚠️ Could not get file modification date, using fallback');
-      lastModDate = new Date('2025-12-17T23:30:00'); // Your last update date
-    }
-    
-    // Get day with ordinal suffix
-    const day = lastModDate.getDate();
-    const suffix = (day) => {
-      if (day > 3 && day < 21) return 'th';
-      switch (day % 10) {
-        case 1: return 'st';
-        case 2: return 'nd';
-        case 3: return 'rd';
-        default: return 'th';
+    // Update Last Modified DateTime - AUTOMATIC FROM FILE
+    function updateLastModified() {
+      try {
+        let lastModDate;
+        
+        // Get document's last modified date
+        if (document.lastModified) {
+          lastModDate = new Date(document.lastModified);
+          console.log('📅 Document last modified (raw):', document.lastModified);
+        }
+        
+        // Validate date
+        if (!lastModDate || isNaN(lastModDate.getTime())) {
+          lastModDate = new Date();
+          console.log('⚠️ Using current date as fallback');
+        }
+        
+        const day = lastModDate.getDate();
+        const suffix = (day) => {
+          if (day > 3 && day < 21) return 'th';
+          switch (day % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+          }
+        };
+        
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const month = monthNames[lastModDate.getMonth()];
+        const year = lastModDate.getFullYear();
+        const hours = lastModDate.getHours().toString().padStart(2, '0');
+        const minutes = lastModDate.getMinutes().toString().padStart(2, '0');
+        
+        const formattedDate = `${day}${suffix(day)} ${month} ${year}, ${hours}:${minutes} IST`;
+        
+        const element = document.getElementById('lastModified');
+        if (element) {
+          element.textContent = formattedDate;
+          console.log('✅ Last Modified displayed:', formattedDate);
+        }
+      } catch (error) {
+        console.error('❌ Last Modified error:', error);
+        const element = document.getElementById('lastModified');
+        if (element) {
+          element.textContent = '17th December 2025, 23:30 IST';
+        }
       }
-    };
-    
-    // Format: "17th December 2025, 23:30 IST"
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                       'July', 'August', 'September', 'October', 'November', 'December'];
-    const month = monthNames[lastModDate.getMonth()];
-    const year = lastModDate.getFullYear();
-    const hours = lastModDate.getHours().toString().padStart(2, '0');
-    const minutes = lastModDate.getMinutes().toString().padStart(2, '0');
-    
-    const formattedDate = `${day}${suffix(day)} ${month} ${year}, ${hours}:${minutes} IST`;
-    
-    const element = document.getElementById('lastModified');
-    if (element) {
-      element.textContent = formattedDate;
-      console.log('✅ Last Modified displayed:', formattedDate);
     }
-  } catch (error) {
-    console.error('❌ Last Modified error:', error);
-    const element = document.getElementById('lastModified');
-    if (element) {
-      element.textContent = '17th December 2025, 23:30 IST';
+    
+    // Call when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateLastModified);
+    } else {
+      updateLastModified();
     }
-  }
-}
-
-// Call when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateLastModified);
-} else {
-  updateLastModified();
-}
     
     // Set default profile on page load
     function setDefaultProfile() {
@@ -838,8 +851,7 @@ if (document.readyState === 'loading') {
     let selectedQueryType = 'custom';
     let aiUsed = {
       groq: false,
-      chatgpt: false,
-      gemini: false
+      chatgpt: false
     };
     
     // User-level specific prompt instructions with ENHANCED FORMATTING
@@ -895,14 +907,12 @@ if (document.readyState === 'loading') {
       
       const loadingMessages = {
         groq: '⚡ Groq is processing at lightning speed...',
-        chatgpt: '🤖 ChatGPT is analyzing deeply...',
-        gemini: '💎 Gemini is generating balanced response...'
+        chatgpt: '🤖 ChatGPT is analyzing deeply...'
       };
       
       const providerNames = {
         groq: '🚀 Groq Llama 3.3',
-        chatgpt: '🤖 ChatGPT GPT-4o',
-        gemini: '💎 Gemini Flash 2.0'
+        chatgpt: '🤖 ChatGPT GPT-4o'
       };
       
       document.getElementById('modalQuestion').textContent = currentQuestion;
@@ -916,6 +926,10 @@ if (document.readyState === 'loading') {
       const startTime = Date.now();
       
       try {
+        // Get selected language
+        const selectedLanguage = document.getElementById('languageSelect').value;
+        console.log('🌐 Selected language:', selectedLanguage);
+        
         // Send CLEAN data - let n8n handle formatting
         const response = await fetch(WEBHOOK_URL, {
           method: 'POST',
@@ -929,6 +943,7 @@ if (document.readyState === 'loading') {
             topic: selectedTopic,
             queryType: selectedQueryType,
             answerDepth: answerLevel,
+            language: selectedLanguage,  // ← LANGUAGE PARAMETER ADDED
             timestamp: new Date().toISOString()
           })
         });
@@ -989,16 +1004,109 @@ if (document.readyState === 'loading') {
         // Now convert markdown links (after escaping HTML)
         answerText = convertMarkdownLinksToHTML(answerText);
         
+        // ============================================
+        // EXTRACT AND REMOVE RELATED QUESTIONS
+        // ============================================
+        let relatedQuestions = [];
+        
+        console.log('🔍 Searching for related questions in answer...');
+        
+        // Try to find related questions section
+        const relatedPattern = /❓\s*RELATED QUESTIONS[\s\S]*?(?=⚠️|━━━|$)/i;
+        const relatedMatch = answerText.match(relatedPattern);
+        
+        if (relatedMatch) {
+          console.log('✅ Found related questions section');
+          const relatedSection = relatedMatch[0];
+          
+          // Split by <br> and extract questions
+          const lines = relatedSection.split(/<br\s*\/?>/gi);
+          
+          for (let line of lines) {
+            // Clean HTML entities
+            let cleaned = line
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&amp;/g, '&')
+              .replace(/&quot;/g, '"')
+              .trim();
+            
+            // Skip header line and empty lines
+            if (cleaned.length < 10 || cleaned.match(/RELATED QUESTIONS/i)) {
+              continue;
+            }
+            
+            // Remove bullet points, numbers, dashes
+            cleaned = cleaned.replace(/^[\s•\-\d\.\)]+/, '').trim();
+            
+            // Must have question mark and be reasonable length
+            if (cleaned.includes('?') && cleaned.length > 15 && cleaned.length < 300) {
+              relatedQuestions.push(cleaned);
+              console.log('  📌 Extracted:', cleaned.substring(0, 60) + '...');
+            }
+          }
+          
+          // Limit to 3 questions
+          relatedQuestions = relatedQuestions.slice(0, 3);
+          console.log('✅ Total questions extracted:', relatedQuestions.length);
+          
+          // REMOVE the entire related questions section from answer
+          answerText = answerText.replace(relatedPattern, '');
+          console.log('✅ Related questions section removed from answer body');
+        } else {
+          console.log('⚠️ No related questions section found');
+        }
+        
         const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
         
         // Add metadata footer
         const levelEmoji = ANSWER_LEVELS[answerLevel].icon;
         const userTypeLabel = selectedUser ? ` | 👤 ${selectedUser.charAt(0).toUpperCase() + selectedUser.slice(1)}` : '';
         
-        document.getElementById('modalAnswer').innerHTML = answerText + 
+        let finalHTML = answerText + 
           '<br><br>━━━━━━━━━━━━━━━━━━━━━━━<br>' +
           `${levelEmoji} ${answerLevel.charAt(0).toUpperCase() + answerLevel.slice(1)} Answer${userTypeLabel}<br>` +
           `⏱️ Response: ${responseTime}s with ${providerNames[provider]}`;
+        
+        // ============================================
+        // DISPLAY RELATED QUESTIONS DROPDOWN
+        // ============================================
+        if (relatedQuestions.length > 0) {
+          console.log('✅ Adding related questions dropdown');
+          
+          finalHTML += '<br><br>' +
+            '<details open style="background: linear-gradient(to right, #fff7ed, #fef3c7); padding: 14px; border-radius: 12px; border: 2px solid #fb923c; box-shadow: 0 2px 8px rgba(251, 146, 60, 0.2);">' +
+              '<summary style="cursor: pointer; font-weight: bold; color: #1f2937; display: flex; align-items: center; gap: 8px; list-style: none; user-select: none;">' +
+                '<span style="font-size: 20px;">❓</span> ' +
+                '<span style="font-size: 16px;">Related Questions (' + relatedQuestions.length + ')</span> ' +
+                '<span style="font-size: 12px; color: #6b7280; margin-left: auto; font-weight: normal;">(Click to ask automatically)</span>' +
+              '</summary>' +
+              '<div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">';
+          
+          relatedQuestions.forEach((q, idx) => {
+            // Escape quotes properly
+            const escapedQuestion = q
+              .replace(/\\/g, '\\\\')
+              .replace(/'/g, "\\'")
+              .replace(/"/g, '&quot;')
+              .replace(/\n/g, ' ');
+            
+            finalHTML += 
+              '<div style="background: white; padding: 14px; border-radius: 10px; border-left: 4px solid #fb923c; cursor: pointer; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" ' +
+                   'onmouseover="this.style.background=\'#fff7ed\'; this.style.borderLeftColor=\'#f97316\'; this.style.boxShadow=\'0 4px 12px rgba(251,146,60,0.3)\'; this.style.transform=\'translateX(4px)\';" ' +
+                   'onmouseout="this.style.background=\'white\'; this.style.borderLeftColor=\'#fb923c\'; this.style.boxShadow=\'0 1px 3px rgba(0,0,0,0.1)\'; this.style.transform=\'translateX(0)\';" ' +
+                   'onclick="askRelatedQuestion(\'' + escapedQuestion + '\')">' +
+                '<div style="display: flex; align-items: start; gap: 12px;">' +
+                  '<span style="color: #f97316; font-weight: bold; font-size: 16px; min-width: 26px; margin-top: 2px;">' + (idx + 1) + '.</span>' +
+                  '<span style="color: #374151; font-size: 15px; line-height: 1.6;">' + q + '</span>' +
+                '</div>' +
+              '</div>';
+          });
+          
+          finalHTML += '</div></details>';
+        }
+        
+        document.getElementById('modalAnswer').innerHTML = finalHTML;
         
         console.log('✅ Response from', provider, 'in', responseTime, 'seconds');
         
@@ -1052,14 +1160,12 @@ if (document.readyState === 'loading') {
     function updateModalHeader(provider) {
       const icons = {
         groq: '🚀',
-        chatgpt: '🤖',
-        gemini: '💎'
+        chatgpt: '🤖'
       };
       
       const names = {
         groq: 'Groq Llama 3.3',
-        chatgpt: 'ChatGPT GPT-4o',
-        gemini: 'Gemini Flash 2.0'
+        chatgpt: 'ChatGPT GPT-4o'
       };
       
       const header = document.querySelector('#aiModal .bg-gradient-to-r h2');
@@ -2130,7 +2236,7 @@ const TOPIC_QUESTIONS = {
       // Reset for new question
       currentQuestion = question;
       currentAnswerLevel = 'standard'; // Default to standard
-      aiUsed = { groq: true, chatgpt: false, gemini: false };
+      aiUsed = { groq: true, chatgpt: false };
       
       // Always use Groq first (fastest) with standard depth
       await getAnswer('groq', 'standard');
@@ -2231,6 +2337,42 @@ const TOPIC_QUESTIONS = {
     }
     
     window.openSectionSearch = openSectionSearch;
+
+    // Ask a Related Question
+    function askRelatedQuestion(question) {
+      console.log('📋 Related question clicked:', question);
+      console.log('📋 Auto-submitting related question...');
+      
+      // Close the modal first
+      document.getElementById('aiModal').classList.add('hidden');
+      
+      // Set the question in the input
+      document.getElementById('userInput').value = question;
+      
+      // Update current question
+      currentQuestion = question;
+      
+      // Scroll to input
+      document.getElementById('userInput').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+      
+      // Brief highlight
+      const input = document.getElementById('userInput');
+      input.style.backgroundColor = '#fef3c7';
+      input.focus();
+      
+      // AUTO-SUBMIT after short delay
+      setTimeout(() => {
+        input.style.backgroundColor = '';
+        console.log('🚀 Auto-submitting question now...');
+        // Trigger the answer
+        getAnswer('groq', 'standard');
+      }, 800);  // 800ms delay to show the question briefly
+    }
+    
+    window.askRelatedQuestion = askRelatedQuestion;
 
     // Autocomplete Suggestions for Custom Questions
     function showAutocompleteSuggestions() {
