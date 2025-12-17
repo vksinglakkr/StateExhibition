@@ -736,7 +736,6 @@
                 <option value="groq" selected>🚀 Groq Llama</option>
                 <option value="mistral">🌟 Mistral</option>
                 <option value="chatgpt">🤖 ChatGPT</option>
-                <option value="sarvam">🇮🇳 Sarvam AI</option>
               </select>
             </div>
           </div>
@@ -854,9 +853,7 @@
     let aiUsed = {
       groq: false,
       chatgpt: false,
-      gemini: false,
-      mistral: false,
-      sarvam: false
+      mistral: false
     };
     
     // User-level specific prompt instructions with ENHANCED FORMATTING
@@ -913,17 +910,13 @@
       const loadingMessages = {
         groq: '⚡ Groq is processing at lightning speed...',
         mistral: '🌟 Mistral is generating intelligent response...',
-        chatgpt: '🤖 ChatGPT is analyzing deeply...',
-        gemini: '💎 Gemini is generating balanced response...',
-        sarvam: '🇮🇳 Sarvam AI is processing in Indian context...'
+        chatgpt: '🤖 ChatGPT is analyzing deeply...'
       };
       
       const providerNames = {
         groq: '🚀 Groq Llama 3.3',
         mistral: '🌟 Mistral Large',
-        chatgpt: '🤖 ChatGPT GPT-4o',
-        gemini: '💎 Gemini Flash 2.0',
-        sarvam: '🇮🇳 Sarvam AI'
+        chatgpt: '🤖 ChatGPT GPT-4o'
       };
       
       document.getElementById('modalQuestion').textContent = currentQuestion;
@@ -1172,17 +1165,13 @@
       const icons = {
         groq: '🚀',
         mistral: '🌟',
-        chatgpt: '🤖',
-        gemini: '💎',
-        sarvam: '🇮🇳'
+        chatgpt: '🤖'
       };
       
       const names = {
         groq: 'Groq Llama 3.3',
         mistral: 'Mistral Large',
-        chatgpt: 'ChatGPT GPT-4o',
-        gemini: 'Gemini Flash 2.0',
-        sarvam: 'Sarvam AI'
+        chatgpt: 'ChatGPT GPT-4o'
       };
       
       const header = document.querySelector('#aiModal .bg-gradient-to-r h2');
@@ -2253,7 +2242,7 @@ const TOPIC_QUESTIONS = {
       // Reset for new question
       currentQuestion = question;
       currentAnswerLevel = 'standard'; // Default to standard
-      aiUsed = { groq: true, mistral: false, chatgpt: false, gemini: false, sarvam: false };
+      aiUsed = { groq: true, mistral: false, chatgpt: false };
       
       // Always use Groq first (fastest) with standard depth
       await getAnswer('groq', 'standard');
