@@ -765,24 +765,55 @@
   </div>
 
   <script>
-    console.log('🚀 LawBot 2024 initializing...');
+    console.log('🚀 NyayaMitra initializing...');
     
-    // Update Last Modified DateTime - FIXED DATE
+    // Update Last Modified DateTime - AUTOMATIC FROM FILE
     function updateLastModified() {
       try {
-        // FIXED DATE - Update this manually when making changes
-        const FIXED_DATE = '17th December 2024, 23:30 IST';
+        let lastModDate;
+        
+        // Get document's last modified date
+        if (document.lastModified) {
+          lastModDate = new Date(document.lastModified);
+          console.log('📅 Document last modified (raw):', document.lastModified);
+        }
+        
+        // Validate date
+        if (!lastModDate || isNaN(lastModDate.getTime())) {
+          lastModDate = new Date();
+          console.log('⚠️ Using current date as fallback');
+        }
+        
+        const day = lastModDate.getDate();
+        const suffix = (day) => {
+          if (day > 3 && day < 21) return 'th';
+          switch (day % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+          }
+        };
+        
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const month = monthNames[lastModDate.getMonth()];
+        const year = lastModDate.getFullYear();
+        const hours = lastModDate.getHours().toString().padStart(2, '0');
+        const minutes = lastModDate.getMinutes().toString().padStart(2, '0');
+        
+        const formattedDate = `${day}${suffix(day)} ${month} ${year}, ${hours}:${minutes} IST`;
         
         const element = document.getElementById('lastModified');
         if (element) {
-          element.textContent = FIXED_DATE;
-          console.log('✅ Last Modified displayed (FIXED):', FIXED_DATE);
+          element.textContent = formattedDate;
+          console.log('✅ Last Modified displayed:', formattedDate);
         }
       } catch (error) {
         console.error('❌ Last Modified error:', error);
         const element = document.getElementById('lastModified');
         if (element) {
-          element.textContent = '17th December 2024, 23:30 IST';
+          element.textContent = '17th December 2025, 23:30 IST';
         }
       }
     }
@@ -978,80 +1009,56 @@
         answerText = convertMarkdownLinksToHTML(answerText);
         
         // ============================================
-        // EXTRACT RELATED QUESTIONS - ROBUST VERSION
+        // EXTRACT AND REMOVE RELATED QUESTIONS
         // ============================================
         let relatedQuestions = [];
         
-        console.log('🔍 Starting related questions extraction...');
-        console.log('🔍 Answer text length:', answerText.length);
+        console.log('🔍 Searching for related questions in answer...');
         
-        // Look for related questions section - try multiple patterns
-        let relatedSection = '';
+        // Try to find related questions section
+        const relatedPattern = /❓\s*RELATED QUESTIONS[\s\S]*?(?=⚠️|━━━|$)/i;
+        const relatedMatch = answerText.match(relatedPattern);
         
-        // Check if "RELATED QUESTION" exists anywhere (case insensitive)
-        const hasRelated = answerText.toLowerCase().includes('related question');
-        console.log('🔍 Contains "related question":', hasRelated);
-        
-        if (hasRelated) {
-          // Split answer by <br> tags
-          const lines = answerText.split(/<br\s*\/?>/gi);
-          console.log('🔍 Total lines in answer:', lines.length);
+        if (relatedMatch) {
+          console.log('✅ Found related questions section');
+          const relatedSection = relatedMatch[0];
           
-          let inRelatedSection = false;
-          let sectionLines = [];
+          // Split by <br> and extract questions
+          const lines = relatedSection.split(/<br\s*\/?>/gi);
           
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i]
+          for (let line of lines) {
+            // Clean HTML entities
+            let cleaned = line
               .replace(/&lt;/g, '<')
               .replace(/&gt;/g, '>')
               .replace(/&amp;/g, '&')
               .replace(/&quot;/g, '"')
               .trim();
             
-            // Check if this line starts the related questions section
-            if (line.match(/❓.*related.*question/i) || line.match(/related.*question/i)) {
-              inRelatedSection = true;
-              console.log('📍 Found related questions section at line', i, ':', line.substring(0, 50));
+            // Skip header line and empty lines
+            if (cleaned.length < 10 || cleaned.match(/RELATED QUESTIONS/i)) {
               continue;
             }
             
-            // Check if we're leaving the section
-            if (inRelatedSection) {
-              if (line.match(/⚠️|disclaimer|warning|━━━/i) || 
-                  line.toLowerCase().includes('educational purposes') ||
-                  line.toLowerCase().includes('consult') ||
-                  (line.length > 50 && !line.includes('?'))) {
-                console.log('📍 Leaving related questions section at line', i);
-                break;
-              }
-              
-              // If line has content, add to section
-              if (line.length > 5) {
-                sectionLines.push(line);
-              }
-            }
-          }
-          
-          console.log('📋 Collected section lines:', sectionLines.length);
-          
-          // Extract questions from collected lines
-          for (let line of sectionLines) {
-            // Remove bullets, numbers, dashes at start
-            let cleaned = line.replace(/^[\s•\-\d\.\)\]]+/, '').trim();
+            // Remove bullet points, numbers, dashes
+            cleaned = cleaned.replace(/^[\s•\-\d\.\)]+/, '').trim();
             
-            // Must have a question mark and be reasonable length
-            if (cleaned.includes('?') && cleaned.length > 15 && cleaned.length < 200) {
-              // Make sure it's not a heading or instruction
-              if (!cleaned.match(/^(format|suggest|should be|questions)/i)) {
-                relatedQuestions.push(cleaned);
-                console.log('✅ Extracted question:', cleaned.substring(0, 60) + '...');
-              }
+            // Must have question mark and be reasonable length
+            if (cleaned.includes('?') && cleaned.length > 15 && cleaned.length < 300) {
+              relatedQuestions.push(cleaned);
+              console.log('  📌 Extracted:', cleaned.substring(0, 60) + '...');
             }
           }
           
-          // Remove duplicates and limit to 3
-          relatedQuestions = [...new Set(relatedQuestions)].slice(0, 3);
-          console.log('📋 Final related questions count:', relatedQuestions.length);
+          // Limit to 3 questions
+          relatedQuestions = relatedQuestions.slice(0, 3);
+          console.log('✅ Total questions extracted:', relatedQuestions.length);
+          
+          // REMOVE the entire related questions section from answer
+          answerText = answerText.replace(relatedPattern, '');
+          console.log('✅ Related questions section removed from answer body');
+        } else {
+          console.log('⚠️ No related questions section found');
         }
         
         const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -1066,44 +1073,43 @@
           `⏱️ Response: ${responseTime}s with ${providerNames[provider]}`;
         
         // ============================================
-        // DISPLAY RELATED QUESTIONS IN DROPDOWN
+        // DISPLAY RELATED QUESTIONS DROPDOWN
         // ============================================
         if (relatedQuestions.length > 0) {
-          console.log('✅ Adding related questions dropdown to UI');
+          console.log('✅ Adding related questions dropdown');
           
           finalHTML += '<br><br>' +
-            '<details open style="background: linear-gradient(to right, #fff7ed, #fef3c7); padding: 12px; border-radius: 12px; border: 2px solid #fb923c; margin-top: 8px;">' +
-              '<summary style="cursor: pointer; font-weight: bold; color: #1f2937; display: flex; align-items: center; gap: 8px; list-style: none;">' +
-                '<span style="font-size: 18px;">❓</span> ' +
+            '<details open style="background: linear-gradient(to right, #fff7ed, #fef3c7); padding: 14px; border-radius: 12px; border: 2px solid #fb923c; box-shadow: 0 2px 8px rgba(251, 146, 60, 0.2);">' +
+              '<summary style="cursor: pointer; font-weight: bold; color: #1f2937; display: flex; align-items: center; gap: 8px; list-style: none; user-select: none;">' +
+                '<span style="font-size: 20px;">❓</span> ' +
                 '<span style="font-size: 16px;">Related Questions (' + relatedQuestions.length + ')</span> ' +
-                '<span style="font-size: 12px; color: #6b7280; margin-left: auto;">(Click question to ask)</span>' +
+                '<span style="font-size: 12px; color: #6b7280; margin-left: auto; font-weight: normal;">(Click to ask automatically)</span>' +
               '</summary>' +
               '<div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">';
           
           relatedQuestions.forEach((q, idx) => {
-            // Escape quotes for onclick
-            const escapedQuestion = q.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            // Escape quotes properly
+            const escapedQuestion = q
+              .replace(/\\/g, '\\\\')
+              .replace(/'/g, "\\'")
+              .replace(/"/g, '&quot;')
+              .replace(/\n/g, ' ');
             
             finalHTML += 
-              '<div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #fb923c; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" ' +
-                   'onmouseover="this.style.background=\'#fff7ed\'; this.style.borderLeftColor=\'#f97316\'; this.style.boxShadow=\'0 2px 6px rgba(0,0,0,0.15)\';" ' +
-                   'onmouseout="this.style.background=\'white\'; this.style.borderLeftColor=\'#fb923c\'; this.style.boxShadow=\'0 1px 3px rgba(0,0,0,0.1)\';" ' +
+              '<div style="background: white; padding: 14px; border-radius: 10px; border-left: 4px solid #fb923c; cursor: pointer; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" ' +
+                   'onmouseover="this.style.background=\'#fff7ed\'; this.style.borderLeftColor=\'#f97316\'; this.style.boxShadow=\'0 4px 12px rgba(251,146,60,0.3)\'; this.style.transform=\'translateX(4px)\';" ' +
+                   'onmouseout="this.style.background=\'white\'; this.style.borderLeftColor=\'#fb923c\'; this.style.boxShadow=\'0 1px 3px rgba(0,0,0,0.1)\'; this.style.transform=\'translateX(0)\';" ' +
                    'onclick="askRelatedQuestion(\'' + escapedQuestion + '\')">' +
-                '<div style="display: flex; align-items: start; gap: 10px;">' +
-                  '<span style="color: #f97316; font-weight: bold; font-size: 16px; min-width: 24px;">' + (idx + 1) + '.</span>' +
-                  '<span style="color: #374151; font-size: 14px; line-height: 1.5;">' + q + '</span>' +
+                '<div style="display: flex; align-items: start; gap: 12px;">' +
+                  '<span style="color: #f97316; font-weight: bold; font-size: 16px; min-width: 26px; margin-top: 2px;">' + (idx + 1) + '.</span>' +
+                  '<span style="color: #374151; font-size: 15px; line-height: 1.6;">' + q + '</span>' +
                 '</div>' +
               '</div>';
           });
           
           finalHTML += '</div></details>';
-          
-          console.log('✅ Related questions UI added successfully');
-        } else {
-          console.log('⚠️ No related questions found - dropdown not added');
         }
         
-        // Display the final HTML
         document.getElementById('modalAnswer').innerHTML = finalHTML;
         
         console.log('✅ Response from', provider, 'in', responseTime, 'seconds');
@@ -2341,29 +2347,35 @@ const TOPIC_QUESTIONS = {
     // Ask a Related Question
     function askRelatedQuestion(question) {
       console.log('📋 Related question clicked:', question);
+      console.log('📋 Auto-submitting related question...');
       
-      // Close the modal
+      // Close the modal first
       document.getElementById('aiModal').classList.add('hidden');
       
       // Set the question in the input
       document.getElementById('userInput').value = question;
       
-      // Scroll to the input
+      // Update current question
+      currentQuestion = question;
+      
+      // Scroll to input
       document.getElementById('userInput').scrollIntoView({ 
         behavior: 'smooth', 
         block: 'center' 
       });
       
-      // Highlight the input briefly
+      // Brief highlight
       const input = document.getElementById('userInput');
       input.style.backgroundColor = '#fef3c7';
       input.focus();
       
+      // AUTO-SUBMIT after short delay
       setTimeout(() => {
         input.style.backgroundColor = '';
-      }, 1000);
-      
-      console.log('✅ Related question loaded in input box');
+        console.log('🚀 Auto-submitting question now...');
+        // Trigger the answer
+        getAnswer('groq', 'standard');
+      }, 800);  // 800ms delay to show the question briefly
     }
     
     window.askRelatedQuestion = askRelatedQuestion;
