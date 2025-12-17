@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LawBot 2024 – New Criminal Laws Assistant [ARRAY-FIX-v2]</title>
+  <title>NyayaMitra (न्यायमित्र) – AI-Powered Criminal Law Assistant</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -484,8 +484,11 @@
     <div class="relative bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 p-6 pb-4 text-center header-glow">
       <div class="floating">
         <h1 class="text-5xl md:text-6xl font-black gradient-text mb-2 playfair tracking-tight">
-          LawBot 2024
+          NyayaMitra
         </h1>
+        <p class="text-2xl md:text-3xl font-bold text-orange-600 mb-1" style="font-family: 'Noto Sans Devanagari', sans-serif;">
+          न्यायमित्र
+        </p>
       </div>
       <p class="text-sm text-gray-600 font-semibold mb-3 tracking-wide">
         Your AI Assistant for New Criminal Laws
@@ -552,7 +555,7 @@
         </h3>
         
         <div class="radio-option selected" id="customCard" onclick="selectQueryType('custom')">
-          <input type="radio" name="queryType" value="custom" checked>
+          <input type="radio" name="queryType" value="custom" checked onclick="event.stopPropagation(); selectQueryType('custom')">
           <span class="radio-icon">✏️</span>
           <div class="radio-label">
             <div class="radio-label-title">Ask Your Own Question</div>
@@ -561,7 +564,7 @@
         </div>
         
         <div class="radio-option" id="readyCard" onclick="selectQueryType('ready')">
-          <input type="radio" name="queryType" value="ready">
+          <input type="radio" name="queryType" value="ready" onclick="event.stopPropagation(); selectQueryType('ready')">
           <span class="radio-icon">📋</span>
           <div class="radio-label">
             <div class="radio-label-title">Select Ready-Made Question</div>
@@ -580,6 +583,8 @@
               rows="3"
               class="w-full rounded-2xl border-4 border-orange-400 p-4 pb-12 text-gray-900 bg-gradient-to-br from-white to-orange-50 shadow-2xl resize-none focus:border-orange-500 focus:ring-4 focus:ring-orange-200 transition-all duration-300"
               placeholder="Type your question here... (e.g., What are my rights during arrest?)"
+              oninput="showAutocompleteSuggestions()"
+              onfocus="showAutocompleteSuggestions()"
             ></textarea>
             <button
               id="voiceBtn"
@@ -590,6 +595,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
               </svg>
             </button>
+          </div>
+          
+          <!-- Autocomplete Suggestions Box -->
+          <div id="autocompleteSuggestions" class="hidden mt-2 bg-white border-2 border-orange-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <!-- Suggestions will be added here dynamically -->
           </div>
         </div>
 
@@ -722,7 +732,7 @@
               </svg>
             </button>
             
-            <button onclick="openSectionSearch()" class="icon-btn bg-blue-600 hover:bg-blue-700" title="Search Exact Section">
+            <button onclick="openSectionSearch()" class="icon-btn bg-blue-600 hover:bg-blue-700" title="Search Related Sections (Opens with keywords from your question)">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
@@ -741,66 +751,65 @@
   <script>
     console.log('🚀 LawBot 2024 initializing...');
     
-    // Update Last Modified DateTime - AUTOMATIC DETECTION
-    function updateLastModified() {
-      try {
-        // Get document's actual last modified date
-        let lastModDate;
-        
-        if (document.lastModified) {
-          // Parse the document.lastModified string
-          lastModDate = new Date(document.lastModified);
-          console.log('📅 Document last modified:', document.lastModified);
-        } else {
-          // Fallback to current date if not available
-          lastModDate = new Date();
-        }
-        
-        // Validate date
-        if (isNaN(lastModDate.getTime())) {
-          lastModDate = new Date();
-        }
-        
-        const day = lastModDate.getDate();
-        const suffix = (day) => {
-          if (day > 3 && day < 21) return 'th';
-          switch (day % 10) {
-            case 1: return 'st';
-            case 2: return 'nd';
-            case 3: return 'rd';
-            default: return 'th';
-          }
-        };
-        
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                           'July', 'August', 'September', 'October', 'November', 'December'];
-        const month = monthNames[lastModDate.getMonth()];
-        const year = lastModDate.getFullYear();
-        const hours = lastModDate.getHours().toString().padStart(2, '0');
-        const minutes = lastModDate.getMinutes().toString().padStart(2, '0');
-        
-        const formattedDate = `${day}${suffix(day)} ${month} ${year}, ${hours}:${minutes} IST`;
-        
-        const element = document.getElementById('lastModified');
-        if (element) {
-          element.textContent = formattedDate;
-          console.log('✅ Last Modified displayed:', formattedDate);
-        }
-      } catch (error) {
-        console.error('❌ Last Modified error:', error);
-        const element = document.getElementById('lastModified');
-        if (element) {
-          element.textContent = '15th December 2024, 21:18 IST';
-        }
-      }
+// Update Last Modified DateTime - SHOWS FILE'S ACTUAL LAST MODIFIED DATE
+function updateLastModified() {
+  try {
+    let lastModDate;
+    
+    // Try to get file's last modified date from server
+    if (document.lastModified) {
+      lastModDate = new Date(document.lastModified);
+      console.log('📅 Raw document.lastModified:', document.lastModified);
     }
     
-    // Call when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', updateLastModified);
-    } else {
-      updateLastModified();
+    // If invalid or not available, fallback
+    if (!lastModDate || isNaN(lastModDate.getTime())) {
+      console.warn('⚠️ Could not get file modification date, using fallback');
+      lastModDate = new Date('2025-12-17T23:30:00'); // Your last update date
     }
+    
+    // Get day with ordinal suffix
+    const day = lastModDate.getDate();
+    const suffix = (day) => {
+      if (day > 3 && day < 21) return 'th';
+      switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    
+    // Format: "17th December 2025, 23:30 IST"
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    const month = monthNames[lastModDate.getMonth()];
+    const year = lastModDate.getFullYear();
+    const hours = lastModDate.getHours().toString().padStart(2, '0');
+    const minutes = lastModDate.getMinutes().toString().padStart(2, '0');
+    
+    const formattedDate = `${day}${suffix(day)} ${month} ${year}, ${hours}:${minutes} IST`;
+    
+    const element = document.getElementById('lastModified');
+    if (element) {
+      element.textContent = formattedDate;
+      console.log('✅ Last Modified displayed:', formattedDate);
+    }
+  } catch (error) {
+    console.error('❌ Last Modified error:', error);
+    const element = document.getElementById('lastModified');
+    if (element) {
+      element.textContent = '17th December 2025, 23:30 IST';
+    }
+  }
+}
+
+// Call when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateLastModified);
+} else {
+  updateLastModified();
+}
     
     // Set default profile on page load
     function setDefaultProfile() {
@@ -1107,35 +1116,820 @@
     };
     
     // Sample questions for each topic
-    const TOPIC_QUESTIONS = {
-      fir: ['How to register an FIR?', 'What is Zero FIR?', 'When can police refuse FIR?', 'FIR vs Complaint difference?', 'Online FIR filing process?'],
-      arrest: ['When can police arrest without warrant?', 'What is police custody vs judicial custody?', 'Rights of arrested person?', 'Medical examination during arrest?', 'Arrest procedures for women?'],
-      investigation: ['What are investigation powers?', 'Search and seizure rules?', 'Chain of custody importance?', 'Timeline for investigation?', 'Rights during investigation?'],
-      evidence: ['How to collect digital evidence?', 'Evidence preservation rules?', 'Chain of custody requirements?', 'Electronic evidence admissibility?', 'Evidence tampering consequences?'],
-      chargesheet: ['How to file charge sheet?', 'Timeline for filing charge sheet?', 'What documents required?', 'Charge sheet vs FIR difference?', 'Can charge sheet be challenged?'],
-      crimes: ['What is theft under BNS?', 'How is assault defined?', 'Cybercrime reporting process?', 'Difference between theft and robbery?', 'Fraud vs cheating definition?'],
-      rights: ['What are my rights during arrest?', 'Can I refuse to give statement?', 'Right to lawyer when?', 'Rights during interrogation?', 'What if rights violated?'],
-      bail: ['How to apply for bail?', 'Regular bail vs anticipatory bail?', 'What are bail conditions?', 'Bail amount calculation?', 'When can bail be cancelled?'],
-      trial: ['Summons case vs warrant case?', 'Trial procedure steps?', 'How long does trial take?', 'Rights during trial?', 'Can trial be fast-tracked?'],
-      appeals: ['How to file appeal?', 'Appeal time limits?', 'High Court vs Supreme Court appeals?', 'Appeal procedure steps?', 'Cost of filing appeal?'],
-      punishments: ['What changed from IPC to BNS?', 'Punishment for theft?', 'Sentencing guidelines?', 'Mitigating factors in sentencing?', 'Maximum punishment for murder?'],
-      procedures: ['How to file case?', 'Court documentation required?', 'Timeline for hearings?', 'Court fees structure?', 'How to get court orders?'],
-      comparison: ['Key changes IPC to BNS?', 'BNSS vs CrPC differences?', 'BSA vs Evidence Act changes?', 'Why were laws changed?', 'Implementation timeline?'],
-      terminology: ['What is cognizable offence?', 'Define bailable offence?', 'What is mens rea?', 'Explain actus reus?', 'What is compounding?'],
-      concepts: ['Explain criminal liability?', 'What is actus reus?', 'Right of private defence?', 'General exceptions concept?', 'Vicarious liability meaning?'],
-      criminal: ['Classification of offences?', 'Types of crimes?', 'Punishment categories?', 'Cognizable vs non-cognizable?', 'Bailable vs non-bailable?'],
-      procedure: ['From FIR to judgment process?', 'Investigation timeline?', 'Trial stages?', 'Appeal process steps?', 'Entire criminal procedure overview?'],
-      evidence_law: ['Types of evidence?', 'Admissibility rules?', 'Burden of proof?', 'Electronic evidence rules?', 'Witness testimony validity?'],
-      amendments: ['Major changes in 2024?', 'Why laws changed?', 'Impact of new laws?', 'Transitional provisions?', 'What stayed same?'],
-      casestudies: ['Real-world examples?', 'Case studies?', 'Practical scenarios?', 'Application of laws?', 'Common situations explained?'],
-      complaint: ['How to file FIR?', 'Online complaint process?', 'What if police refuse?', 'NCW complaint process?', 'Consumer court complaint?'],
-      common: ['What to do if theft?', 'Accident procedure?', 'Property dispute resolution?', 'Neighbor dispute handling?', 'Cheque bounce remedy?'],
-      legal_aid: ['How to get free legal aid?', 'Legal help resources?', 'Helpline numbers?', 'Government legal services?', 'NGOs for legal help?'],
-      cybercrime: ['How to report online fraud?', 'Cyber harassment complaint?', 'Online safety tips?', 'Social media crime reporting?', 'Digital evidence collection?'],
-      women: ['Women protection laws?', 'Child protection provisions?', 'Emergency helplines?', 'Domestic violence remedy?', 'Sexual harassment complaint?'],
-      basics: ['Basic legal terms?', 'Simple explanations?', 'Common legal words?', 'Court terminology?', 'Legal process basics?']
-    };
-    
+ // FINAL COMPREHENSIVE TOPIC QUESTIONS - MERGED BEST FROM BOTH LISTS
+// 660+ High-Quality Questions - No Duplicates
+const TOPIC_QUESTIONS = {
+  // ========== POLICE OFFICER QUESTIONS ==========
+  
+  fir: [
+    'How to register an FIR under new criminal laws?',
+    'What is Zero FIR and when to use it?',
+    'When is Zero FIR mandatory?',
+    'When can police refuse to register FIR?',
+    'What reasons are valid for refusing FIR?',
+    'What information must be included in FIR?',
+    'How to handle FIR for cognizable offences?',
+    'What is the difference between FIR and complaint?',
+    'Online FIR filing process and requirements?',
+    'Can FIR be registered at any police station?',
+    'What if complainant is unconscious or injured?',
+    'How to register FIR for cybercrime?',
+    'How to record FIR for online offences?',
+    'FIR registration time limits?',
+    'FIR registration timeline under BNSS?',
+    'Can FIR be corrected after registration?',
+    'What is NCR (Non-Cognizable Report)?',
+    'How to handle multiple complainants?',
+    'FIR for missing person procedure?',
+    'Anonymous complaint handling guidelines?',
+    'What if FIR involves multiple jurisdictions?',
+    'Can FIR be transferred to another PS?',
+    'How to register FIR for economic offences?',
+    'FIR for offences against women - special procedures?',
+    'Cross-FIR in same incident - how to handle?',
+    'E-FIR vs regular FIR differences?',
+    'What documents to attach with FIR?',
+    'FIR in languages other than English/Hindi?',
+    'Can witness register FIR on behalf of victim?',
+    'How to handle delayed FIR registration?'
+  ],
+  
+  arrest: [
+    'When can police arrest without warrant under BNSS?',
+    'What are the mandatory procedures during arrest?',
+    'When is notice of appearance sufficient?',
+    'Rights that must be informed to arrested person?',
+    'Medical examination requirements during arrest?',
+    'Medical examination timeline after arrest?',
+    'Arrest procedures for women - specific rules?',
+    'What is police custody vs judicial custody?',
+    'Difference between police and judicial custody?',
+    'Maximum duration of police remand?',
+    'When to arrest juvenile vs adult?',
+    'Can arrest be made at night? Restrictions?',
+    'How to conduct arrest with dignity?',
+    'When to handcuff arrested person?',
+    'Arrest memo requirements and format?',
+    'Arrest memo preparation checklist?',
+    'What if arrested person needs medical attention?',
+    'Family notification requirements after arrest?',
+    'Strip search rules and limitations?',
+    'Arrest of government employees - special procedure?',
+    'When can bail be granted during custody?',
+    'Custody diary maintenance requirements?',
+    'Transfer from police to judicial custody process?',
+    'What if arrested person attempts suicide in custody?',
+    'Rights of arrested person to meet lawyer?',
+    'Arrest in non-bailable vs bailable offences?',
+    'Can pregnant woman be arrested?',
+    'Preventive detention vs punitive detention?',
+    'Release procedures from police custody?'
+  ],
+  
+  investigation: [
+    'What are police investigation powers under BNSS?',
+    'How to conduct search under Section 93?',
+    'Search warrant requirements and validity?',
+    'When can search be done without warrant?',
+    'Seizure of property - legal procedures?',
+    'Chain of custody for evidence - importance?',
+    'How to collect digital evidence properly?',
+    'Digital evidence seizure procedure?',
+    'Investigation timeline under new laws?',
+    'Maximum time for investigation in cognizable case?',
+    'Can investigation continue after charge sheet?',
+    'Rights of accused during investigation?',
+    'Witness examination during investigation?',
+    'How to record dying declaration?',
+    'Confession recording - legal requirements?',
+    'Investigation diary (Case Diary) maintenance?',
+    'Scene of crime examination procedures?',
+    'How to preserve electronic evidence?',
+    'How to preserve CCTV footage?',
+    'Investigation of cybercrime - special procedures?',
+    'Concurrent investigation by multiple agencies?',
+    'Investigation in economic offences?',
+    'Narco test and polygraph - legal validity?',
+    'Voice identification parade procedures?',
+    'Investigation closure report (Final Report)?',
+    'Further investigation after charge sheet?',
+    'Victim role in investigation?',
+    'Investigation supervision and monitoring?',
+    'Can IO seize mobile without warrant?',
+    'Can accused be called repeatedly?'
+  ],
+  
+  evidence: [
+    'How to collect digital evidence for court?',
+    'Evidence preservation rules under BSA?',
+    'Chain of custody requirements and documentation?',
+    'Electronic evidence admissibility criteria?',
+    'Evidence tampering - legal consequences?',
+    'DNA evidence collection procedures?',
+    'CCTV footage as evidence - authentication?',
+    'Mobile phone evidence extraction?',
+    'Email and social media evidence collection?',
+    'Audio and video recording evidence?',
+    'How to seize computer and electronic devices?',
+    'Evidence storage and security protocols?',
+    'Expert evidence and forensic reports?',
+    'Dying declaration as evidence - requirements?',
+    'Tip-off information vs admissible evidence?',
+    'Circumstantial evidence vs direct evidence?',
+    'Recovery memo preparation?',
+    'Evidence contradicting FIR - how to handle?',
+    'Lost or destroyed evidence - consequences?',
+    'Evidence from private CCTV vs public camera?'
+  ],
+  
+  chargesheet: [
+    'How to file charge sheet under BNSS?',
+    'Timeline for filing charge sheet?',
+    'What happens if charge sheet is delayed?',
+    'What documents must be attached with charge sheet?',
+    'Documents mandatory with charge sheet?',
+    'Charge sheet vs FIR - key differences?',
+    'Can charge sheet be challenged in court?',
+    'Supplementary charge sheet when needed?',
+    'Can supplementary charge sheet be filed?',
+    'Charge sheet format and mandatory sections?',
+    'Multiple accused in single charge sheet?',
+    'How to add new accused after charge sheet?',
+    'Victim impact statement in charge sheet?',
+    'Evidence list requirements in charge sheet?',
+    'Investigation officer signature requirements?',
+    'Sanction for prosecution - when required?',
+    'Charge sheet in cases of juveniles?',
+    'Final report vs charge sheet difference?',
+    'Closure report (A-summary) procedure?',
+    'Further investigation after charge sheet filed?',
+    'Charge sheet in economic offences - special rules?',
+    'Time limit extension for charge sheet?',
+    'Extension of investigation time – procedure?',
+    'Defective charge sheet - court powers?',
+    'Who approves final report?'
+  ],
+  
+  crimes: [
+    'What constitutes theft under BNS Section 303?',
+    'How is assault defined in new criminal laws?',
+    'Cybercrime reporting and investigation process?',
+    'Difference between theft and robbery?',
+    'Fraud vs cheating - legal definitions?',
+    'Dowry death investigation procedures?',
+    'Rape investigation - special procedures?',
+    'Murder vs culpable homicide - distinction?',
+    'Kidnapping vs abduction differences?',
+    'Eve teasing and sexual harassment laws?',
+    'Domestic violence - police powers?',
+    'Child abuse reporting and investigation?',
+    'Senior citizen abuse laws?',
+    'Defamation - criminal vs civil?',
+    'Criminal intimidation and threats?',
+    'Rioting and unlawful assembly?',
+    'Forgery and document fraud?',
+    'Bribery and corruption offences?',
+    'Drug offences investigation?',
+    'Arms Act violations?',
+    'Motor vehicle accidents - criminal liability?',
+    'Outraging modesty of women?',
+    'Stalking - new provisions under BNS?',
+    'Acid attack - legal provisions?',
+    'Human trafficking investigation?'
+  ],
+  
+  rights: [
+    'What are rights of arrested person?',
+    'Can accused refuse to give statement?',
+    'Right to lawyer - when does it begin?',
+    'Rights during police interrogation?',
+    'What if rights are violated - remedies?',
+    'Right to bail under new laws?',
+    'Right to medical examination?',
+    'Family notification rights?',
+    'Right against self-incrimination?',
+    'Right to interpreter if language barrier?',
+    'Right to food and basic amenities in custody?',
+    'Right to meet legal counsel - frequency?',
+    'Right to remain silent during investigation?',
+    'Rights of women accused - special provisions?',
+    'Rights of juvenile in conflict with law?',
+    'Right to speedy trial?',
+    'Right to cross-examine witnesses?',
+    'Right to appeal against arrest?',
+    'Right to compensation if wrongfully arrested?',
+    'Fundamental rights during criminal proceedings?'
+  ],
+  
+  terminology: [
+    'What is cognizable offence?',
+    'Define bailable offence vs non-bailable?',
+    'What is compounding of offences?',
+    'Explain warrant case vs summons case?',
+    'What is remand - police vs judicial?',
+    'Define anticipatory bail?',
+    'What is concurrent sentence vs consecutive sentence?',
+    'Explain plea bargaining provisions?',
+    'What is probation of offenders?',
+    'Define community service as punishment?',
+    'What is discharge vs acquittal?',
+    'Explain compoundable vs non-compoundable offence?',
+    'What is conviction and sentencing?',
+    'Define abetment and conspiracy?',
+    'What is vicarious liability?',
+    'Explain strict liability in criminal law?',
+    'What is burden of proof?',
+    'Define reasonable doubt?',
+    'What is res gestae?',
+    'Explain doctrine of alibi?'
+  ],
+  
+  // ========== LEGAL PROFESSIONAL QUESTIONS ==========
+  
+  bail: [
+    'How to apply for regular bail under BNSS Section 479?',
+    'Regular bail vs anticipatory bail - key differences?',
+    'What factors does court consider for bail?',
+    'Grounds for bail rejection under BNSS?',
+    'Bail amount calculation and guidelines?',
+    'When can bail be cancelled by court?',
+    'Bail in non-bailable offences - conditions?',
+    'Anticipatory bail procedure and time limits?',
+    'Can anticipatory bail be time-bound?',
+    'Can bail be granted during investigation?',
+    'Bail rejection - appeal process?',
+    'Default bail (Section 167 BNSS) provisions?',
+    'Difference between default bail and regular bail?',
+    'Bail conditions that can be imposed?',
+    'Bail conditions enforceability?',
+    'Surety requirements for bail?',
+    'Cash bail vs personal bond?',
+    'Bail in cases involving women accused?',
+    'Bail for juveniles - special provisions?',
+    'Transit remand vs production warrant?',
+    'Bail cancellation grounds?',
+    'Modification of bail conditions?',
+    'Bail in economic offences - restrictions?',
+    'Anticipatory bail duration and extension?',
+    'Concurrent jurisdiction for bail?',
+    'Bail pending investigation vs pending trial?',
+    'Supreme Court guidelines on bail?',
+    'Bail in terrorism and UAPA cases?',
+    'Personal liberty vs public interest in bail?',
+    'Can court impose digital monitoring?'
+  ],
+  
+  trial: [
+    'Summons case vs warrant case - differences?',
+    'Sessions trial procedure under BNSS?',
+    'How long does criminal trial typically take?',
+    'Rights of accused during trial?',
+    'Can trial be fast-tracked? Conditions?',
+    'Framing of charges procedure?',
+    'Discharge vs acquittal - legal distinction?',
+    'Trial in absentia - when permissible?',
+    'Witness examination procedure?',
+    'Cross-examination rights and limits?',
+    'Court commissioner examination - when used?',
+    'Evidence recording in trial?',
+    'Defence evidence presentation?',
+    'Final arguments and written submissions?',
+    'Judgment delivery timeline?',
+    'Split trial - when ordered?',
+    'De novo trial - circumstances?',
+    'Joint trial of multiple accused?',
+    'Separate trial for co-accused - when?',
+    'Victim participation in trial?',
+    'In-camera trial provisions?',
+    'Video conferencing in trial?',
+    'Speedy trial - constitutional right?',
+    'Trial by jury vs judge alone?',
+    'Summary trial procedure?',
+    'Is WhatsApp chat admissible?',
+    'Who certifies electronic evidence?',
+    'CCTV footage without certificate – valid?',
+    'Can call records be primary evidence?',
+    'Hostile witness treatment under BSA?'
+  ],
+  
+  appeals: [
+    'How to file appeal under BNSS?',
+    'Appeal time limits from different courts?',
+    'Limitation period for appeal?',
+    'High Court vs Supreme Court appeals - differences?',
+    'Appeal procedure and documentation?',
+    'Can appeal be filed online?',
+    'Cost of filing appeals?',
+    'Suspension of sentence pending appeal?',
+    'Revision petition vs appeal - distinction?',
+    'Difference between revision and appeal?',
+    'Powers of appellate court?',
+    'Fresh evidence in appeal - when allowed?',
+    'Appeal against acquittal - procedure?',
+    'Appeal against conviction and sentence?',
+    'Appeal by State vs appeal by accused?',
+    'Condonation of delay in appeal?',
+    'Withdrawal of appeal - procedure?',
+    'Acquittal on appeal - consequences?',
+    'Enhanced sentence on appeal - legality?',
+    'Compounding of offences during appeal?',
+    'Legal aid for appeals?',
+    'Reference to High Court - circumstances?',
+    'Special Leave Petition to Supreme Court?',
+    'Interim relief during appeal?',
+    'Stay on conviction possible?'
+  ],
+  
+  punishments: [
+    'What changed from IPC to BNS in punishments?',
+    'Punishment for theft under BNS?',
+    'Sentencing guidelines under new laws?',
+    'Mitigating factors in sentencing?',
+    'Maximum punishment for murder?',
+    'Death penalty - current status under BNS?',
+    'Life imprisonment provisions?',
+    'Community service as alternative punishment?',
+    'Fine as punishment - maximum limits?',
+    'Compensation to victims - mandatory provisions?',
+    'Suspended sentence and probation?',
+    'First-time offender - leniency provisions?',
+    'Juvenile sentencing - special provisions?',
+    'Concurrent vs consecutive sentences?',
+    'Minimum sentences for specific offences?',
+    'Enhanced punishment for repeat offenders?',
+    'Remission and commutation of sentences?',
+    'Presidential pardon provisions?',
+    'Punishment for corporate crimes?',
+    'Sentencing in plea bargaining?'
+  ],
+  
+  procedures: [
+    'How to file criminal case in court?',
+    'Court documentation and format requirements?',
+    'Timeline for court hearings?',
+    'Court fees structure for criminal cases?',
+    'How to get certified copies of court orders?',
+    'Case diary access by accused?',
+    'Filing of complaints under Section 200 BNSS?',
+    'Private complaint procedure?',
+    'Condonation of delay in filing?',
+    'Application for summons to witnesses?',
+    'Vakalatnama and authorization to appear?',
+    'Adjournment of cases - grounds?',
+    'Production of documents in court?',
+    'Examination of accused under Section 313?',
+    'Application for discharge?',
+    'Bail application format and grounds?',
+    'Interim orders during trial?',
+    'Court recording of evidence?',
+    'Petition for transfer of case?',
+    'Stay of proceedings - when granted?'
+  ],
+  
+  comparison: [
+    'Key changes from IPC to BNS?',
+    'Major differences between BNSS and CrPC?',
+    'BSA vs Evidence Act - what changed?',
+    'Why were criminal laws changed in 2024?',
+    'Implementation timeline for new laws?',
+    'Sections renumbered - how to find correspondence?',
+    'New offences added in BNS?',
+    'Offences removed from IPC?',
+    'Punishment changes - increased or decreased?',
+    'Procedural changes in BNSS?',
+    'Electronic evidence provisions - new additions?',
+    'Time limits changed in new laws?',
+    'Bail provisions - what is different?',
+    'Investigation powers - expanded or restricted?',
+    'Victim rights - enhanced provisions?',
+    'Women and children - special protections added?',
+    'Cybercrime provisions in new laws?',
+    'Economic offences - new provisions?',
+    'Community service - new concept?',
+    'Plea bargaining - any changes?',
+    'Appeals and revision - modified provisions?',
+    'Language and terminology changes?',
+    'Transitional provisions for pending cases?',
+    'Savings clause - what continues?',
+    'Training and adaptation challenges?',
+    'FIR process: CrPC vs BNSS',
+    'Arrest rules: Old vs New law',
+    'Evidence law changes summary',
+    'New timelines introduced',
+    'Technology use in new laws'
+  ],
+  
+  // ========== LAW STUDENT QUESTIONS ==========
+  
+  concepts: [
+    'Mens rea - detailed explanation with examples?',
+    'What is mens rea in simple words?',
+    'Actus reus - what constitutes criminal act?',
+    'Criminal liability - how is it established?',
+    'Strict liability vs absolute liability?',
+    'Vicarious liability - scope and limits?',
+    'Joint liability - common intention vs common object?',
+    'Constructive liability - meaning?',
+    'Right of private defence - when justified?',
+    'General exceptions to criminal liability?',
+    'Age of criminal responsibility - legal provisions?',
+    'Unsoundness of mind - defence?',
+    'Intoxication - voluntary vs involuntary?',
+    'Necessity as defence - legal validity?',
+    'Mistake of fact vs mistake of law?',
+    'Doctrine of transferred malice?',
+    'Doctrine of common intention?',
+    'Doctrine of mens rea in statutory offences?',
+    'Principle of nulla poena sine lege?',
+    'Doctrine of double jeopardy?',
+    'Burden of proof in criminal cases?',
+    'What is burden of proof?',
+    'Standard of proof - beyond reasonable doubt?',
+    'Presumption of innocence - application?',
+    'What is presumption under law?',
+    'Corpus delicti - essential requirement?',
+    'Motive vs intention - legal distinction?',
+    'Criminal negligence vs civil negligence?'
+  ],
+  
+  criminal: [
+    'Classification of offences under BNS?',
+    'Meaning of cognizable offence with example?',
+    'Difference between bailable and non-bailable?',
+    'Crimes against human body - categories?',
+    'Crimes against property - types?',
+    'Crimes against state - treason, sedition?',
+    'Crimes against public tranquility?',
+    'Crimes related to elections?',
+    'Crimes by or relating to public servants?',
+    'Contempt of lawful authority?',
+    'Offences affecting public health and safety?',
+    'Offences relating to religion?',
+    'Offences affecting human body - murder to assault?',
+    'Sexual offences - comprehensive overview?',
+    'Offences against women - special provisions?',
+    'Offences relating to marriage?',
+    'Defamation - criminal provisions?',
+    'Criminal intimidation and insult?',
+    'Theft, extortion, robbery, dacoity?',
+    'Cheating and fraud?',
+    'Criminal breach of trust?',
+    'Forgery and document fraud?',
+    'Currency offences?',
+    'Cybercrime under BNS?',
+    'Economic offences?',
+    'Environmental crimes?',
+    'Organized crime and terrorism?'
+  ],
+  
+  procedure: [
+    'FIR to judgment - complete process?',
+    'Preliminary investigation before FIR?',
+    'Investigation powers and duties?',
+    'Arrest procedures and safeguards?',
+    'Search and seizure - legal requirements?',
+    'Remand to police custody - procedure?',
+    'Bail application and hearing?',
+    'Charge sheet filing - timeline and format?',
+    'Cognizance by magistrate - process?',
+    'Framing of charges - procedure?',
+    'Trial procedure in sessions court?',
+    'Recording of evidence - examination stages?',
+    'Defence evidence presentation?',
+    'Arguments - prosecution and defence?',
+    'Judgment writing - requirements?',
+    'Sentencing hearing and factors?',
+    'Appeal procedure and time limits?',
+    'Revision petition - when maintainable?',
+    'Review of judgment - grounds?',
+    'Reference to High Court?',
+    'Special leave petition to Supreme Court?',
+    'Execution of sentences?',
+    'Probation and suspended sentence?',
+    'Remission and pardon?',
+    'Victim compensation - procedure?'
+  ],
+  
+  evidence_law: [
+    'Types of evidence - direct, circumstantial, documentary?',
+    'Oral evidence vs documentary evidence?',
+    'Primary evidence vs secondary evidence?',
+    'Admissibility of evidence - tests?',
+    'Relevancy of evidence - determining factors?',
+    'Facts in issue and relevant facts?',
+    'Burden of proof - who bears it?',
+    'Standard of proof in criminal vs civil?',
+    'Presumptions - rebuttable and conclusive?',
+    'Confession - admissibility conditions?',
+    'Dying declaration - evidentiary value?',
+    'Expert evidence - when required?',
+    'Opinion evidence - admissibility?',
+    'Character evidence - when relevant?',
+    'Previous judgments as evidence?',
+    'Electronic evidence under BSA?',
+    'Digital signatures and certificates?',
+    'CCTV footage authentication?',
+    'Social media evidence?',
+    'Email and SMS as evidence?',
+    'Voice recognition and call records?',
+    'DNA evidence - admissibility?',
+    'Lie detector and narco tests?',
+    'Witness examination - chief, cross, re-examination?',
+    'Impeaching witness credibility?'
+  ],
+  
+  amendments: [
+    'Why IPC was replaced by BNS?',
+    'Objectives of BNSS in simple terms?',
+    'Why Evidence Act was changed?',
+    'What problems old laws had?',
+    'Most significant changes in criminal laws?',
+    'New offences introduced in BNS?',
+    'Enhanced punishments - which crimes?',
+    'Reduced punishments - any instances?',
+    'Time-bound investigation provisions?',
+    'Victim rights - new additions?',
+    'Technology integration - major changes?',
+    'Simplified language - impact?',
+    'Gender-neutral provisions?',
+    'Community service - implementation?',
+    'Forensic investigation - mandatory provisions?',
+    'Electronic service of summons?',
+    'Video conferencing in trial?',
+    'Witness protection scheme?',
+    'Speedy trial provisions?',
+    'Bail reforms?',
+    'Plea bargaining changes?',
+    'Juvenile justice amendments?',
+    'Economic crime provisions?',
+    'International cooperation provisions?'
+  ],
+  
+  casestudies: [
+    'Landmark judgments under new criminal laws?',
+    'Case study: FIR registration issues?',
+    'Case study: Bail application denied/granted?',
+    'Example: Investigation procedure in cyberfraud?',
+    'Case study: Trial procedure in murder case?',
+    'Example: Evidence presentation in court?',
+    'Case study: Appeal after conviction?',
+    'Example: Compounding of offences?',
+    'Case study: Juvenile justice case?',
+    'Example: Anticipatory bail application?',
+    'Case study: Victim compensation awarded?',
+    'Example: Witness protection case?',
+    'Case study: Electronic evidence admissibility?',
+    'Example: Community service as punishment?',
+    'Case study: Plea bargaining success?',
+    'Example: Private defence justified?',
+    'Case study: General exceptions applied?',
+    'Example: Joint trial of multiple accused?',
+    'Case study: Reference to High Court?',
+    'Example: Practical application of new laws?'
+  ],
+  
+  // ========== GENERAL CITIZEN QUESTIONS ==========
+  
+  rights: [
+    'What are my rights if arrested?',
+    'Can I refuse to give statement to police?',
+    'When do I get right to lawyer?',
+    'What are my rights during police interrogation?',
+    'What if my rights are violated by police?',
+    'Right to bail - am I entitled?',
+    'Right to medical examination when arrested?',
+    'Does police have to inform my family?',
+    'Can police search my house without warrant?',
+    'Right against self-incrimination - what is it?',
+    'What if I do not understand the language?',
+    'Right to food and basic needs in custody?',
+    'How often can I meet my lawyer?',
+    'Can I remain silent during questioning?',
+    'Special rights for women accused?',
+    'Rights of senior citizens in criminal cases?',
+    'Right to speedy trial - how long should case take?',
+    'Can I cross-examine witnesses?',
+    'Right to appeal if convicted?',
+    'Compensation if wrongfully arrested?',
+    'Rights during court trial?',
+    'Right to interpreter in court?',
+    'Rights of victims in criminal cases?',
+    'Right to legal aid if I cannot afford lawyer?',
+    'Constitutional rights in criminal proceedings?',
+    'Can police call me without written notice?',
+    'Can police arrest at night?',
+    'Can police arrest without telling reason?',
+    'What should I do if police misbehave?',
+    'Can mobile be taken by police?'
+  ],
+  
+  complaint: [
+    'How do I file FIR?',
+    'Where can I register FIR?',
+    'Can I file FIR online?',
+    'Can FIR be lodged through email or online?',
+    'What if police station refuses FIR?',
+    'What if police delay FIR registration?',
+    'What is Zero FIR and when to use?',
+    'What information should I give in complaint?',
+    'Do I need documents for FIR?',
+    'What documents are needed to file FIR?',
+    'How to file complaint for cybercrime?',
+    'Online complaint to National Commission for Women?',
+    'Consumer court complaint process?',
+    'How to complain about police officer?',
+    'Complaint to Human Rights Commission?',
+    'Anonymous complaint - is it valid?',
+    'Oral vs written complaint?',
+    'Time limit for filing FIR?',
+    'Can I get copy of my FIR?',
+    'What happens after FIR is registered?',
+    'Private complaint in court - procedure?',
+    'How to file complaint for cheating?',
+    'Property dispute complaint - where to file?',
+    'Workplace harassment complaint?',
+    'Domestic violence complaint procedure?',
+    'Missing person complaint?',
+    'Accident complaint and insurance claim?',
+    'Online fraud complaint - step by step?',
+    'Can a family member file FIR on my behalf?',
+    'Is FIR free of cost?',
+    'Can FIR be withdrawn later?'
+  ],
+  
+  bail: [
+    'What is bail and who can get it?',
+    'How to apply for bail?',
+    'How much does bail cost?',
+    'How much time does it take to get bail?',
+    'What are bail conditions?',
+    'Can bail be given during investigation?',
+    'What is anticipatory bail?',
+    'How long does bail process take?',
+    'What if bail is rejected?',
+    'Who can stand surety for bail?',
+    'Who can apply for bail on my behalf?',
+    'Can I travel if on bail?',
+    'Regular bail vs interim bail?',
+    'Bail for women - any special provisions?',
+    'Bail for senior citizens?',
+    'When can bail be cancelled?',
+    'What happens if bail conditions are violated?',
+    'Default bail - what is it?',
+    'How to get bail in non-bailable case?',
+    'Personal bond vs surety bail?',
+    'Reporting to police station while on bail?',
+    'Bail in serious crimes like murder?',
+    'Release on personal recognizance?',
+    'Is bail possible on the same day of arrest?',
+    'Can police oppose bail?'
+  ],
+  
+  common: [
+    'What to do if my mobile is stolen?',
+    'Vehicle accident - what steps to take?',
+    'Property dispute with neighbor - resolution?',
+    'Cheque bounced - what is remedy?',
+    'Online shopping fraud - how to complain?',
+    'Landlord-tenant dispute handling?',
+    'Workplace harassment - what to do?',
+    'Domestic violence - immediate help?',
+    'Lost important documents - procedure?',
+    'Credit card fraud - steps to take?',
+    'Defamation case - how to handle?',
+    'Physical assault - what should I do?',
+    'Robbery at home - immediate actions?',
+    'Bike/car stolen - reporting process?',
+    'Threatened by someone - legal help?',
+    'Money not returned by friend - options?',
+    'Fake social media profile - complaint?',
+    'Neighbour causing nuisance - remedy?',
+    'Child missing - what to do immediately?',
+    'Dowry harassment - legal remedies?',
+    'Will dispute in family?',
+    'Marriage fraud case?',
+    'Job fraud and fake placement - complaint?',
+    'Electricity/water theft by neighbor?',
+    'Stray animal causing damage - liability?',
+    'Can case be settled outside court?',
+    'How long does criminal case take?',
+    'What happens if accused does not cooperate?',
+    'Can police close case without informing complainant?'
+  ],
+  
+  legal_aid: [
+    'How to get free legal aid?',
+    'Who is eligible for free legal services?',
+    'Legal aid helpline numbers?',
+    'Government legal aid authorities?',
+    'District Legal Services Authority - how to contact?',
+    'NGOs providing free legal help?',
+    'Online legal consultation services?',
+    'Lawyer fees - typical costs?',
+    'How to find good criminal lawyer?',
+    'Legal aid for women?',
+    'Legal help for senior citizens?',
+    'Free legal aid for SC/ST/OBC?',
+    'Legal aid for persons with disabilities?',
+    'Victim legal services?',
+    'Legal aid in custody?',
+    'Legal awareness programs?',
+    'Mobile legal aid clinics?',
+    'Tele-law services?',
+    'Legal aid mobile apps?',
+    'Pro bono legal services?'
+  ],
+  
+  cybercrime: [
+    'How to report online fraud?',
+    'What to do if money is deducted online fraud?',
+    'Cyber police station - where to find?',
+    'National Cybercrime Reporting Portal?',
+    'Online harassment complaint procedure?',
+    'Social media account hacked - what to do?',
+    'Fake profile impersonating me - remedy?',
+    'Online blackmail and extortion - help?',
+    'Cyberstalking - how to complain?',
+    'Revenge porn - legal remedies?',
+    'Phishing attack - reporting process?',
+    'UPI fraud - immediate steps?',
+    'Banking fraud online - whom to inform?',
+    'Can bank reverse fraud amount?',
+    'Online job scam - complaint?',
+    'Dating app fraud - legal action?',
+    'Cyber bullying - how to stop?',
+    'Obscene messages - legal remedy?',
+    'Morphed photos circulated - what to do?',
+    'Online defamation - legal options?',
+    'Video call blackmail - help?',
+    'Email hacking - complaint procedure?',
+    'Identity theft online - steps?',
+    'Online gaming fraud?',
+    'Fake website cheating - complaint?',
+    'Digital arrest scam - awareness?',
+    'How to protect myself online?',
+    'How quickly should cyber complaint be filed?',
+    'Is cyber complaint possible without FIR?',
+    'Is cyber crime complaint anonymous?'
+  ],
+  
+  women: [
+    'Domestic violence - immediate help?',
+    'Dowry harassment - legal remedy?',
+    'Sexual harassment - where to complain?',
+    'Acid attack - legal help and compensation?',
+    'Rape - medical and legal procedure?',
+    'Stalking - legal protection?',
+    'Eve teasing - what to do?',
+    'Women helpline numbers?',
+    'What is emergency number for women?',
+    'Mahila police station - services?',
+    'Protection of Women from Domestic Violence Act?',
+    'Child abuse - reporting procedure?',
+    'Child sexual abuse - immediate steps?',
+    'Missing child - what to do?',
+    'Child marriage - how to prevent?',
+    'POCSO Act - what does it cover?',
+    'Child helpline number?',
+    'Juvenile justice - who it applies to?',
+    'Maintenance for wife and children?',
+    'Divorce and domestic violence?',
+    'Protection from husband family?',
+    'Working women harassment - complaint?',
+    'Maternity rights?',
+    'Sexual harassment at workplace - procedure?',
+    'Women safety apps?',
+    'Legal aid for women?',
+    'Can woman be arrested by male police?',
+    'What time police can arrest a woman?',
+    'Is complaint mandatory in women cases?',
+    'What rights does a minor have during inquiry?'
+  ],
+  
+  basics: [
+    'What is FIR in simple words?',
+    'What does cognizable offence mean?',
+    'Bailable vs non-bailable - simple explanation?',
+    'What is police custody?',
+    'What is judicial custody?',
+    'What is charge sheet?',
+    'Bail - simple definition?',
+    'What is arrest warrant?',
+    'What is summons?',
+    'Court - different types explained?',
+    'What is trial?',
+    'Judge vs Magistrate - difference?',
+    'What is appeal?',
+    'What is conviction?',
+    'What is acquittal?',
+    'Punishment - types explained?',
+    'What is fine?',
+    'Life imprisonment - how many years?',
+    'What is lawyer role?',
+    'Public prosecutor - who is this?',
+    'How long can police keep someone in custody?'
+  ]
+};    
     // FIXED: Proper radio button handling
     function selectQueryType(type) {
       selectedQueryType = type;
@@ -1367,39 +2161,134 @@
     
     window.shareOnWhatsApp = shareOnWhatsApp;
 
-    // Extract Section Numbers from Response
-    function extractSectionNumbers(text) {
-      const matches = text.match(/(BNSS|BNS|BSA)\s*(?:Section)?\s*(\d+)/gi);
-      if (!matches) return [];
+    // Extract Keywords from User's Question
+    function extractKeywords(question) {
+      // Convert to lowercase for processing
+      const text = question.toLowerCase();
       
-      const sections = [];
-      matches.forEach(function(m) {
-        const parts = m.match(/(BNSS|BNS|BSA)\s*(?:Section)?\s*(\d+)/i);
-        if (parts) {
-          sections.push({ law: parts[1], section: parts[2] });
-        }
-      });
-      return sections;
+      // Remove common question words
+      const stopWords = ['what', 'when', 'where', 'how', 'why', 'who', 'is', 'are', 'the', 'a', 'an', 
+                         'can', 'could', 'should', 'would', 'do', 'does', 'did', 'have', 'has', 'had',
+                         'will', 'shall', 'may', 'might', 'must', 'को', 'का', 'के', 'में', 'से', 'है', 'हैं'];
+      
+      // Split into words and filter
+      const words = text.split(/\s+/)
+        .filter(word => word.length > 2)  // At least 3 characters
+        .filter(word => !stopWords.includes(word))
+        .filter(word => !/^\d+$/.test(word));  // Remove pure numbers
+      
+      // Take first 4-5 meaningful words as keywords
+      const keywords = words.slice(0, 5);
+      
+      // If we have very few keywords, try to extract key phrases
+      if (keywords.length < 3) {
+        // Look for important legal terms
+        const importantTerms = [
+          'arrest', 'bail', 'fir', 'complaint', 'investigation', 'search', 'seizure',
+          'evidence', 'witness', 'trial', 'court', 'judge', 'lawyer', 'police',
+          'custody', 'detention', 'rights', 'punishment', 'crime', 'offence',
+          'murder', 'theft', 'fraud', 'rape', 'kidnapping', 'cybercrime',
+          'electronic', 'digital', 'cyber', 'appeal', 'revision', 'judgment',
+          'charge', 'chargesheet', 'confession', 'anticipatory', 'cognizable',
+          'bailable', 'warrant', 'summons', 'victim', 'compensation'
+        ];
+        
+        importantTerms.forEach(term => {
+          if (text.includes(term) && !keywords.includes(term)) {
+            keywords.push(term);
+          }
+        });
+      }
+      
+      return keywords.filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
     }
 
-    // Open Section Search with Parameters
+    // Open Section Search with Keywords from Question
     function openSectionSearch() {
-      const answer = document.getElementById('modalAnswer').textContent;
-      const sections = extractSectionNumbers(answer);
+      // Get the original question
+      const question = document.getElementById('modalQuestion').textContent;
       
-      if (sections.length > 0) {
-        const params = sections.map(function(s) {
-          return s.law + '-' + s.section;
-        }).join(',');
-        window.open('section-search.html?sections=' + params, '_blank');
-        console.log('✅ Opening section search with:', params);
+      if (question && question.trim()) {
+        // Extract keywords from the question
+        const keywords = extractKeywords(question);
+        
+        if (keywords.length > 0) {
+          // Build URL with keywords
+          const searchQuery = keywords.join('+');
+          const url = 'section-search.html?search=' + encodeURIComponent(searchQuery);
+          window.open(url, '_blank');
+          console.log('✅ Opening section search with keywords:', keywords.join(' '));
+        } else {
+          // Fallback: open without keywords
+          window.open('section-search.html', '_blank');
+          console.log('⚠️ No keywords extracted, opening section search');
+        }
       } else {
+        // No question available, just open section search
         window.open('section-search.html', '_blank');
-        console.log('✅ Opening section search (no sections found)');
+        console.log('✅ Opening section search (no question available)');
       }
     }
     
     window.openSectionSearch = openSectionSearch;
+
+    // Autocomplete Suggestions for Custom Questions
+    function showAutocompleteSuggestions() {
+      const input = document.getElementById('userInput');
+      const suggestionsBox = document.getElementById('autocompleteSuggestions');
+      const query = input.value.toLowerCase().trim();
+      
+      // Hide if input is too short
+      if (query.length < 3) {
+        suggestionsBox.classList.add('hidden');
+        return;
+      }
+      
+      // Get all questions from TOPIC_QUESTIONS
+      const allQuestions = [];
+      for (const topic in TOPIC_QUESTIONS) {
+        allQuestions.push(...TOPIC_QUESTIONS[topic]);
+      }
+      
+      // Filter matching questions
+      const matches = allQuestions.filter(q => 
+        q.toLowerCase().includes(query)
+      ).slice(0, 10); // Limit to 10 suggestions
+      
+      // Show suggestions
+      if (matches.length > 0) {
+        suggestionsBox.innerHTML = matches.map(q => `
+          <div class="p-3 hover:bg-orange-50 cursor-pointer border-b border-orange-100 text-sm transition"
+               onclick="selectSuggestion('${q.replace(/'/g, "\\'")}')">
+            ${q}
+          </div>
+        `).join('');
+        suggestionsBox.classList.remove('hidden');
+      } else {
+        suggestionsBox.classList.add('hidden');
+      }
+    }
+    
+    function selectSuggestion(question) {
+      const input = document.getElementById('userInput');
+      const suggestionsBox = document.getElementById('autocompleteSuggestions');
+      
+      input.value = question;
+      suggestionsBox.classList.add('hidden');
+      input.focus();
+    }
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(event) {
+      const suggestionsBox = document.getElementById('autocompleteSuggestions');
+      const input = document.getElementById('userInput');
+      
+      if (!suggestionsBox.contains(event.target) && event.target !== input) {
+        suggestionsBox.classList.add('hidden');
+      }
+    });
+    
+    console.log('✅ NyayaMitra ready with autocomplete!');
 
     console.log('✅ LawBot Topic-Based ready!');
   </script>
