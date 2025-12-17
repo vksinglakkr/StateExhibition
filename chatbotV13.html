@@ -751,32 +751,65 @@
   <script>
     console.log('🚀 LawBot 2024 initializing...');
     
-    // Update Last Modified DateTime - FIXED DATE
-    function updateLastModified() {
-      try {
-        // FIXED DATE - Update this manually when making changes
-        const FIXED_DATE = '17th December 2024, 23:30 IST';
-        
-        const element = document.getElementById('lastModified');
-        if (element) {
-          element.textContent = FIXED_DATE;
-          console.log('✅ Last Modified displayed (FIXED):', FIXED_DATE);
-        }
-      } catch (error) {
-        console.error('❌ Last Modified error:', error);
-        const element = document.getElementById('lastModified');
-        if (element) {
-          element.textContent = '17th December 2024, 23:30 IST';
-        }
-      }
+// Update Last Modified DateTime - SHOWS FILE'S ACTUAL LAST MODIFIED DATE
+function updateLastModified() {
+  try {
+    let lastModDate;
+    
+    // Try to get file's last modified date from server
+    if (document.lastModified) {
+      lastModDate = new Date(document.lastModified);
+      console.log('📅 Raw document.lastModified:', document.lastModified);
     }
     
-    // Call when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', updateLastModified);
-    } else {
-      updateLastModified();
+    // If invalid or not available, fallback
+    if (!lastModDate || isNaN(lastModDate.getTime())) {
+      console.warn('⚠️ Could not get file modification date, using fallback');
+      lastModDate = new Date('2025-12-17T23:30:00'); // Your last update date
     }
+    
+    // Get day with ordinal suffix
+    const day = lastModDate.getDate();
+    const suffix = (day) => {
+      if (day > 3 && day < 21) return 'th';
+      switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    
+    // Format: "17th December 2025, 23:30 IST"
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    const month = monthNames[lastModDate.getMonth()];
+    const year = lastModDate.getFullYear();
+    const hours = lastModDate.getHours().toString().padStart(2, '0');
+    const minutes = lastModDate.getMinutes().toString().padStart(2, '0');
+    
+    const formattedDate = `${day}${suffix(day)} ${month} ${year}, ${hours}:${minutes} IST`;
+    
+    const element = document.getElementById('lastModified');
+    if (element) {
+      element.textContent = formattedDate;
+      console.log('✅ Last Modified displayed:', formattedDate);
+    }
+  } catch (error) {
+    console.error('❌ Last Modified error:', error);
+    const element = document.getElementById('lastModified');
+    if (element) {
+      element.textContent = '17th December 2025, 23:30 IST';
+    }
+  }
+}
+
+// Call when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateLastModified);
+} else {
+  updateLastModified();
+}
     
     // Set default profile on page load
     function setDefaultProfile() {
