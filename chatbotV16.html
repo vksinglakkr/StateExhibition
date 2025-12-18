@@ -506,7 +506,7 @@
     <div class="p-2">
       
       <!-- ALWAYS VISIBLE: Who are you? -->
-      <div class="mb-4">
+       <div class="mb-4" id="profileAccordion">
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-4" id="profileSelector">
           <label class="block text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">👤</span>
@@ -544,6 +544,17 @@
             ✓ Default: General Citizen (You can change this above)
           </p>
         </div>
+         <div id="profileSummary"
+     class="hidden mt-2 p-3 bg-blue-50 border-2 border-blue-300 rounded-xl flex items-center justify-between cursor-pointer"
+     onclick="expandProfileSelector()">
+  <div class="text-sm font-bold text-blue-900">
+    👤 Profile selected:
+    <span id="profileSummaryText">General Citizen</span>
+  </div>
+  <div class="text-xs text-blue-700 font-semibold">
+    Change
+  </div>
+</div>
       </div>
       
       <div class="query-type-selector">
@@ -2077,34 +2088,70 @@ const TOPIC_QUESTIONS = {
     
     window.selectQueryType = selectQueryType;
 
-    // Select main user profile (always visible)
-    function selectMainUser(userType) {
-      selectedUser = userType;
-      
-      // Update main profile cards
-      document.querySelectorAll('.user-card-small').forEach(el => el.classList.remove('selected'));
-      const mainCard = document.getElementById('user' + userType.charAt(0).toUpperCase() + userType.slice(1) + 'Main');
-      if (mainCard) mainCard.classList.add('selected');
-      
-      // Update hint text
-      const userNames = {
-        police: 'Police Officer - Get practical, procedural answers',
-        legal: 'Legal Professional - Get detailed technical analysis',
-        student: 'Student/Researcher - Get educational explanations',
-        citizen: 'General Citizen - Get simple, practical guidance'
-      };
-      
-      document.getElementById('profileHint').textContent = '✓ Selected: ' + userNames[userType];
-      
-      // If ready-made questions section is visible, load topics automatically
-      const readyDiv = document.getElementById('readyQuestionDiv');
-      if (readyDiv && readyDiv.style.display !== 'none') {
-        loadTopics(userType);
-        document.getElementById('topicSection').style.display = 'block';
-      }
-      
-      console.log('✅ Main user profile selected:', userType);
+   // Select main user profile (always visible)
+function selectMainUser(userType) {
+  selectedUser = userType;
+  
+  // Update main profile cards
+  document.querySelectorAll('.user-card-small')
+    .forEach(el => el.classList.remove('selected'));
+  
+  const mainCard = document.getElementById(
+    'user' + userType.charAt(0).toUpperCase() + userType.slice(1) + 'Main'
+  );
+  if (mainCard) mainCard.classList.add('selected');
+  
+  // Update hint text
+  const userNames = {
+    police: 'Police Officer - Get practical, procedural answers',
+    legal: 'Legal Professional - Get detailed technical analysis',
+    student: 'Student/Researcher - Get educational explanations',
+    citizen: 'General Citizen - Get simple, practical guidance'
+  };
+  
+  const hintEl = document.getElementById('profileHint');
+  if (hintEl) {
+    hintEl.textContent = '✓ Selected: ' + userNames[userType];
+  }
+
+  /* ================================
+     NEW: Progressive Collapse Logic
+     ================================ */
+  setTimeout(() => {
+    const profileBox = document.getElementById('profileSelector');
+    const summaryBox = document.getElementById('profileSummary');
+    const summaryText = document.getElementById('profileSummaryText');
+
+    const shortNames = {
+      police: 'Police Officer',
+      legal: 'Legal Professional',
+      student: 'Student / Researcher',
+      citizen: 'General Citizen'
+    };
+
+    if (profileBox && summaryBox && summaryText) {
+      profileBox.classList.add('hidden');
+      summaryBox.classList.remove('hidden');
+      summaryText.textContent = shortNames[userType] || 'General Citizen';
     }
+
+    // Auto-scroll to next section for smooth guided flow
+    const nextSection = document.querySelector('.query-type-selector');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 300);
+
+  // If ready-made questions section is visible, load topics automatically
+  const readyDiv = document.getElementById('readyQuestionDiv');
+  if (readyDiv && readyDiv.style.display !== 'none') {
+    loadTopics(userType);
+    document.getElementById('topicSection').style.display = 'block';
+  }
+  
+  console.log('✅ Main user profile selected:', userType);
+}
+
     
     window.selectMainUser = selectMainUser;
 
@@ -2431,6 +2478,10 @@ const TOPIC_QUESTIONS = {
     });
     
     console.log('✅ NyayaMitra ready with autocomplete!');
+function expandProfileSelector() {
+  document.getElementById('profileSelector')?.classList.remove('hidden');
+  document.getElementById('profileSummary')?.classList.add('hidden');
+}
 
   </script>
 
