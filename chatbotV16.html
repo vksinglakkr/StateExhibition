@@ -945,9 +945,14 @@
 </button>
 <button id="listenBtn"
         onclick="toggleListen()"
-        class="icon-btn bg-purple-600 hover:bg-purple-700"
+        class="icon-btn bg-purple-600 hover:bg-purple-700 relative"
         title="Listen / Stop">
-  
+
+  <!-- 🔴 ACTIVE INDICATOR -->
+  <span id="listenIndicator"
+        class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-600 rounded-full hidden">
+  </span>
+
   <!-- PLAY ICON -->
   <svg id="listenIconPlay"
        viewBox="0 0 24 24"
@@ -955,7 +960,7 @@
     <path d="M3 9v6h4l5 5V4L7 9H3z"/>
   </svg>
 
-  <!-- STOP ICON (hidden initially) -->
+  <!-- STOP ICON -->
   <svg id="listenIconStop"
        viewBox="0 0 24 24"
        class="w-5 h-5 fill-white hidden">
@@ -2809,9 +2814,14 @@ function updateListeningUI(active) {
   document.getElementById('listenIconPlay').classList.toggle('hidden', active);
   document.getElementById('listenIconStop').classList.toggle('hidden', !active);
 
-  btn.classList.toggle('listen-active', active); // 🔴 visual ON/OFF
+  document.getElementById('listenIndicator').classList.toggle('hidden', !active);
+
+  btn.classList.toggle('bg-purple-600', !active);
+  btn.classList.toggle('bg-red-600', active);
+
   isListening = active;
 }
+
 
   function stopListeningUI() {
     updateListeningUI(false);
