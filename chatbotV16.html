@@ -924,12 +924,25 @@
     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
   </svg>
 </button>
-      <button id="listenBtn" onclick="listenToResponse()"
+<button id="listenBtn"
+        onclick="toggleListen()"
         class="icon-btn bg-purple-600 hover:bg-purple-700"
-        title="Listen to Answer">
-  <svg viewBox="0 0 24 24" class="w-5 h-5 fill-white">
-    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+        title="Listen / Stop">
+  
+  <!-- PLAY ICON -->
+  <svg id="listenIconPlay"
+       viewBox="0 0 24 24"
+       class="w-5 h-5 fill-white">
+    <path d="M3 9v6h4l5 5V4L7 9H3z"/>
   </svg>
+
+  <!-- STOP ICON (hidden initially) -->
+  <svg id="listenIconStop"
+       viewBox="0 0 24 24"
+       class="w-5 h-5 fill-white hidden">
+    <path d="M6 6h12v12H6z"/>
+  </svg>
+
 </button>
 
     </div>
@@ -2469,11 +2482,13 @@ function loadQuestionsForTopic(topicId) {
 
 document.getElementById('closeModal').addEventListener('click', function() {
   speechSynthesis.cancel();   // 🔇 Stop listening
+  stopListeningUI();
   document.getElementById('aiModal').classList.add('hidden');
 });
 
 document.getElementById('closeBtn').addEventListener('click', function() {
   speechSynthesis.cancel();   // 🔇 Stop listening
+  stopListeningUI();
   document.getElementById('aiModal').classList.add('hidden');
 });
 
@@ -2724,13 +2739,21 @@ function enableResponseActions() {
   }
   disableResponseActions();
 </script>
-  <script>
-  let currentSpeech = null;
+<script>
+  let isListening = false;
+  let currentUtterance = null;
 
-  function listenToResponse() {
+  function toggleListen() {
     const response = document.getElementById('modalAnswer');
     if (!response) {
       alert('No response available to listen.');
+      return;
+    }
+
+    // 🔁 If already speaking → STOP
+    if (speechSynthesis.speaking || isListening) {
+      speechSynthesis.cancel();
+      stopListeningUI();
       return;
     }
 
@@ -2740,30 +2763,36 @@ function enableResponseActions() {
       return;
     }
 
-    // Stop previous speech if running
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
-    }
+    currentUtterance = new SpeechSynthesisUtterance(text);
 
-    const utterance = new SpeechSynthesisUtterance(text);
-
-    // 🔤 Language selection (sync with your language dropdown)
+    // Language sync
     const lang = document.getElementById('languageSelect')?.value || 'english';
+    if (lang === 'hindi') currentUtterance.lang = 'hi-IN';
+    else if (lang === 'punjabi') currentUtterance.lang = 'pa-IN';
+    else currentUtterance.lang = 'en-IN';
 
-    if (lang === 'hindi') {
-      utterance.lang = 'hi-IN';
-    } else if (lang === 'punjabi') {
-      utterance.lang = 'pa-IN';
-    } else {
-      utterance.lang = 'en-IN';
-    }
+    currentUtterance.rate = 0.95;
+    currentUtterance.pitch = 1;
+    currentUtterance.volume = 1;
 
-    utterance.rate = 0.95;   // natural speed
-    utterance.pitch = 1;
-    utterance.volume = 1;
+    currentUtterance.onend = () => {
+      stopListeningUI();
+    };
 
-    currentSpeech = utterance;
-    speechSynthesis.speak(utterance);
+    isListening = true;
+    updateListeningUI(true);
+    speechSynthesis.speak(currentUtterance);
+  }
+
+  function updateListeningUI(active) {
+    document.getElementById('listenIconPlay').classList.toggle('hidden', active);
+    document.getElementById('listenIconStop').classList.toggle('hidden', !active);
+    isListening = active;
+  }
+
+  function stopListeningUI() {
+    updateListeningUI(false);
+    isListening = false;
   }
 </script>
 
