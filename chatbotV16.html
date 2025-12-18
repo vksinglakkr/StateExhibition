@@ -550,26 +550,20 @@
     padding: 4px 6px;
   }
 }
-/* FINAL SPACING BALANCE – MOBILE ONLY */
+/* FINAL SPACING BALANCE – MOBILE ONLY (CORRECTED) */
 @media (max-width: 640px) {
 
-  /* Increase space between Mode card and text area */
+  /* Space between Mode card and text area (this was correct) */
   #customQuestionDiv {
     margin-top: 14px;
+    margin-bottom: 6px;   /* 🔑 controls space BELOW textbox */
   }
 
-  /* Reduce excessive gap above Get Answer */
+  /* Sticky button should NOT add margin */
   #submitBtn {
-    margin-top: 8px !important;
-  }
-
-  /* Reduce gap below text area */
-  #userInput {
-    margin-bottom: 10px;
+    margin-top: 0 !important;
   }
 }
-
-
 
   </style>
 </head>
