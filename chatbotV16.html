@@ -599,6 +599,19 @@
     padding: 14px 28px;
   }
 }
+@media (max-width: 640px) {
+
+  /* Attach submit bar closer to content */
+  .submit-bar {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid #e5e7eb; /* subtle visual anchor */
+  }
+
+  #submitBtn {
+    bottom: 6px;
+  }
+}
 
   </style>
 </head>
@@ -761,8 +774,7 @@
               <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
               📚 What do you want to know about?
             </label>
-            <p class="text-xs text-gray-600 mb-4 ml-10">Choose a topic - we'll find the right law for you</p>
-            
+           
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="topicContainer">
               <!-- Topics will load here dynamically -->
             </div>
