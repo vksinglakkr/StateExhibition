@@ -2084,10 +2084,13 @@ function selectQueryType(type) {
     document.getElementById('readyQuestionDiv').style.display = 'none';
 
     // 🔹 Refinement 2: Auto-focus cursor
-    setTimeout(() => {
-      document.getElementById('userInput')?.focus();
-    }, 200);
-
+   setTimeout(() => {
+  const input = document.getElementById('userInput');
+  if (input) {
+    input.value = '';   // clear old ready-made question
+    input.focus();      // focus for fresh input
+  }
+}, 200);
   } else {
     document.getElementById('readyCard')?.classList.add('selected');
     document.getElementById('customQuestionDiv').style.display = 'none';
