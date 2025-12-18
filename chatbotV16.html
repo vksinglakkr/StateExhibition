@@ -2424,19 +2424,18 @@ function loadQuestionsForTopic(topicId) {
     });
 
     // WhatsApp Share Function
-    function shareOnWhatsApp() {
-      const question = document.getElementById('modalQuestion').textContent;
-      const answer = document.getElementById('modalAnswer').textContent;
-      
-      const message = '*NyayaMitra 2024 - New Criminal Laws*\n\n' +
-                      '*Question:*\n' + question + '\n\n' +
-                      '*Answer:*\n' + answer.substring(0, 400) + '...\n\n' +
-                      'Get more info at NyayaMitra 2024';
-      
-      const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(message);
-      window.open(whatsappUrl, '_blank');
-      console.log('✅ Shared on WhatsApp');
-    }
+  function shareOnWhatsApp() {
+  const response = document.getElementById('responseText');
+  if (!response) return;
+
+  const text = response.innerText.trim();
+
+  const encodedText = encodeURIComponent(text);
+
+  const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+  window.open(whatsappUrl, '_blank');
+}
+
     
     window.shareOnWhatsApp = shareOnWhatsApp;
 
