@@ -483,6 +483,42 @@
     z-index: 20;
   }
 }
+    /* MOBILE COMPACT MODE FOR TOPIC CARDS */
+@media (max-width: 640px) {
+
+  .topic-card {
+    padding: 8px 10px;        /* reduce inner padding */
+    gap: 6px;
+    margin-bottom: 6px;      /* reduce vertical spacing */
+    border-radius: 8px;
+  }
+
+  .topic-icon {
+    font-size: 18px;         /* smaller icon */
+  }
+
+  .topic-title {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .topic-subtitle {
+    font-size: 9px;
+    line-height: 1.2;
+  }
+
+  .topic-law {
+    font-size: 8px;
+  }
+}
+@media (max-width: 640px) {
+  #topicContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+}
+
 
   </style>
 </head>
