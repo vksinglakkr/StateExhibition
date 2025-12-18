@@ -731,34 +731,28 @@
         </div>
 
 <!-- Language Selection - Before Submit Button -->
-<div class="mb-4 fade-in">
-  <div class="language-container flex items-center justify-between bg-gradient-to-r from-orange-50 to-yellow-50 p-3 rounded-xl border-2 border-orange-200">
-    <label class="text-sm font-bold text-gray-800 flex items-center gap-2">
-      <span class="text-xl">🌐</span>
-      Response Language:
-    </label>
-    <select id="languageSelect" 
-            class="px-4 py-2 border-2 border-orange-400 rounded-lg bg-white text-sm font-bold text-gray-800 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition cursor-pointer hover:bg-orange-50">
-      <option value="english">🇬🇧 English</option>
-      <option value="hindi">🇮🇳 हिंदी</option>
-      <option value="punjabi">🇮🇳 ਪੰਜਾਬੀ</option>
+<!-- Language + Submit (Inline Utility Bar) -->
+<div class="flex items-center justify-between gap-3 mt-4">
+
+  <div class="flex items-center gap-2 text-sm text-gray-600">
+    <span>Language:</span>
+    <select id="languageSelect"
+            class="px-2 py-1 border border-gray-300 rounded-md text-sm bg-white focus:border-orange-400 focus:ring-1 focus:ring-orange-200">
+      <option value="english">English</option>
+      <option value="hindi">हिंदी</option>
+      <option value="punjabi">ਪੰਜਾਬੀ</option>
     </select>
   </div>
+
+  <button id="submitBtn"
+          class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600
+                 text-white font-bold py-3 rounded-xl shadow-lg
+                 hover:from-orange-600 hover:to-orange-700 transition">
+    ⚡ Get Answer
+  </button>
+
 </div>
-
-
-        <button 
-          id="submitBtn" 
-          class="w-full btn-primary flex items-center justify-center gap-3 text-xl fade-in"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
-          Get Answer
-        </button>
-
       </div>
-
     </div>
 
     <div class="border-t-2 border-gray-200 px-6 py-4 text-center bg-gradient-to-b from-gray-50 to-white">
