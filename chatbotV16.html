@@ -600,6 +600,25 @@
   content: "";
   margin-top: 6px;
 }
+/* Listen button active state */
+.listen-active {
+  background-color: #dc2626 !important; /* red-600 */
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+}
+
+/* Optional subtle pulse (safe, slow) */
+.listen-active {
+  animation: listenPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes listenPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.15);
+  }
+}
 
 
   </style>
@@ -2784,11 +2803,15 @@ function enableResponseActions() {
     speechSynthesis.speak(currentUtterance);
   }
 
-  function updateListeningUI(active) {
-    document.getElementById('listenIconPlay').classList.toggle('hidden', active);
-    document.getElementById('listenIconStop').classList.toggle('hidden', !active);
-    isListening = active;
-  }
+function updateListeningUI(active) {
+  const btn = document.getElementById('listenBtn');
+
+  document.getElementById('listenIconPlay').classList.toggle('hidden', active);
+  document.getElementById('listenIconStop').classList.toggle('hidden', !active);
+
+  btn.classList.toggle('listen-active', active); // 🔴 visual ON/OFF
+  isListening = active;
+}
 
   function stopListeningUI() {
     updateListeningUI(false);
