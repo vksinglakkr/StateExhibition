@@ -924,6 +924,13 @@
     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
   </svg>
 </button>
+      <button onclick="listenToResponse()"
+        class="icon-btn bg-purple-600 hover:bg-purple-700"
+        title="Listen to Answer">
+  <svg viewBox="0 0 24 24" class="w-5 h-5 fill-white">
+    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+  </svg>
+</button>
 
     </div>
 
@@ -2460,13 +2467,16 @@ function loadQuestionsForTopic(topicId) {
       await getAnswer('chatgpt', 'standard');
     });
 
-    document.getElementById('closeModal').addEventListener('click', function() {
-      document.getElementById('aiModal').classList.add('hidden');
-    });
+document.getElementById('closeModal').addEventListener('click', function() {
+  speechSynthesis.cancel();   // 🔇 Stop listening
+  document.getElementById('aiModal').classList.add('hidden');
+});
 
-    document.getElementById('closeBtn').addEventListener('click', function() {
-      document.getElementById('aiModal').classList.add('hidden');
-    });
+document.getElementById('closeBtn').addEventListener('click', function() {
+  speechSynthesis.cancel();   // 🔇 Stop listening
+  document.getElementById('aiModal').classList.add('hidden');
+});
+
 
     // Extract Keywords from User's Question
     function extractKeywords(question) {
@@ -2693,6 +2703,49 @@ function toggleAdvancedFooter() {
     );
   }
 </script>
+  <script>
+  let currentSpeech = null;
+
+  function listenToResponse() {
+    const response = document.getElementById('modalAnswer');
+    if (!response) {
+      alert('No response available to listen.');
+      return;
+    }
+
+    const text = response.innerText.trim();
+    if (!text) {
+      alert('Response is empty.');
+      return;
+    }
+
+    // Stop previous speech if running
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // 🔤 Language selection (sync with your language dropdown)
+    const lang = document.getElementById('languageSelect')?.value || 'english';
+
+    if (lang === 'hindi') {
+      utterance.lang = 'hi-IN';
+    } else if (lang === 'punjabi') {
+      utterance.lang = 'pa-IN';
+    } else {
+      utterance.lang = 'en-IN';
+    }
+
+    utterance.rate = 0.95;   // natural speed
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    currentSpeech = utterance;
+    speechSynthesis.speak(utterance);
+  }
+</script>
+
 
 
 </body>
