@@ -632,6 +632,31 @@
     bottom: 6px;
   }
 }
+/* Improve visibility of "Select a question" dropdown */
+@media (max-width: 640px) {
+
+  .compact-dropdown {
+    background-color: #ffffff;
+    border: 2px solid #9ca3af;   /* darker border for visibility */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+  }
+
+  .compact-dropdown:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  }
+
+  .compact-dropdown {
+  padding-left: 36px;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M2 2h12v2H2zM2 6h12v2H2zM2 10h12v2H2z'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left 10px center, right 8px center;
+}
+
+}
 
   </style>
 </head>
@@ -808,7 +833,7 @@
             </label>
             
             <select id="questionSelect" class="block w-full px-5 py-4 text-base border-3 border-orange-400 focus:ring-4 focus:ring-orange-200 rounded-2xl bg-gradient-to-br from-white to-orange-50 shadow-lg transition-all font-medium mb-4">
-              <option value="" selected disabled>Select a question...</option>
+              <option value="" selected disabled>Tap to select a question...</option>
             </select>
           </div>
           
