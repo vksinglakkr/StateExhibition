@@ -667,9 +667,6 @@
             </div>
           </div>
           
-          <p class="text-xs text-blue-700 mt-2 text-center italic font-semibold" id="profileHint">
-            ✓ Default: General Citizen (You can change this above)
-          </p>
         </div>
          <div id="profileSummary"
      class="hidden mt-2 p-3 bg-blue-50 border-2 border-blue-300 rounded-xl flex items-center justify-between cursor-pointer"
@@ -2286,12 +2283,7 @@ function selectMainUser(userType) {
     citizen: 'General Citizen - Get simple, practical guidance'
   };
   
-  const hintEl = document.getElementById('profileHint');
-  if (hintEl) {
-    hintEl.textContent = '✓ Selected: ' + userNames[userType];
-  }
-
-  /* ================================
+   /* ================================
      NEW: Progressive Collapse Logic
      ================================ */
   setTimeout(() => {
