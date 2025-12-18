@@ -2467,22 +2467,6 @@ function loadQuestionsForTopic(topicId) {
       document.getElementById('aiModal').classList.add('hidden');
     });
 
-    // WhatsApp Share Function
-  function shareOnWhatsApp() {
-  const response = document.getElementById('responseText');
-  if (!response) return;
-
-  const text = response.innerText.trim();
-
-  const encodedText = encodeURIComponent(text);
-
-  const whatsappUrl = `https://wa.me/?text=${encodedText}`;
-  window.open(whatsappUrl, '_blank');
-}
-
-    
-    window.shareOnWhatsApp = shareOnWhatsApp;
-
     // Extract Keywords from User's Question
     function extractKeywords(question) {
       // Convert to lowercase for processing
@@ -2687,29 +2671,21 @@ function toggleAdvancedFooter() {
 
   </script>
 <script>
+    // WhatsApp Share Function
   function shareOnWhatsApp() {
-    console.log('✅ WhatsApp button clicked');
+  const response = document.getElementById('responseText');
+  if (!response) return;
 
-    const response =
-      document.getElementById('responseText') ||
-      document.querySelector('.response-content') ||
-      document.querySelector('#responseContainer');
+  const text = response.innerText.trim();
 
-    if (!response) {
-      alert('No response available to share.');
-      return;
-    }
+  const encodedText = encodeURIComponent(text);
 
-    const text = response.innerText.trim();
-    if (!text) {
-      alert('Response is empty.');
-      return;
-    }
+  const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+  window.open(whatsappUrl, '_blank');
+}
 
-    const url = 'https://wa.me/?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
-  }
-</script>
+    
+    window.shareOnWhatsApp = shareOnWhatsApp;</script>
 
 </body>
 </html>
