@@ -605,7 +605,27 @@
   .submit-bar {
     margin-top: 4px;
     padding-top: 6px;
-    border-top: 1px solid #e5e7eb; /* subtle visual anchor */
+  }
+
+  #submitBtn {
+    bottom: 6px;
+  }
+}
+/* FINAL SUBMIT BAR ANCHOR – WORKS IN ALL MODES */
+@media (max-width: 640px) {
+
+  .submit-bar {
+    margin-top: 4px;
+    padding-top: 6px;
+
+    /* soft visual anchor */
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.85),
+      rgba(255, 255, 255, 1)
+    );
+
+    box-shadow: 0 -6px 10px rgba(0, 0, 0, 0.04);
   }
 
   #submitBtn {
