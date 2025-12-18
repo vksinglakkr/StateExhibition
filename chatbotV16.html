@@ -2516,9 +2516,30 @@ function expandProfileSelector() {
   document.getElementById('profileSummary')?.classList.add('hidden');
 }
 function expandQueryType() {
-  document.querySelector('.query-type-selector')?.classList.remove('hidden');
-  document.getElementById('queryTypeSummary')?.classList.add('hidden');
+  const selector = document.querySelector('.query-type-selector');
+  const summary = document.getElementById('queryTypeSummary');
+
+  if (selector && summary) {
+    selector.classList.remove('hidden');
+    summary.classList.add('hidden');
+  }
+
+  // 🔹 FIX: Restore correct radio & visual selection
+  document.querySelectorAll('.radio-option')
+    .forEach(el => el.classList.remove('selected'));
+
+  const customRadio = document.querySelector('input[name="queryType"][value="custom"]');
+  const readyRadio = document.querySelector('input[name="queryType"][value="ready"]');
+
+  if (selectedQueryType === 'custom') {
+    customRadio.checked = true;
+    document.getElementById('customCard')?.classList.add('selected');
+  } else {
+    readyRadio.checked = true;
+    document.getElementById('readyCard')?.classList.add('selected');
+  }
 }
+
 
 
   </script>
