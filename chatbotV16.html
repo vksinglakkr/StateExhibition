@@ -518,6 +518,33 @@
     gap: 6px;
   }
 }
+@media (max-width: 640px) {
+  #languageSelect {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-width: 1.5px;
+  }
+
+  .language-container {
+    padding: 10px;
+  }
+}
+    @media (max-width: 640px) {
+  .query-type-selector {
+    margin-bottom: 12px;
+  }
+
+  #topicSection {
+    margin-bottom: 10px;
+  }
+}
+@media (max-width: 640px) {
+  .step-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
 
 
   </style>
@@ -703,21 +730,22 @@
           
         </div>
 
-        <!-- Language Selection - Before Submit Button -->
-        <div class="mb-4 fade-in">
-          <div class="flex items-center justify-between bg-gradient-to-r from-orange-50 to-yellow-50 p-3 rounded-xl border-2 border-orange-200">
-            <label class="text-sm font-bold text-gray-800 flex items-center gap-2">
-              <span class="text-xl">🌐</span>
-              Response Language:
-            </label>
-            <select id="languageSelect" 
-                    class="px-4 py-2 border-2 border-orange-400 rounded-lg bg-white text-sm font-bold text-gray-800 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition cursor-pointer hover:bg-orange-50">
-              <option value="english">🇬🇧 English</option>
-              <option value="hindi">🇮🇳 हिंदी</option>
-              <option value="punjabi">🇮🇳 ਪੰਜਾਬੀ</option>
-            </select>
-          </div>
-        </div>
+<!-- Language Selection - Before Submit Button -->
+<div class="mb-4 fade-in">
+  <div class="language-container flex items-center justify-between bg-gradient-to-r from-orange-50 to-yellow-50 p-3 rounded-xl border-2 border-orange-200">
+    <label class="text-sm font-bold text-gray-800 flex items-center gap-2">
+      <span class="text-xl">🌐</span>
+      Response Language:
+    </label>
+    <select id="languageSelect" 
+            class="px-4 py-2 border-2 border-orange-400 rounded-lg bg-white text-sm font-bold text-gray-800 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition cursor-pointer hover:bg-orange-50">
+      <option value="english">🇬🇧 English</option>
+      <option value="hindi">🇮🇳 हिंदी</option>
+      <option value="punjabi">🇮🇳 ਪੰਜਾਬੀ</option>
+    </select>
+  </div>
+</div>
+
 
         <button 
           id="submitBtn" 
