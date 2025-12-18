@@ -475,6 +475,51 @@
       }
       .user-icon { font-size: 36px; }
     }
+    /* Refinement 3: Sticky submit button on mobile */
+@media (max-width: 640px) {
+  #submitBtn {
+    position: sticky;
+    bottom: 12px;
+    z-index: 20;
+  }
+}
+    /* MOBILE COMPACT MODE FOR TOPIC CARDS */
+@media (max-width: 640px) {
+
+  .topic-card {
+    padding: 8px 10px;        /* reduce inner padding */
+    gap: 6px;
+    margin-bottom: 6px;      /* reduce vertical spacing */
+    border-radius: 8px;
+  }
+
+  .topic-icon {
+    font-size: 18px;         /* smaller icon */
+  }
+
+  .topic-title {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .topic-subtitle {
+    font-size: 9px;
+    line-height: 1.2;
+  }
+
+  .topic-law {
+    font-size: 8px;
+  }
+}
+@media (max-width: 640px) {
+  #topicContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+}
+
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -506,7 +551,7 @@
     <div class="p-2">
       
       <!-- ALWAYS VISIBLE: Who are you? -->
-      <div class="mb-4">
+       <div class="mb-4" id="profileAccordion">
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-4" id="profileSelector">
           <label class="block text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
             <span class="bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">👤</span>
@@ -544,6 +589,17 @@
             ✓ Default: General Citizen (You can change this above)
           </p>
         </div>
+         <div id="profileSummary"
+     class="hidden mt-2 p-3 bg-blue-50 border-2 border-blue-300 rounded-xl flex items-center justify-between cursor-pointer"
+     onclick="expandProfileSelector()">
+  <div class="text-sm font-bold text-blue-900">
+    👤 Profile selected:
+    <span id="profileSummaryText">General Citizen</span>
+  </div>
+  <div class="text-xs text-blue-700 font-semibold">
+    Change
+  </div>
+</div>
       </div>
       
       <div class="query-type-selector">
@@ -572,6 +628,20 @@
           </div>
         </div>
       </div>
+      <!-- Compact Query Type Summary (hidden initially) -->
+<div id="queryTypeSummary"
+     class="hidden mt-2 p-3 bg-amber-50 border-2 border-amber-300 rounded-xl
+            flex items-center justify-between cursor-pointer"
+     onclick="expandQueryType()">
+  <div class="text-sm font-bold text-amber-900">
+    📌 Mode:
+    <span id="queryTypeSummaryText">Ask Your Own Question</span>
+  </div>
+  <div class="text-xs font-semibold text-amber-700">
+    Change
+  </div>
+</div>
+
 
       <div id="questionSection">
         
@@ -2037,74 +2107,123 @@ const TOPIC_QUESTIONS = {
   ]
 };    
     // FIXED: Proper radio button handling
-    function selectQueryType(type) {
-      selectedQueryType = type;
-      
-      const customCard = document.getElementById('customCard');
-      const readyCard = document.getElementById('readyCard');
-      const customDiv = document.getElementById('customQuestionDiv');
-      const readyDiv = document.getElementById('readyQuestionDiv');
-      
-      // Remove selected class from both
-      customCard.classList.remove('selected');
-      readyCard.classList.remove('selected');
-      
-      if (type === 'custom') {
-        customCard.classList.add('selected');
-        document.querySelector('input[value="custom"]').checked = true;
-        customDiv.style.display = 'block';
-        readyDiv.style.display = 'none';
-      } else {
-        readyCard.classList.add('selected');
-        document.querySelector('input[value="ready"]').checked = true;
-        customDiv.style.display = 'none';
-        readyDiv.style.display = 'block';
-        
-        // IMPORTANT: If profile already selected, show topics immediately
-        if (selectedUser) {
-          loadTopics(selectedUser);
-          document.getElementById('topicSection').style.display = 'block';
-          console.log('✅ Topics loaded for already-selected user:', selectedUser);
-        } else {
-          // Hide topics until profile is selected
-          document.getElementById('topicSection').style.display = 'none';
-          console.log('⚠️ No profile selected yet - topics hidden');
-        }
-      }
-      
-      console.log('✅ Query type selected:', type);
+function selectQueryType(type) {
+  selectedQueryType = type;
+
+  // Toggle radio cards
+  document.querySelectorAll('.radio-option')
+    .forEach(el => el.classList.remove('selected'));
+
+  if (type === 'custom') {
+    document.getElementById('customCard')?.classList.add('selected');
+    document.getElementById('customQuestionDiv').style.display = 'block';
+    document.getElementById('readyQuestionDiv').style.display = 'none';
+
+    // 🔹 Refinement 2: Auto-focus cursor
+   setTimeout(() => {
+  const input = document.getElementById('userInput');
+  if (input) {
+    input.value = '';   // clear old ready-made question
+    input.focus();      // focus for fresh input
+  }
+}, 200);
+  } else {
+    document.getElementById('readyCard')?.classList.add('selected');
+    document.getElementById('customQuestionDiv').style.display = 'none';
+    document.getElementById('readyQuestionDiv').style.display = 'block';
+
+    loadTopics(selectedUser);
+    document.getElementById('topicSection').style.display = 'block';
+  }
+
+  /* ================================
+     Refinement 1: Auto-collapse selector
+     ================================ */
+  setTimeout(() => {
+    const selector = document.querySelector('.query-type-selector');
+    const summary = document.getElementById('queryTypeSummary');
+    const text = document.getElementById('queryTypeSummaryText');
+
+    const labels = {
+      custom: 'Ask Your Own Question',
+      ready: 'Ready-Made Questions'
+    };
+
+    if (selector && summary && text) {
+      selector.classList.add('hidden');
+      summary.classList.remove('hidden');
+      text.textContent = labels[type];
     }
+  }, 300);
+}
+
     
     window.selectQueryType = selectQueryType;
 
-    // Select main user profile (always visible)
-    function selectMainUser(userType) {
-      selectedUser = userType;
-      
-      // Update main profile cards
-      document.querySelectorAll('.user-card-small').forEach(el => el.classList.remove('selected'));
-      const mainCard = document.getElementById('user' + userType.charAt(0).toUpperCase() + userType.slice(1) + 'Main');
-      if (mainCard) mainCard.classList.add('selected');
-      
-      // Update hint text
-      const userNames = {
-        police: 'Police Officer - Get practical, procedural answers',
-        legal: 'Legal Professional - Get detailed technical analysis',
-        student: 'Student/Researcher - Get educational explanations',
-        citizen: 'General Citizen - Get simple, practical guidance'
-      };
-      
-      document.getElementById('profileHint').textContent = '✓ Selected: ' + userNames[userType];
-      
-      // If ready-made questions section is visible, load topics automatically
-      const readyDiv = document.getElementById('readyQuestionDiv');
-      if (readyDiv && readyDiv.style.display !== 'none') {
-        loadTopics(userType);
-        document.getElementById('topicSection').style.display = 'block';
-      }
-      
-      console.log('✅ Main user profile selected:', userType);
+   // Select main user profile (always visible)
+function selectMainUser(userType) {
+  selectedUser = userType;
+  
+  // Update main profile cards
+  document.querySelectorAll('.user-card-small')
+    .forEach(el => el.classList.remove('selected'));
+  
+  const mainCard = document.getElementById(
+    'user' + userType.charAt(0).toUpperCase() + userType.slice(1) + 'Main'
+  );
+  if (mainCard) mainCard.classList.add('selected');
+  
+  // Update hint text
+  const userNames = {
+    police: 'Police Officer - Get practical, procedural answers',
+    legal: 'Legal Professional - Get detailed technical analysis',
+    student: 'Student/Researcher - Get educational explanations',
+    citizen: 'General Citizen - Get simple, practical guidance'
+  };
+  
+  const hintEl = document.getElementById('profileHint');
+  if (hintEl) {
+    hintEl.textContent = '✓ Selected: ' + userNames[userType];
+  }
+
+  /* ================================
+     NEW: Progressive Collapse Logic
+     ================================ */
+  setTimeout(() => {
+    const profileBox = document.getElementById('profileSelector');
+    const summaryBox = document.getElementById('profileSummary');
+    const summaryText = document.getElementById('profileSummaryText');
+
+    const shortNames = {
+      police: 'Police Officer',
+      legal: 'Legal Professional',
+      student: 'Student / Researcher',
+      citizen: 'General Citizen'
+    };
+
+    if (profileBox && summaryBox && summaryText) {
+      profileBox.classList.add('hidden');
+      summaryBox.classList.remove('hidden');
+      summaryText.textContent = shortNames[userType] || 'General Citizen';
     }
+
+    // Auto-scroll to next section for smooth guided flow
+    const nextSection = document.querySelector('.query-type-selector');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 300);
+
+  // If ready-made questions section is visible, load topics automatically
+  const readyDiv = document.getElementById('readyQuestionDiv');
+  if (readyDiv && readyDiv.style.display !== 'none') {
+    loadTopics(userType);
+    document.getElementById('topicSection').style.display = 'block';
+  }
+  
+  console.log('✅ Main user profile selected:', userType);
+}
+
     
     window.selectMainUser = selectMainUser;
 
@@ -2431,6 +2550,36 @@ const TOPIC_QUESTIONS = {
     });
     
     console.log('✅ NyayaMitra ready with autocomplete!');
+function expandProfileSelector() {
+  document.getElementById('profileSelector')?.classList.remove('hidden');
+  document.getElementById('profileSummary')?.classList.add('hidden');
+}
+function expandQueryType() {
+  const selector = document.querySelector('.query-type-selector');
+  const summary = document.getElementById('queryTypeSummary');
+
+  if (selector && summary) {
+    selector.classList.remove('hidden');
+    summary.classList.add('hidden');
+  }
+
+  // 🔹 FIX: Restore correct radio & visual selection
+  document.querySelectorAll('.radio-option')
+    .forEach(el => el.classList.remove('selected'));
+
+  const customRadio = document.querySelector('input[name="queryType"][value="custom"]');
+  const readyRadio = document.querySelector('input[name="queryType"][value="ready"]');
+
+  if (selectedQueryType === 'custom') {
+    customRadio.checked = true;
+    document.getElementById('customCard')?.classList.add('selected');
+  } else {
+    readyRadio.checked = true;
+    document.getElementById('readyCard')?.classList.add('selected');
+  }
+}
+
+
 
   </script>
 
