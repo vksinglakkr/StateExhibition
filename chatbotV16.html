@@ -475,187 +475,73 @@
       }
       .user-icon { font-size: 36px; }
     }
-    /* Refinement 3: Sticky submit button on mobile */
-@media (max-width: 640px) {
-  #submitBtn {
-    position: sticky;
-    bottom: 12px;
-    z-index: 20;
-  }
-}
-    /* MOBILE COMPACT MODE FOR TOPIC CARDS */
+/* ===== FINAL MOBILE UI (SINGLE SOURCE OF TRUTH) ===== */
 @media (max-width: 640px) {
 
+  /* Query type card */
+  .query-type-selector {
+    margin-bottom: 12px;
+  }
+
+  /* Ready-made topic section spacing */
+  #topicSection {
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+
+  /* Custom question textarea wrapper */
+  #customQuestionDiv {
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+
+  /* Topic cards compact */
   .topic-card {
-    padding: 8px 10px;        /* reduce inner padding */
+    padding: 8px 10px;
     gap: 6px;
-    margin-bottom: 6px;      /* reduce vertical spacing */
+    margin-bottom: 6px;
     border-radius: 8px;
   }
 
-  .topic-icon {
-    font-size: 18px;         /* smaller icon */
-  }
-
-  .topic-title {
-    font-size: 12px;
-    line-height: 1.2;
-  }
-
-  .topic-subtitle {
-    font-size: 9px;
-    line-height: 1.2;
-  }
-
-  .topic-law {
-    font-size: 8px;
-  }
-}
-@media (max-width: 640px) {
+  /* Topic grid */
   #topicContainer {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
   }
-}
-@media (max-width: 640px) {
-  #languageSelect {
-    padding: 6px 10px;
-    font-size: 12px;
-    border-width: 1.5px;
-  }
 
-  .language-container {
-    padding: 10px;
-  }
-}
-    @media (max-width: 640px) {
-  .query-type-selector {
-    margin-bottom: 12px;
-  }
-
-  #topicSection {
-    margin-bottom: 10px;
-  }
-}
-@media (max-width: 640px) {
-  .step-badge {
-    font-size: 11px;
-    padding: 4px 8px;
-  }
-}
-@media (max-width: 640px) {
-  #languageSelect {
-    font-size: 12px;
-    padding: 4px 6px;
-  }
-}
-/* FINAL GAP FIX – MOBILE ONLY */
-@media (max-width: 640px) {
-
-  .query-type-selector {
-    margin-bottom: 10px !important;
-  }
-
-  #customQuestionDiv {
-    margin-top: 14px;
-    margin-bottom: 4px;
-  }
-
-  .btn-primary {
-    padding: 14px 28px;
-  }
-
-  #submitBtn {
-    margin-top: 0 !important;
-    bottom: 6px;
-  }
-}
-/* FINAL READY-MADE MODE POLISH – MOBILE ONLY */
-@media (max-width: 640px) {
-
-  /* Proper separation when topic section appears */
-  #topicSection {
-    margin-top: 14px;
-  }
-
-  /* Reduce floating feel above submit */
-  .submit-bar {
-    margin-top: 6px;
-  }
-
-  /* Balanced spacing overall */
-  .query-type-selector {
-    margin-bottom: 10px;
-  }
-
-  /* Sticky button fine tuning */
-  #submitBtn {
-    bottom: 6px;
-  }
-
-  /* Slightly slimmer button */
-  .btn-primary {
-    padding: 14px 28px;
-  }
-}
-@media (max-width: 640px) {
-
-  /* Attach submit bar closer to content */
-  .submit-bar {
-    margin-top: 4px;
-    padding-top: 6px;
-  }
-
-  #submitBtn {
-    bottom: 6px;
-  }
-}
-/* FINAL SUBMIT BAR ANCHOR – WORKS IN ALL MODES */
-@media (max-width: 640px) {
-
-  .submit-bar {
-    margin-top: 4px;
-    padding-top: 6px;
-
-    /* soft visual anchor */
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.85),
-      rgba(255, 255, 255, 1)
-    );
-
-    box-shadow: 0 -6px 10px rgba(0, 0, 0, 0.04);
-  }
-
-  #submitBtn {
-    bottom: 6px;
-  }
-}
-/* Improve visibility of "Select a question" dropdown */
-@media (max-width: 640px) {
-
+  /* Dropdown visibility */
   .compact-dropdown {
-    background-color: #ffffff;
-    border: 2px solid #9ca3af;   /* darker border for visibility */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background-color: #fff;
+    border: 2px solid #9ca3af;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     font-weight: 600;
   }
 
-  .compact-dropdown:focus {
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  /* Submit bar */
+  .submit-bar {
+    margin-top: 4px;
+    padding-top: 6px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.9),
+      rgba(255,255,255,1)
+    );
+    box-shadow: 0 -6px 10px rgba(0,0,0,0.04);
   }
 
-  .compact-dropdown {
-  padding-left: 36px;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M2 2h12v2H2zM2 6h12v2H2zM2 10h12v2H2z'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat, no-repeat;
-  background-position: left 10px center, right 8px center;
-}
+  /* Button */
+  .btn-primary {
+    padding: 14px 28px;
+  }
 
+  /* Sticky submit */
+  #submitBtn {
+    position: sticky;
+    bottom: 6px;
+    margin-top: 0;
+    z-index: 20;
+  }
 }
 
   </style>
