@@ -413,18 +413,21 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     
-    .icon-btn {
-      padding: 8px;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-      transition: all 0.3s;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    }
+.icon-btn {
+  min-width: 44px;          /* 👈 ensures proper touch target */
+  min-height: 44px;         /* 👈 mobile accessibility standard */
+  padding: 10px;            /* slightly more breathing space */
+  border-radius: 12px;      /* softer, premium look */
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
     
     .icon-btn:hover {
       transform: translateY(-2px);
