@@ -600,6 +600,25 @@
   content: "";
   margin-top: 6px;
 }
+/* Listen button active state */
+.listen-active {
+  background-color: #dc2626 !important; /* red-600 */
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+}
+
+/* Optional subtle pulse (safe, slow) */
+.listen-active {
+  animation: listenPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes listenPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.15);
+  }
+}
 
 
   </style>
@@ -904,7 +923,7 @@
 
     <!-- Left Actions -->
     <div class="flex items-center gap-2">
-   <button onclick="shareOnWhatsApp()"
+   <button id="whatsappBtn" onclick="shareOnWhatsApp()"
         class="icon-btn bg-green-600 hover:bg-green-700"
         title="Share on WhatsApp">
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -914,7 +933,7 @@
 
 
 
-<button onclick="openSectionSearch()"
+<button id="searchBtn" onclick="openSectionSearch()"
         class="icon-btn bg-blue-600 hover:bg-blue-700"
         title="Search Related Sections">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -923,6 +942,31 @@
     <circle cx="11" cy="11" r="8"></circle>
     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
   </svg>
+</button>
+<button id="listenBtn"
+        onclick="toggleListen()"
+        class="icon-btn bg-purple-600 hover:bg-purple-700 relative"
+        title="Listen / Stop">
+
+  <!-- 🔴 ACTIVE INDICATOR -->
+  <span id="listenIndicator"
+        class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-600 rounded-full hidden">
+  </span>
+
+  <!-- PLAY ICON -->
+  <svg id="listenIconPlay"
+       viewBox="0 0 24 24"
+       class="w-5 h-5 fill-white">
+    <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+  </svg>
+
+  <!-- STOP ICON -->
+  <svg id="listenIconStop"
+       viewBox="0 0 24 24"
+       class="w-5 h-5 fill-white hidden">
+    <path d="M6 6h12v12H6z"/>
+  </svg>
+
 </button>
 
     </div>
@@ -1283,7 +1327,7 @@
         }
         
         document.getElementById('modalAnswer').innerHTML = finalHTML;
-        
+        enableResponseActions();
         console.log('✅ Response from', provider, 'in', responseTime, 'seconds');
         
       } catch (error) {
@@ -2460,13 +2504,18 @@ function loadQuestionsForTopic(topicId) {
       await getAnswer('chatgpt', 'standard');
     });
 
-    document.getElementById('closeModal').addEventListener('click', function() {
-      document.getElementById('aiModal').classList.add('hidden');
-    });
+document.getElementById('closeModal').addEventListener('click', function() {
+  speechSynthesis.cancel();   // 🔇 Stop listening
+  stopListeningUI();
+  document.getElementById('aiModal').classList.add('hidden');
+});
 
-    document.getElementById('closeBtn').addEventListener('click', function() {
-      document.getElementById('aiModal').classList.add('hidden');
-    });
+document.getElementById('closeBtn').addEventListener('click', function() {
+  speechSynthesis.cancel();   // 🔇 Stop listening
+  stopListeningUI();
+  document.getElementById('aiModal').classList.add('hidden');
+});
+
 
     // Extract Keywords from User's Question
     function extractKeywords(question) {
@@ -2672,6 +2721,26 @@ function toggleAdvancedFooter() {
 
   </script>
 <script>
+  function disableResponseActions() {
+  ['whatsappBtn', 'listenBtn', 'searchBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add('opacity-40', 'cursor-not-allowed');
+    }
+  });
+}
+
+function enableResponseActions() {
+  ['whatsappBtn', 'listenBtn', 'searchBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove('opacity-40', 'cursor-not-allowed');
+    }
+  });
+}
+
   function shareOnWhatsApp() {
     console.log('✅ shareOnWhatsApp reached');
 
@@ -2692,7 +2761,74 @@ function toggleAdvancedFooter() {
       '_blank'
     );
   }
+  disableResponseActions();
 </script>
+<script>
+  let isListening = false;
+  let currentUtterance = null;
+
+  function toggleListen() {
+    const response = document.getElementById('modalAnswer');
+    if (!response) {
+      alert('No response available to listen.');
+      return;
+    }
+
+    // 🔁 If already speaking → STOP
+    if (speechSynthesis.speaking || isListening) {
+      speechSynthesis.cancel();
+      stopListeningUI();
+      return;
+    }
+
+    const text = response.innerText.trim();
+    if (!text) {
+      alert('Response is empty.');
+      return;
+    }
+
+    currentUtterance = new SpeechSynthesisUtterance(text);
+
+    // Language sync
+    const lang = document.getElementById('languageSelect')?.value || 'english';
+    if (lang === 'hindi') currentUtterance.lang = 'hi-IN';
+    else if (lang === 'punjabi') currentUtterance.lang = 'pa-IN';
+    else currentUtterance.lang = 'en-IN';
+
+    currentUtterance.rate = 0.95;
+    currentUtterance.pitch = 1;
+    currentUtterance.volume = 1;
+
+    currentUtterance.onend = () => {
+      stopListeningUI();
+    };
+
+    isListening = true;
+    updateListeningUI(true);
+    speechSynthesis.speak(currentUtterance);
+  }
+
+function updateListeningUI(active) {
+  const btn = document.getElementById('listenBtn');
+
+  document.getElementById('listenIconPlay').classList.toggle('hidden', active);
+  document.getElementById('listenIconStop').classList.toggle('hidden', !active);
+
+  document.getElementById('listenIndicator').classList.toggle('hidden', !active);
+
+  btn.classList.toggle('bg-purple-600', !active);
+  btn.classList.toggle('bg-red-600', active);
+
+  isListening = active;
+}
+
+
+  function stopListeningUI() {
+    updateListeningUI(false);
+    isListening = false;
+  }
+</script>
+
 
 
 </body>
