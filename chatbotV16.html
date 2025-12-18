@@ -2294,19 +2294,20 @@ function selectMainUser(userType) {
       console.log('✅ Topic selected:', topicId);
     }
 
-    function loadQuestionsForTopic(topicId) {
-      const questionSelect = document.getElementById('questionSelect');
-      questionSelect.innerHTML = '<option value="" selected disabled>Select a question...</option>';
-      
-      const questions = TOPIC_QUESTIONS[topicId] || [];
-      
-      questions.forEach(function(q) {
-        const option = document.createElement('option');
-        option.value = q;
-        option.textContent = q;
-        questionSelect.appendChild(option);
-      });
-    }
+function loadQuestionsForTopic(topicId) {
+  const questionSelect = document.getElementById('questionSelect');
+  questionSelect.innerHTML = '<option value="" selected disabled>Tap to select a question...</option>';
+  
+  const questions = TOPIC_QUESTIONS[topicId] || [];
+  
+  questions.forEach(function(q) {
+    const option = document.createElement('option');
+    option.value = q;
+    option.textContent = q;
+    questionSelect.appendChild(option);
+  });
+}
+
 
     document.getElementById('questionSelect').addEventListener('change', function() {
       document.getElementById('userInput').value = this.value;
