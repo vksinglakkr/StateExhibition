@@ -1290,7 +1290,7 @@
         }
         
         document.getElementById('modalAnswer').innerHTML = finalHTML;
-        
+        enableResponseActions();
         console.log('✅ Response from', provider, 'in', responseTime, 'seconds');
         
       } catch (error) {
