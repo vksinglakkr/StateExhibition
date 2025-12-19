@@ -2437,49 +2437,59 @@ function loadQuestionsForTopic(topicId) {
       document.getElementById('userInput').value = this.value;
     });
 
-    // Voice recognition
-    let recognition;
-    let isRecording = false;
+// Voice recognition
+let recognition;
+let isRecording = false;
 
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'hi-IN';
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
-      recognition.onstart = function() {
-        isRecording = true;
-        document.getElementById('voiceBtn').classList.add('recording');
-      };
+  recognition.onstart = function () {
+    isRecording = true;
+    document.getElementById('voiceBtn').classList.add('recording');
+  };
 
-      recognition.onresult = function(event) {
-        document.getElementById('userInput').value = event.results[0][0].transcript;
-      };
+  recognition.onresult = function (event) {
+    document.getElementById('userInput').value =
+      event.results[0][0].transcript;
+  };
 
-      recognition.onend = function() {
-        isRecording = false;
-        document.getElementById('voiceBtn').classList.remove('recording');
-      };
+  recognition.onend = function () {
+    isRecording = false;
+    document.getElementById('voiceBtn').classList.remove('recording');
+  };
 
-      recognition.onerror = function() {
-        isRecording = false;
-        document.getElementById('voiceBtn').classList.remove('recording');
-      };
-    }
+  recognition.onerror = function () {
+    isRecording = false;
+    document.getElementById('voiceBtn').classList.remove('recording');
+  };
+}
 
-    document.getElementById('voiceBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-      if (recognition) {
-        if (isRecording) {
-          recognition.stop();
-        } else {
-          recognition.start();
-        }
-      } else {
-        alert('Voice recognition not supported');
-      }
-    });
+document.getElementById('voiceBtn').addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (!recognition) {
+    alert('Voice recognition not supported');
+    return;
+  }
+
+  if (isRecording) {
+    recognition.stop();
+    return;
+  }
+
+  // ✅ SET LANGUAGE JUST BEFORE START
+  const lang = document.getElementById('languageSelect')?.value || 'english';
+
+  if (lang === 'hindi') recognition.lang = 'hi-IN';
+  else if (lang === 'punjabi') recognition.lang = 'pa-IN';
+  else recognition.lang = 'en-IN';
+
+  recognition.start();
+});
 
     document.getElementById('submitBtn').addEventListener('click', async function() {
       const question = document.getElementById('userInput').value.trim();
