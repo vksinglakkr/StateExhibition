@@ -1068,7 +1068,14 @@
     } else {
       updateLastModified();
     }
-    
+
+ document.addEventListener('DOMContentLoaded', function () {
+  const hintEl = document.getElementById('profileHint');
+  if (hintEl) {
+    hintEl.textContent = 'Default profile: General Citizen (you can change it)';
+  }
+});
+
     // Set default profile on page load
     function setDefaultProfile() {
       // Default to General Citizen (most common user type)
